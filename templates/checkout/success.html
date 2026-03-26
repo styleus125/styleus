@@ -26,14 +26,14 @@
       {% for item in order.items %}
       <div class="flex justify-between text-sm">
         <span class="text-gray-700">{{ item.product_name }} × {{ item.quantity }}</span>
-        <span class="font-semibold">${{ '%.2f' | format(item.price_at_purchase * item.quantity) }}</span>
+        <span class="font-semibold">₹{{ '%.2f' | format(item.price_at_purchase * item.quantity) }}</span>
       </div>
       {% endfor %}
     </div>
 
     <div class="border-t border-gray-200 pt-3 flex justify-between font-bold">
       <span>Total</span>
-      <span>${{ '%.2f' | format(order.total) }}</span>
+      <span>₹{{ '%.2f' | format(order.total) }}</span>
     </div>
 
     <!-- Digital downloads -->

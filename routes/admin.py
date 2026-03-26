@@ -34,7 +34,7 @@ class CategoryForm(FlaskForm):
 class ProductForm(FlaskForm):
     name = StringField('Product Name', validators=[DataRequired(), Length(max=200)])
     description = TextAreaField('Description', validators=[Optional()])
-    price = FloatField('Price ($)', validators=[DataRequired(), NumberRange(min=0)])
+    price = FloatField('Price (₹)', validators=[DataRequired(), NumberRange(min=0)])
     stock = IntegerField('Stock', validators=[NumberRange(min=0)], default=0)
     category_id = SelectField('Category', coerce=int, validators=[Optional()])
     product_type = SelectField('Type', choices=[('physical', 'Physical'), ('digital', 'Digital')])

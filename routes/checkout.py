@@ -77,7 +77,7 @@ def checkout():
         try:
             intent = stripe.PaymentIntent.create(
                 amount=int(total * 100),
-                currency='usd',
+                currency='inr',
                 metadata={'email': form.email.data},
             )
             payment_intent_id = intent.id

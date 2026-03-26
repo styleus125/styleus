@@ -51,7 +51,7 @@
           <td class="px-5 py-3 text-sm text-gray-600">
             {{ order.customer_email or (order.user.email if order.user else '–') }}
           </td>
-          <td class="px-5 py-3 text-sm font-semibold">${{ '%.2f' | format(order.total) }}</td>
+          <td class="px-5 py-3 text-sm font-semibold">₹{{ '%.2f' | format(order.total) }}</td>
           <td class="px-5 py-3">
             <span class="text-xs font-semibold px-2 py-1 rounded-full capitalize {{ status_colors.get(order.status, 'bg-gray-100 text-gray-600') }}">
               {{ order.status }}

@@ -20,7 +20,7 @@
           <p class="text-sm text-gray-400 mt-0.5">{{ order.created_at.strftime('%B %d, %Y') }}</p>
         </div>
         <div class="flex items-center gap-3">
-          <span class="text-lg font-bold text-navy-900">${{ '%.2f' | format(order.total) }}</span>
+          <span class="text-lg font-bold text-navy-900">₹{{ '%.2f' | format(order.total) }}</span>
           <span class="text-xs font-semibold px-3 py-1 rounded-full capitalize {{ status_colors.get(order.status, 'bg-gray-100 text-gray-600') }}">
             {{ order.status }}
           </span>
@@ -33,7 +33,7 @@
           {% for item in order.items %}
           <div class="flex justify-between text-sm text-gray-600">
             <span>{{ item.product_name }} × {{ item.quantity }}</span>
-            <span>${{ '%.2f' | format(item.price_at_purchase * item.quantity) }}</span>
+            <span>₹{{ '%.2f' | format(item.price_at_purchase * item.quantity) }}</span>
           </div>
           {% endfor %}
         </div>

@@ -59,14 +59,14 @@
         {% for item in order.items %}
         <tr>
           <td class="px-5 py-3 text-sm font-medium">{{ item.product_name }}</td>
-          <td class="px-5 py-3 text-sm">${{ '%.2f' | format(item.price_at_purchase) }}</td>
+          <td class="px-5 py-3 text-sm">₹{{ '%.2f' | format(item.price_at_purchase) }}</td>
           <td class="px-5 py-3 text-sm">{{ item.quantity }}</td>
-          <td class="px-5 py-3 text-sm font-semibold">${{ '%.2f' | format(item.price_at_purchase * item.quantity) }}</td>
+          <td class="px-5 py-3 text-sm font-semibold">₹{{ '%.2f' | format(item.price_at_purchase * item.quantity) }}</td>
         </tr>
         {% endfor %}
         <tr class="bg-gray-50">
           <td colspan="3" class="px-5 py-3 text-sm font-bold text-right">Total</td>
-          <td class="px-5 py-3 text-sm font-black">${{ '%.2f' | format(order.total) }}</td>
+          <td class="px-5 py-3 text-sm font-black">₹{{ '%.2f' | format(order.total) }}</td>
         </tr>
       </tbody>
     </table>
