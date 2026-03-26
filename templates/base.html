@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>{% block title %}{{ title or 'DLO Store' }}{% endblock %} – DLO Store</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          colors: {
+            navy: {
+              50: '#f0f4ff',
+              100: '#e0e9ff',
+              200: '#c7d7fe',
+              300: '#a5b8fb',
+              400: '#8193f8',
+              500: '#6271f2',
+              600: '#4e52e7',
+              700: '#3d3fcb',
+              800: '#3235a4',
+              900: '#1e2160',
+              950: '#131440',
+            }
+          }
+        }
+      }
+    }
+  </script>
+  <meta name="csrf-token" content="{{ csrf_token() }}" />
+  {% block head %}{% endblock %}
+</head>
+<body class="bg-gray-50 text-gray-800 font-sans antialiased">
+
+<!-- Navbar -->
+<nav class="bg-navy-900 shadow-lg sticky top-0 z-50">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex items-center justify-between h-16">
+      <!-- Logo -->
+      <a href="{{ url_for('shop.index') }}" class="flex items-center gap-2">
+        <span class="text-2xl font-black text-white tracking-tight">DLO<span class="text-blue-400">.</span></span>
+        <span class="hidden sm:inline text-gray-300 text-sm font-medium">Store</span>
+      </a>
+
+      <!-- Search (desktop) -->
+      <div class="hidden md:flex flex-1 max-w-lg mx-8">
+        <form action="{{ url_for('shop.products') }}" method="get" class="w-full flex">
+          <input type="text" name="q" placeholder="Search products…"
+                 value="{{ request.args.get('q', '') }}"
+                 class="w-full px-4 py-2 rounded-l-lg text-sm bg-navy-800 text-white placeholder-gray-400 border border-navy-700 focus:outline-none focus:border-blue-400">
+          <button type="submit" class="px-4 py-2 bg-blue-500 hover:bg-blue-600 text-white rounded-r-lg transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-4.35-4.35M17 11A6 6 0 1 1 5 11a6 6 0 0 1 12 0z"/>
+            </svg>
+          </button>
+        </form>
+      </div>
+
+      <!-- Nav links -->
+      <div class="flex items-center gap-4">
+        <a href="{{ url_for('shop.products') }}" class="hidden sm:inline text-gray-300 hover:text-white text-sm transition">Shop</a>
+
+        <!-- Cart -->
+        <a href="{{ url_for('cart.view_cart') }}" class="relative flex items-center text-gray-300 hover:text-white transition">
+          <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                  d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13l-1.5 6h13M7 13L5.4 5M9 21a1 1 0 100-2 1 1 0 000 2zm10 0a1 1 0 100-2 1 1 0 000 2z"/>
+          </svg>
+          <span id="cart-badge"
+                class="absolute -top-2 -right-2 bg-blue-500 text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center
+                       {% if cart_count == 0 %}hidden{% endif %}">
+            {{ cart_count }}
+          </span>
+        </a>
+
+        {% if current_user.is_authenticated %}
+          <div class="relative group">
+            <button class="flex items-center gap-2 text-gray-300 hover:text-white text-sm transition">
+              <span class="hidden sm:inline">{{ current_user.name.split()[0] }}</span>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+              </svg>
+            </button>
+            <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-100 opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-all duration-200 z-50">
+              <a href="{{ url_for('orders.history') }}" class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50">My Orders</a>
+              {% if current_user.is_admin %}
+              <a href="{{ url_for('admin.dashboard') }}" class="block px-4 py-2.5 text-sm text-blue-600 font-medium hover:bg-gray-50">Admin Panel</a>
+              {% endif %}
+              <hr class="my-1">
+              <a href="{{ url_for('auth.logout') }}" class="block px-4 py-2.5 text-sm text-red-600 hover:bg-gray-50">Logout</a>
+            </div>
+          </div>
+        {% else %}
+          <a href="{{ url_for('auth.login') }}" class="text-gray-300 hover:text-white text-sm transition">Login</a>
+          <a href="{{ url_for('auth.register') }}"
+             class="bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium px-4 py-2 rounded-lg transition">
+            Register
+          </a>
+        {% endif %}
+      </div>
+    </div>
+  </div>
+</nav>
+
+<!-- Flash messages -->
+{% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-4 space-y-2">
+      {% for category, message in messages %}
+        {% set color_map = {'success': 'bg-green-50 border-green-400 text-green-800',
+                            'danger': 'bg-red-50 border-red-400 text-red-800',
+                            'warning': 'bg-yellow-50 border-yellow-400 text-yellow-800',
+                            'info': 'bg-blue-50 border-blue-400 text-blue-800',
+                            'error': 'bg-red-50 border-red-400 text-red-800'} %}
+        <div class="flex items-center gap-3 border-l-4 p-4 rounded-r-lg {{ color_map.get(category, 'bg-gray-50 border-gray-400 text-gray-800') }}"
+             role="alert">
+          <span class="flex-1 text-sm font-medium">{{ message }}</span>
+          <button onclick="this.parentElement.remove()" class="text-current opacity-60 hover:opacity-100">
+            <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
+              <path d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"/>
+            </svg>
+          </button>
+        </div>
+      {% endfor %}
+    </div>
+  {% endif %}
+{% endwith %}
+
+<!-- Main content -->
+<main>
+  {% block content %}{% endblock %}
+</main>
+
+<!-- Footer -->
+<footer class="bg-navy-900 text-gray-400 mt-16">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+    <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
+      <div class="col-span-1 md:col-span-2">
+        <a href="{{ url_for('shop.index') }}" class="text-2xl font-black text-white">DLO<span class="text-blue-400">.</span></a>
+        <p class="mt-3 text-sm leading-relaxed">Your one-stop shop for physical and digital products. Quality guaranteed.</p>
+      </div>
+      <div>
+        <h4 class="text-white font-semibold mb-3">Shop</h4>
+        <ul class="space-y-2 text-sm">
+          <li><a href="{{ url_for('shop.products') }}" class="hover:text-white transition">All Products</a></li>
+          <li><a href="{{ url_for('shop.products') }}?type=physical" class="hover:text-white transition">Physical</a></li>
+          <li><a href="{{ url_for('shop.products') }}?type=digital" class="hover:text-white transition">Digital</a></li>
+        </ul>
+      </div>
+      <div>
+        <h4 class="text-white font-semibold mb-3">Account</h4>
+        <ul class="space-y-2 text-sm">
+          {% if current_user.is_authenticated %}
+            <li><a href="{{ url_for('orders.history') }}" class="hover:text-white transition">My Orders</a></li>
+            <li><a href="{{ url_for('auth.logout') }}" class="hover:text-white transition">Logout</a></li>
+          {% else %}
+            <li><a href="{{ url_for('auth.login') }}" class="hover:text-white transition">Login</a></li>
+            <li><a href="{{ url_for('auth.register') }}" class="hover:text-white transition">Register</a></li>
+          {% endif %}
+        </ul>
+      </div>
+    </div>
+    <div class="border-t border-navy-700 mt-8 pt-6 text-sm text-center">
+      &copy; {{ now.year if now else 2026 }} DLO Store. All rights reserved.
+    </div>
+  </div>
+</footer>
+
+<script src="{{ url_for('static', filename='js/cart.js') }}"></script>
+{% block scripts %}{% endblock %}
+</body>
+</html>

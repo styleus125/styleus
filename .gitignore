@@ -1,0 +1,27 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# Virtual environment
+venv/
+env/
+
+# Database
+*.db
+*.sqlite3
+
+# Environment variables
+.env
+
+# Uploads
+static/uploads/*
+static/downloads/*
+!static/uploads/.gitkeep
+!static/downloads/.gitkeep
+
+# OS
+.DS_Store
+Thumbs.db

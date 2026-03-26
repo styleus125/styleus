@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<!-- Hero Banner -->
+<section class="bg-gradient-to-br from-navy-900 via-navy-800 to-blue-900 text-white py-24">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <h1 class="text-5xl md:text-6xl font-black tracking-tight mb-6">
+      Shop <span class="text-blue-400">Smarter</span>
+    </h1>
+    <p class="text-xl text-gray-300 max-w-2xl mx-auto mb-10">
+      Discover thousands of physical and digital products at unbeatable prices.
+    </p>
+    <div class="flex flex-col sm:flex-row gap-4 justify-center">
+      <a href="{{ url_for('shop.products') }}"
+         class="inline-flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold px-8 py-3 rounded-xl transition text-lg shadow-lg">
+        Browse Products
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+        </svg>
+      </a>
+      <a href="{{ url_for('shop.products') }}?type=digital"
+         class="inline-flex items-center gap-2 border border-white/30 hover:bg-white/10 text-white font-semibold px-8 py-3 rounded-xl transition text-lg">
+        Digital Downloads
+      </a>
+    </div>
+  </div>
+</section>
+
+<!-- Category Bar -->
+{% if categories %}
+<section class="bg-white border-b border-gray-200 py-4">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="flex gap-3 overflow-x-auto pb-1 scrollbar-hide">
+      <a href="{{ url_for('shop.products') }}"
+         class="shrink-0 text-sm font-medium px-4 py-2 rounded-full bg-navy-900 text-white hover:bg-navy-800 transition">
+        All
+      </a>
+      {% for cat in categories %}
+      <a href="{{ url_for('shop.products') }}?category={{ cat.slug }}"
+         class="shrink-0 text-sm font-medium px-4 py-2 rounded-full border border-gray-200 text-gray-600 hover:bg-navy-900 hover:text-white hover:border-navy-900 transition">
+        {{ cat.name }}
+      </a>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- Featured Products -->
+{% if featured %}
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+  <div class="flex items-center justify-between mb-8">
+    <h2 class="text-3xl font-bold text-gray-900">Featured Products</h2>
+    <a href="{{ url_for('shop.products') }}" class="text-blue-600 hover:text-blue-700 font-medium text-sm">View all →</a>
+  </div>
+  <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+    {% for product in featured %}
+    {% include '_product_card.html' %}
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+<!-- Promo Banner -->
+<section class="bg-gradient-to-r from-blue-600 to-blue-700 text-white py-14">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <h2 class="text-3xl font-bold mb-3">Digital Products</h2>
+    <p class="text-blue-100 mb-6 max-w-xl mx-auto">Software, eBooks, music and more. Download instantly after purchase.</p>
+    <a href="{{ url_for('shop.products') }}?type=digital"
+       class="inline-block bg-white text-blue-700 font-semibold px-8 py-3 rounded-xl hover:bg-blue-50 transition shadow">
+      Shop Digital
+    </a>
+  </div>
+</section>
+
+<!-- New Arrivals -->
+{% if new_arrivals %}
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+  <div class="flex items-center justify-between mb-8">
+    <h2 class="text-3xl font-bold text-gray-900">New Arrivals</h2>
+    <a href="{{ url_for('shop.products') }}?sort=newest" class="text-blue-600 hover:text-blue-700 font-medium text-sm">View all →</a>
+  </div>
+  <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+    {% for product in new_arrivals %}
+    {% include '_product_card.html' %}
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
+{% endblock %}

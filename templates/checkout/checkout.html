@@ -1,0 +1,157 @@
+{% extends 'base.html' %}
+{% block head %}
+<script src="https://js.stripe.com/v3/"></script>
+{% endblock %}
+
+{% block content %}
+<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+  <h1 class="text-3xl font-bold text-gray-900 mb-8">Checkout</h1>
+
+  <div class="grid grid-cols-1 lg:grid-cols-5 gap-10">
+    <!-- Form -->
+    <div class="lg:col-span-3">
+      <form method="post" action="{{ url_for('checkout.checkout') }}" id="checkout-form">
+        {{ form.hidden_tag() }}
+
+        <!-- Contact -->
+        <div class="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+          <h2 class="font-bold text-gray-900 mb-4 text-lg">Contact</h2>
+          <div class="space-y-4">
+            <div>
+              {{ form.email.label(class="block text-sm font-medium text-gray-700 mb-1") }}
+              {{ form.email(class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400 " + ("border-red-400" if form.email.errors else "")) }}
+              {% for e in form.email.errors %}<p class="text-red-500 text-xs mt-1">{{ e }}</p>{% endfor %}
+            </div>
+            <div>
+              {{ form.full_name.label(class="block text-sm font-medium text-gray-700 mb-1") }}
+              {{ form.full_name(class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400") }}
+              {% for e in form.full_name.errors %}<p class="text-red-500 text-xs mt-1">{{ e }}</p>{% endfor %}
+            </div>
+          </div>
+        </div>
+
+        <!-- Shipping (only for physical) -->
+        {% if has_physical %}
+        <div class="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+          <h2 class="font-bold text-gray-900 mb-4 text-lg">Shipping Address</h2>
+          <div class="space-y-4">
+            <div>
+              {{ form.address.label(class="block text-sm font-medium text-gray-700 mb-1") }}
+              {{ form.address(rows=2, class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400") }}
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                {{ form.city.label(class="block text-sm font-medium text-gray-700 mb-1") }}
+                {{ form.city(class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400") }}
+              </div>
+              <div>
+                {{ form.state.label(class="block text-sm font-medium text-gray-700 mb-1") }}
+                {{ form.state(class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400") }}
+              </div>
+            </div>
+            <div class="grid grid-cols-2 gap-4">
+              <div>
+                {{ form.postal_code.label(class="block text-sm font-medium text-gray-700 mb-1") }}
+                {{ form.postal_code(class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400") }}
+              </div>
+              <div>
+                {{ form.country.label(class="block text-sm font-medium text-gray-700 mb-1") }}
+                {{ form.country(class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400") }}
+              </div>
+            </div>
+          </div>
+        </div>
+        {% endif %}
+
+        <!-- Payment -->
+        <div class="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+          <h2 class="font-bold text-gray-900 mb-4 text-lg">Payment</h2>
+          <div id="card-element" class="border border-gray-300 rounded-lg px-4 py-3 bg-white">
+            <!-- Stripe card element mounts here -->
+          </div>
+          <div id="card-errors" class="text-red-500 text-sm mt-2 hidden"></div>
+          <p class="text-xs text-gray-400 mt-3 flex items-center gap-1">
+            <svg class="w-3 h-3" fill="currentColor" viewBox="0 0 20 20">
+              <path fill-rule="evenodd" d="M5 9V7a5 5 0 0110 0v2a2 2 0 012 2v5a2 2 0 01-2 2H5a2 2 0 01-2-2v-5a2 2 0 012-2zm8-2v2H7V7a3 3 0 016 0z" clip-rule="evenodd"/>
+            </svg>
+            Payments secured by Stripe
+          </p>
+        </div>
+
+        <button type="submit" id="submit-btn"
+                class="w-full bg-navy-900 hover:bg-navy-800 text-white font-bold py-4 rounded-xl text-lg transition shadow-lg">
+          Pay ${{ '%.2f' | format(total) }}
+        </button>
+      </form>
+    </div>
+
+    <!-- Order summary -->
+    <div class="lg:col-span-2">
+      <div class="bg-white rounded-xl border border-gray-200 p-6 sticky top-20">
+        <h2 class="font-bold text-gray-900 text-lg mb-4">Order Summary</h2>
+        <div class="space-y-3 mb-4">
+          {% for item in items %}
+          <div class="flex gap-3">
+            <div class="w-12 h-12 bg-gray-100 rounded-lg overflow-hidden shrink-0">
+              {% if item.product.image_url %}
+                <img src="{{ item.product.image_url }}" alt="" class="w-full h-full object-cover">
+              {% endif %}
+            </div>
+            <div class="flex-1 min-w-0">
+              <p class="text-sm font-medium text-gray-800 truncate">{{ item.product.name }}</p>
+              <p class="text-xs text-gray-400">Qty: {{ item.quantity }}</p>
+            </div>
+            <span class="text-sm font-semibold text-gray-700">${{ '%.2f' | format(item.subtotal) }}</span>
+          </div>
+          {% endfor %}
+        </div>
+        <div class="border-t border-gray-200 pt-4">
+          <div class="flex justify-between font-bold text-gray-900 text-lg">
+            <span>Total</span>
+            <span>${{ '%.2f' | format(total) }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  const stripePublicKey = "{{ stripe_public_key }}";
+  let stripe, cardElement;
+
+  if (stripePublicKey && !stripePublicKey.includes('placeholder')) {
+    stripe = Stripe(stripePublicKey);
+    const elements = stripe.elements();
+    cardElement = elements.create('card', {
+      style: {
+        base: { fontSize: '16px', color: '#1e2160', '::placeholder': { color: '#9ca3af' } }
+      }
+    });
+    cardElement.mount('#card-element');
+    cardElement.on('change', ({error}) => {
+      const disp = document.getElementById('card-errors');
+      if (error) {
+        disp.textContent = error.message;
+        disp.classList.remove('hidden');
+      } else {
+        disp.classList.add('hidden');
+      }
+    });
+  } else {
+    document.getElementById('card-element').innerHTML =
+      '<p class="text-sm text-gray-500 italic">Demo mode: Stripe not configured. Form will submit directly.</p>';
+  }
+
+  document.getElementById('checkout-form').addEventListener('submit', async function(e) {
+    if (!stripe || !cardElement) return; // demo mode, let it submit normally
+    e.preventDefault();
+    const btn = document.getElementById('submit-btn');
+    btn.disabled = true;
+    btn.textContent = 'Processing…';
+    this.submit();
+  });
+</script>
+{% endblock %}

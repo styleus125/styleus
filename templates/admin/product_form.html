@@ -1,0 +1,114 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+
+<div class="flex items-center gap-3 mb-6">
+  <a href="{{ url_for('admin.products') }}" class="text-gray-400 hover:text-gray-600">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+    </svg>
+  </a>
+  <h2 class="text-xl font-bold text-gray-800">{{ 'Edit Product' if product else 'New Product' }}</h2>
+</div>
+
+<div class="max-w-3xl">
+  <form method="post"
+        action="{{ url_for('admin.product_edit', product_id=product.id) if product else url_for('admin.product_new') }}"
+        enctype="multipart/form-data">
+    {{ form.hidden_tag() }}
+
+    <div class="bg-white rounded-xl border border-gray-200 p-6 mb-5">
+      <h3 class="font-semibold text-gray-700 mb-4 text-sm uppercase tracking-wider">Basic Info</h3>
+      <div class="space-y-5">
+        <div>
+          {{ form.name.label(class="block text-sm font-medium text-gray-700 mb-1") }}
+          {{ form.name(class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400") }}
+          {% for e in form.name.errors %}<p class="text-red-500 text-xs mt-1">{{ e }}</p>{% endfor %}
+        </div>
+
+        <div>
+          {{ form.description.label(class="block text-sm font-medium text-gray-700 mb-1") }}
+          {{ form.description(rows=4, class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400") }}
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            {{ form.price.label(class="block text-sm font-medium text-gray-700 mb-1") }}
+            {{ form.price(class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400") }}
+            {% for e in form.price.errors %}<p class="text-red-500 text-xs mt-1">{{ e }}</p>{% endfor %}
+          </div>
+          <div>
+            {{ form.stock.label(class="block text-sm font-medium text-gray-700 mb-1") }}
+            {{ form.stock(class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400") }}
+          </div>
+        </div>
+
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            {{ form.category_id.label(class="block text-sm font-medium text-gray-700 mb-1") }}
+            {{ form.category_id(class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400") }}
+          </div>
+          <div>
+            {{ form.product_type.label(class="block text-sm font-medium text-gray-700 mb-1") }}
+            {{ form.product_type(class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400") }}
+          </div>
+        </div>
+
+        <div id="digital-url-field">
+          {{ form.digital_file_url.label(class="block text-sm font-medium text-gray-700 mb-1") }}
+          {{ form.digital_file_url(class="w-full border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400", placeholder="/static/downloads/file.zip") }}
+          <p class="text-xs text-gray-400 mt-1">URL path to the downloadable file</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Image -->
+    <div class="bg-white rounded-xl border border-gray-200 p-6 mb-5">
+      <h3 class="font-semibold text-gray-700 mb-4 text-sm uppercase tracking-wider">Product Image</h3>
+      {% if product and product.image_url %}
+        <div class="mb-3">
+          <img src="{{ product.image_url }}" alt="Current image" class="w-32 h-32 object-cover rounded-lg border border-gray-200">
+          <p class="text-xs text-gray-400 mt-1">Current image</p>
+        </div>
+      {% endif %}
+      {{ form.image(class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-navy-900 file:text-white hover:file:bg-navy-800") }}
+    </div>
+
+    <!-- Flags -->
+    <div class="bg-white rounded-xl border border-gray-200 p-6 mb-6">
+      <h3 class="font-semibold text-gray-700 mb-4 text-sm uppercase tracking-wider">Settings</h3>
+      <div class="flex gap-6">
+        <label class="flex items-center gap-2 cursor-pointer">
+          {{ form.is_active(class="rounded text-blue-500") }}
+          <span class="text-sm text-gray-700">Active (visible in store)</span>
+        </label>
+        <label class="flex items-center gap-2 cursor-pointer">
+          {{ form.is_featured(class="rounded text-blue-500") }}
+          <span class="text-sm text-gray-700">Featured on homepage</span>
+        </label>
+      </div>
+    </div>
+
+    <div class="flex gap-3">
+      <button type="submit"
+              class="bg-navy-900 hover:bg-navy-800 text-white font-semibold px-6 py-2.5 rounded-lg transition text-sm">
+        {{ 'Update Product' if product else 'Create Product' }}
+      </button>
+      <a href="{{ url_for('admin.products') }}"
+         class="border border-gray-300 text-gray-600 font-medium px-6 py-2.5 rounded-lg hover:bg-gray-50 transition text-sm">
+        Cancel
+      </a>
+    </div>
+  </form>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+  function toggleDigitalField() {
+    const type = document.querySelector('[name="product_type"]').value;
+    document.getElementById('digital-url-field').style.display = type === 'digital' ? 'block' : 'none';
+  }
+  document.querySelector('[name="product_type"]').addEventListener('change', toggleDigitalField);
+  toggleDigitalField();
+</script>
+{% endblock %}

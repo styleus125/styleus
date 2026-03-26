@@ -1,0 +1,109 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+
+<div class="flex items-center justify-between mb-6">
+  <h2 class="text-xl font-bold text-gray-800">Orders</h2>
+  <!-- Status filter -->
+  <div class="flex gap-2">
+    <a href="{{ url_for('admin.orders') }}"
+       class="text-sm px-3 py-1.5 rounded-lg border transition
+              {% if not status_filter %}bg-navy-900 text-white border-navy-900{% else %}border-gray-300 text-gray-600 hover:bg-gray-50{% endif %}">
+      All
+    </a>
+    {% for s in status_choices %}
+    <a href="{{ url_for('admin.orders', status=s) }}"
+       class="text-sm px-3 py-1.5 rounded-lg border transition capitalize
+              {% if status_filter == s %}bg-navy-900 text-white border-navy-900{% else %}border-gray-300 text-gray-600 hover:bg-gray-50{% endif %}">
+      {{ s }}
+    </a>
+    {% endfor %}
+  </div>
+</div>
+
+<div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+  <div class="overflow-x-auto">
+    <table class="w-full">
+      <thead>
+        <tr class="text-xs text-gray-500 uppercase tracking-wider bg-gray-50 border-b border-gray-200">
+          <th class="text-left px-5 py-3">Order</th>
+          <th class="text-left px-5 py-3">Customer</th>
+          <th class="text-left px-5 py-3">Total</th>
+          <th class="text-left px-5 py-3">Status</th>
+          <th class="text-left px-5 py-3">Date</th>
+          <th class="text-left px-5 py-3">Update Status</th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-100">
+        {% for order in orders %}
+        {% set status_colors = {
+          'pending': 'bg-yellow-100 text-yellow-700',
+          'processing': 'bg-blue-100 text-blue-700',
+          'shipped': 'bg-purple-100 text-purple-700',
+          'delivered': 'bg-green-100 text-green-700',
+          'cancelled': 'bg-red-100 text-red-700'
+        } %}
+        <tr class="hover:bg-gray-50 transition">
+          <td class="px-5 py-3">
+            <a href="{{ url_for('admin.order_detail', order_id=order.id) }}"
+               class="text-sm font-medium text-blue-600 hover:underline">#{{ order.id }}</a>
+            <p class="text-xs text-gray-400">{{ order.items.count() }} item(s)</p>
+          </td>
+          <td class="px-5 py-3 text-sm text-gray-600">
+            {{ order.customer_email or (order.user.email if order.user else '–') }}
+          </td>
+          <td class="px-5 py-3 text-sm font-semibold">${{ '%.2f' | format(order.total) }}</td>
+          <td class="px-5 py-3">
+            <span class="text-xs font-semibold px-2 py-1 rounded-full capitalize {{ status_colors.get(order.status, 'bg-gray-100 text-gray-600') }}">
+              {{ order.status }}
+            </span>
+          </td>
+          <td class="px-5 py-3 text-sm text-gray-500">{{ order.created_at.strftime('%b %d, %Y') }}</td>
+          <td class="px-5 py-3">
+            <form action="{{ url_for('admin.order_status', order_id=order.id) }}" method="post" class="flex gap-2">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <select name="status" class="border border-gray-300 rounded px-2 py-1 text-xs focus:outline-none">
+                {% for s in status_choices %}
+                  <option value="{{ s }}" {% if s == order.status %}selected{% endif %}>{{ s }}</option>
+                {% endfor %}
+              </select>
+              <button type="submit" class="bg-navy-900 text-white text-xs px-3 py-1 rounded hover:bg-navy-800 transition">
+                Update
+              </button>
+            </form>
+          </td>
+        </tr>
+        {% else %}
+        <tr><td colspan="6" class="px-5 py-10 text-center text-gray-400">No orders found</td></tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Pagination -->
+  {% if pagination.pages > 1 %}
+  <div class="px-5 py-4 border-t border-gray-200 flex items-center justify-between">
+    <p class="text-sm text-gray-500">{{ pagination.total }} total orders</p>
+    <div class="flex gap-1">
+      {% if pagination.has_prev %}
+        <a href="{{ url_for('admin.orders', page=pagination.prev_num, status=status_filter) }}"
+           class="px-3 py-1.5 border rounded text-sm hover:bg-gray-50">&larr;</a>
+      {% endif %}
+      {% for p in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
+        {% if p %}
+          <a href="{{ url_for('admin.orders', page=p, status=status_filter) }}"
+             class="px-3 py-1.5 border rounded text-sm {% if p == pagination.page %}bg-navy-900 text-white border-navy-900{% else %}hover:bg-gray-50{% endif %}">
+            {{ p }}
+          </a>
+        {% else %}
+          <span class="px-2 py-1.5 text-gray-400">…</span>
+        {% endif %}
+      {% endfor %}
+      {% if pagination.has_next %}
+        <a href="{{ url_for('admin.orders', page=pagination.next_num, status=status_filter) }}"
+           class="px-3 py-1.5 border rounded text-sm hover:bg-gray-50">&rarr;</a>
+      {% endif %}
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

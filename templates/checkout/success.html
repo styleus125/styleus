@@ -1,0 +1,78 @@
+{% extends 'base.html' %}
+{% block content %}
+<div class="max-w-2xl mx-auto px-4 sm:px-6 lg:px-8 py-16 text-center">
+  <!-- Success icon -->
+  <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+    <svg class="w-10 h-10 text-green-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+    </svg>
+  </div>
+
+  <h1 class="text-3xl font-black text-gray-900 mb-3">Order Confirmed!</h1>
+  <p class="text-gray-500 mb-8 text-lg">
+    Thank you for your purchase. We're processing your order now.
+  </p>
+
+  {% if order %}
+  <div class="bg-white rounded-2xl border border-gray-200 p-6 text-left mb-8">
+    <div class="flex justify-between items-center mb-4">
+      <h2 class="font-bold text-gray-800">Order #{{ order.id }}</h2>
+      <span class="bg-yellow-100 text-yellow-700 text-xs font-semibold px-3 py-1 rounded-full capitalize">
+        {{ order.status }}
+      </span>
+    </div>
+
+    <div class="space-y-3 mb-4">
+      {% for item in order.items %}
+      <div class="flex justify-between text-sm">
+        <span class="text-gray-700">{{ item.product_name }} × {{ item.quantity }}</span>
+        <span class="font-semibold">${{ '%.2f' | format(item.price_at_purchase * item.quantity) }}</span>
+      </div>
+      {% endfor %}
+    </div>
+
+    <div class="border-t border-gray-200 pt-3 flex justify-between font-bold">
+      <span>Total</span>
+      <span>${{ '%.2f' | format(order.total) }}</span>
+    </div>
+
+    <!-- Digital downloads -->
+    {% set has_digital = namespace(v=false) %}
+    {% for item in order.items %}
+      {% if item.product and item.product.product_type == 'digital' and item.product.digital_file_url %}
+        {% set has_digital.v = true %}
+      {% endif %}
+    {% endfor %}
+    {% if has_digital.v %}
+    <div class="mt-4 bg-blue-50 border border-blue-200 rounded-xl p-4">
+      <p class="text-sm font-semibold text-blue-700 mb-2">Your Digital Downloads</p>
+      {% for item in order.items %}
+        {% if item.product and item.product.product_type == 'digital' and item.product.digital_file_url %}
+        <a href="{{ item.product.digital_file_url }}" download
+           class="flex items-center gap-2 text-sm text-blue-600 hover:underline mb-1">
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4"/>
+          </svg>
+          Download {{ item.product_name }}
+        </a>
+        {% endif %}
+      {% endfor %}
+    </div>
+    {% endif %}
+  </div>
+  {% endif %}
+
+  <div class="flex gap-4 justify-center">
+    {% if current_user.is_authenticated %}
+    <a href="{{ url_for('orders.history') }}"
+       class="bg-navy-900 text-white font-semibold px-6 py-3 rounded-xl hover:bg-navy-800 transition">
+      View My Orders
+    </a>
+    {% endif %}
+    <a href="{{ url_for('shop.products') }}"
+       class="border border-gray-300 text-gray-700 font-semibold px-6 py-3 rounded-xl hover:bg-gray-50 transition">
+      Continue Shopping
+    </a>
+  </div>
+</div>
+{% endblock %}

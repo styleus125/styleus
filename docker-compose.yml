@@ -1,0 +1,21 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: dlo_app
+    ports:
+      - "8080:5000"
+    environment:
+      - SECRET_KEY=super-secret-key-change-in-production
+      - DATABASE_URL=sqlite:////app/data/dlo.db
+      - STRIPE_PUBLIC_KEY=pk_test_placeholder_key_replace_with_real
+      - STRIPE_SECRET_KEY=sk_test_placeholder_key_replace_with_real
+    volumes:
+      - dlo_data:/app/data
+      - dlo_uploads:/app/static/uploads
+    restart: unless-stopped
+
+volumes:
+  dlo_data:
+  dlo_uploads:
