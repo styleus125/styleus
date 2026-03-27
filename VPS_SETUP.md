@@ -101,54 +101,39 @@ App will be available at `http://your-vps-ip:8080`
 
 ---
 
-## 6. Set Up Nginx Reverse Proxy (Recommended)
+## 6. Set Up Nginx + SSL (Containerized)
+
+Nginx and Certbot both run as Docker containers — no host-level nginx install needed.
+
+**First-time setup (run once on VPS):**
 
 ```bash
-apt install nginx -y
+cd /opt/dlo
+
+# Edit init-letsencrypt.sh and set your real email address
+nano init-letsencrypt.sh
+
+# Run the bootstrap script
+chmod +x init-letsencrypt.sh
+./init-letsencrypt.sh
 ```
 
-Create a config file:
+This script will:
+1. Start nginx in HTTP-only mode
+2. Issue a Let's Encrypt certificate via certbot
+3. Switch nginx to HTTPS and reload it
+4. Start the certbot container (auto-renews every 12h)
 
-```bash
-nano /etc/nginx/sites-available/dlo
+Your site will be live at `https://aibrainlabs.online`
+
+**Architecture:**
+```
+Internet → nginx:443 (SSL termination) → web:5000 (Flask app)
+                ↑
+         certbot (auto-renews certs every 12h)
 ```
 
-Paste the following (replace `yourdomain.com`):
-
-```nginx
-server {
-    listen 80;
-    server_name yourdomain.com www.yourdomain.com;
-
-    client_max_body_size 20M;
-
-    location / {
-        proxy_pass http://127.0.0.1:8080;
-        proxy_set_header Host $host;
-        proxy_set_header X-Real-IP $remote_addr;
-        proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
-    }
-}
-```
-
-Enable and restart Nginx:
-
-```bash
-ln -s /etc/nginx/sites-available/dlo /etc/nginx/sites-enabled/
-nginx -t
-systemctl restart nginx
-```
-
----
-
-## 7. Enable HTTPS with SSL (Recommended)
-
-```bash
-apt install certbot python3-certbot-nginx -y
-certbot --nginx -d yourdomain.com -d www.yourdomain.com
-```
-
-Your site will be live at `https://yourdomain.com`
+> Note: Port 8080 is no longer exposed. All traffic goes through nginx on 80/443.
 
 ---
 

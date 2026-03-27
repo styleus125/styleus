@@ -4,8 +4,8 @@ services:
   web:
     build: .
     container_name: dlo_app
-    ports:
-      - "8080:5000"
+    expose:
+      - "5000"
     environment:
       - SECRET_KEY=super-secret-key-change-in-production
       - DATABASE_URL=sqlite:////app/data/dlo.db
@@ -16,6 +16,31 @@ services:
       - dlo_uploads:/app/static/uploads
     restart: unless-stopped
 
+  nginx:
+    image: nginx:alpine
+    container_name: dlo_nginx
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./nginx/conf.d:/etc/nginx/conf.d:ro
+      - certbot_www:/var/www/certbot:ro
+      - certbot_conf:/etc/letsencrypt:ro
+    depends_on:
+      - web
+    restart: unless-stopped
+    command: "/bin/sh -c 'while :; do sleep 6h & wait $${!}; nginx -s reload; done & nginx -g \"daemon off;\"'"
+
+  certbot:
+    image: certbot/certbot
+    container_name: dlo_certbot
+    volumes:
+      - certbot_www:/var/www/certbot
+      - certbot_conf:/etc/letsencrypt
+    entrypoint: "/bin/sh -c 'trap exit TERM; while :; do certbot renew; sleep 12h & wait $${!}; done'"
+
 volumes:
   dlo_data:
   dlo_uploads:
+  certbot_www:
+  certbot_conf:
