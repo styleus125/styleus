@@ -44,8 +44,17 @@ def get_cart_items_and_total():
     return items, total
 
 
+# CHECKOUT DISABLED — remove the two lines below to re-enable
+CHECKOUT_DISABLED = True
+CHECKOUT_DISABLED_MSG = 'Checkout is temporarily unavailable. Please check back soon.'
+
+
 @checkout_bp.route('/', methods=['GET', 'POST'])
 def checkout():
+    if CHECKOUT_DISABLED:
+        flash(CHECKOUT_DISABLED_MSG, 'warning')
+        return redirect(url_for('cart.view_cart'))
+
     items, total = get_cart_items_and_total()
     if not items:
         flash('Your cart is empty.', 'warning')
