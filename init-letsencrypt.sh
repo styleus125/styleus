@@ -27,10 +27,10 @@ server {
 }
 EOF
 
-docker compose up -d nginx web
+docker-compose up -d nginx web
 
 echo "### Requesting Let's Encrypt certificate..."
-docker compose run --rm certbot certonly \
+docker-compose run --rm certbot certonly \
     --webroot \
     --webroot-path=/var/www/certbot \
     --email "$EMAIL" \
@@ -84,10 +84,10 @@ server {
 EOF
 
 echo "### Reloading nginx with HTTPS config..."
-docker compose exec nginx nginx -s reload
+docker-compose exec nginx nginx -s reload
 
 echo "### Starting certbot auto-renew container..."
-docker compose up -d certbot
+docker-compose up -d certbot
 
 echo ""
 echo "Done! Your site is live at https://$DOMAIN"
