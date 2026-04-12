@@ -2,8 +2,8 @@
 {% block content %}
 
 <!-- Hero Banner -->
-<section class="bg-gradient-to-br from-navy-900 via-navy-800 to-blue-900 text-white py-24">
-  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+<section class="bg-gradient-to-br from-navy-900 via-navy-800 to-blue-900 text-white overflow-hidden">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center pt-24 pb-12">
     <h1 class="text-5xl md:text-6xl font-black tracking-tight mb-6">
       Shop <span class="text-blue-400">Smarter</span>
     </h1>
@@ -24,7 +24,58 @@
       </a>
     </div>
   </div>
+
+  <!-- Scrolling Clothing Images -->
+  <div class="relative pb-10">
+    <!-- fade edges -->
+    <div class="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-navy-900 to-transparent z-10 pointer-events-none"></div>
+    <div class="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-blue-900 to-transparent z-10 pointer-events-none"></div>
+
+    <div class="flex gap-4 hero-scroll-track">
+      {% set clothing_images = [
+        ('https://images.unsplash.com/photo-1512436991641-6745cdb1723f?w=220&h=300&fit=crop', 'Summer Dress'),
+        ('https://images.unsplash.com/photo-1489987707025-afc232f7ea0f?w=220&h=300&fit=crop', 'Casual Shirt'),
+        ('https://images.unsplash.com/photo-1542295669297-4d352b042bca?w=220&h=300&fit=crop', 'Denim Jacket'),
+        ('https://images.unsplash.com/photo-1551232864-3f0890e580d9?w=220&h=300&fit=crop', 'Floral Blouse'),
+        ('https://images.unsplash.com/photo-1434389677669-e08b4cac3105?w=220&h=300&fit=crop', 'Trench Coat'),
+        ('https://images.unsplash.com/photo-1485968579580-b6d095142e6e?w=220&h=300&fit=crop', 'White Tee'),
+        ('https://images.unsplash.com/photo-1509631179647-0177331693ae?w=220&h=300&fit=crop', 'Knit Sweater'),
+        ('https://images.unsplash.com/photo-1483985988355-763728e1935b?w=220&h=300&fit=crop', 'Fashion Look'),
+        ('https://images.unsplash.com/photo-1469334031218-e382a71b716b?w=220&h=300&fit=crop', 'Street Style'),
+        ('https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?w=220&h=300&fit=crop', 'Model Outfit')
+      ] %}
+      <!-- First set -->
+      {% for src, label in clothing_images %}
+      <div class="shrink-0 rounded-2xl overflow-hidden shadow-xl border border-white/10 hero-scroll-item">
+        <img src="{{ src }}" alt="{{ label }}" class="w-[180px] h-[240px] object-cover" loading="lazy">
+      </div>
+      {% endfor %}
+      <!-- Duplicate for seamless loop -->
+      {% for src, label in clothing_images %}
+      <div class="shrink-0 rounded-2xl overflow-hidden shadow-xl border border-white/10 hero-scroll-item" aria-hidden="true">
+        <img src="{{ src }}" alt="" class="w-[180px] h-[240px] object-cover" loading="lazy">
+      </div>
+      {% endfor %}
+    </div>
+  </div>
 </section>
+
+<style>
+.hero-scroll-track {
+  display: flex;
+  gap: 1rem;
+  animation: heroScroll 30s linear infinite;
+  width: max-content;
+  padding: 0 1rem;
+}
+.hero-scroll-track:hover {
+  animation-play-state: paused;
+}
+@keyframes heroScroll {
+  0%   { transform: translateX(0); }
+  100% { transform: translateX(-50%); }
+}
+</style>
 
 <!-- Category Bar -->
 {% if categories %}

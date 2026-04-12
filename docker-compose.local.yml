@@ -1,0 +1,23 @@
+version: '3.8'
+
+services:
+  web:
+    build: .
+    container_name: dlo_app_local
+    ports:
+      - "8080:5000"
+    environment:
+      - SECRET_KEY=local-dev-secret-key
+      - DATABASE_URL=sqlite:////app/data/dlo.db
+      - STRIPE_PUBLIC_KEY=pk_test_placeholder_key_replace_with_real
+      - STRIPE_SECRET_KEY=sk_test_placeholder_key_replace_with_real
+      - FLASK_ENV=development
+      - FLASK_DEBUG=1
+    volumes:
+      - dlo_local_data:/app/data
+      - dlo_local_uploads:/app/static/uploads
+      - .:/app                          # live code reload — changes reflect without rebuild
+
+volumes:
+  dlo_local_data:
+  dlo_local_uploads:
