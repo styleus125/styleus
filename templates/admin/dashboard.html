@@ -49,6 +49,21 @@
   </a>
 </div>
 
+{% if pending_users > 0 %}
+<div class="mb-4">
+  <a href="{{ url_for('admin.users', filter='pending') }}"
+     class="flex items-center gap-4 bg-blue-50 border border-blue-300 rounded-xl p-5 hover:bg-blue-100 transition">
+    <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-black text-lg">
+      {{ pending_users }}
+    </div>
+    <div>
+      <p class="font-semibold text-blue-800">New user registration{{ 's' if pending_users != 1 }} awaiting approval</p>
+      <p class="text-sm text-blue-600">Click to review and approve</p>
+    </div>
+  </a>
+</div>
+{% endif %}
+
 {% if pending_listings > 0 %}
 <div class="mb-8">
   <a href="{{ url_for('admin.listings', status='pending') }}"

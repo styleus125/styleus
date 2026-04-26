@@ -3,6 +3,16 @@
 
 <div class="flex items-center justify-between mb-6">
   <h2 class="text-xl font-bold text-gray-800">Users</h2>
+  <div class="flex gap-2">
+    <a href="{{ url_for('admin.users') }}"
+       class="px-3 py-1.5 text-sm rounded-lg font-medium transition {% if not request.args.get('filter') %}bg-navy-900 text-white{% else %}bg-white border border-gray-300 text-gray-600 hover:bg-gray-50{% endif %}">
+      All
+    </a>
+    <a href="{{ url_for('admin.users', filter='pending') }}"
+       class="px-3 py-1.5 text-sm rounded-lg font-medium transition {% if request.args.get('filter') == 'pending' %}bg-navy-900 text-white{% else %}bg-white border border-gray-300 text-gray-600 hover:bg-gray-50{% endif %}">
+      Pending
+    </a>
+  </div>
 </div>
 
 <!-- Search -->
@@ -23,6 +33,7 @@
           <th class="text-left px-5 py-3">User</th>
           <th class="text-left px-5 py-3">Email</th>
           <th class="text-left px-5 py-3">Role</th>
+          <th class="text-left px-5 py-3">Status</th>
           <th class="text-left px-5 py-3">Joined</th>
           <th class="text-left px-5 py-3">Actions</th>
         </tr>
@@ -45,22 +56,34 @@
               {{ 'Admin' if user.is_admin else 'Customer' }}
             </span>
           </td>
-          <td class="px-5 py-3 text-sm text-gray-500">{{ user.created_at.strftime('%b %d, %Y') }}</td>
           <td class="px-5 py-3">
+            <span class="text-xs font-semibold px-2 py-1 rounded-full
+              {% if user.is_approved %}bg-green-100 text-green-700{% else %}bg-yellow-100 text-yellow-700{% endif %}">
+              {{ 'Approved' if user.is_approved else 'Pending' }}
+            </span>
+          </td>
+          <td class="px-5 py-3 text-sm text-gray-500">{{ user.created_at.strftime('%b %d, %Y') }}</td>
+          <td class="px-5 py-3 flex items-center gap-3">
             {% if user.id != current_user.id %}
-            <form action="{{ url_for('admin.user_toggle_admin', user_id=user.id) }}" method="post" class="inline">
-              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-              <button type="submit" class="text-xs text-blue-600 hover:underline">
-                {{ 'Revoke Admin' if user.is_admin else 'Grant Admin' }}
-              </button>
-            </form>
+              {% if not user.is_approved %}
+              <form action="{{ url_for('admin.user_approve', user_id=user.id) }}" method="post" class="inline">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="text-xs text-green-600 font-semibold hover:underline">Approve</button>
+              </form>
+              {% endif %}
+              <form action="{{ url_for('admin.user_toggle_admin', user_id=user.id) }}" method="post" class="inline">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="text-xs text-blue-600 hover:underline">
+                  {{ 'Revoke Admin' if user.is_admin else 'Grant Admin' }}
+                </button>
+              </form>
             {% else %}
             <span class="text-xs text-gray-400">You</span>
             {% endif %}
           </td>
         </tr>
         {% else %}
-        <tr><td colspan="5" class="px-5 py-10 text-center text-gray-400">No users found</td></tr>
+        <tr><td colspan="6" class="px-5 py-10 text-center text-gray-400">No users found</td></tr>
         {% endfor %}
       </tbody>
     </table>

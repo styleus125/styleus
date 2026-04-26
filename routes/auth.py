@@ -36,8 +36,10 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data.lower()).first()
         if user and user.check_password(form.password.data):
+            if not user.is_approved:
+                flash('Your account is pending admin approval. You will be able to log in once approved.', 'warning')
+                return redirect(url_for('auth.login'))
             login_user(user, remember=form.remember.data)
-            # Merge session cart into DB cart
             _merge_session_cart(user)
             next_page = request.args.get('next')
             flash(f'Welcome back, {user.name}!', 'success')
@@ -52,14 +54,12 @@ def register():
         return redirect(url_for('shop.index'))
     form = RegisterForm()
     if form.validate_on_submit():
-        user = User(name=form.name.data, email=form.email.data.lower())
+        user = User(name=form.name.data, email=form.email.data.lower(), is_approved=False)
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
-        login_user(user)
-        _merge_session_cart(user)
-        flash('Account created! Welcome to Styleus.', 'success')
-        return redirect(url_for('shop.index'))
+        flash('Account created! Your account is pending admin approval. You will be notified once approved.', 'success')
+        return redirect(url_for('auth.login'))
     return render_template('auth/register.html', form=form, title='Create Account')
 
 

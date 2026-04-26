@@ -82,6 +82,7 @@ def dashboard():
     recent_orders = Order.query.order_by(Order.created_at.desc()).limit(5).all()
 
     pending_listings = UserListing.query.filter_by(status='pending').count()
+    pending_users = User.query.filter_by(is_approved=False).count()
 
     return render_template('admin/dashboard.html',
                            total_products=total_products,
@@ -91,6 +92,7 @@ def dashboard():
                            orders_today=orders_today,
                            recent_orders=recent_orders,
                            pending_listings=pending_listings,
+                           pending_users=pending_users,
                            title='Admin Dashboard')
 
 
@@ -254,11 +256,14 @@ def order_status(order_id):
 def users():
     page = request.args.get('page', 1, type=int)
     search = request.args.get('q', '').strip()
+    status_filter = request.args.get('filter', '')
     query = User.query
     if search:
         query = query.filter(
             (User.name.ilike(f'%{search}%')) | (User.email.ilike(f'%{search}%'))
         )
+    if status_filter == 'pending':
+        query = query.filter_by(is_approved=False)
     pagination = query.order_by(User.created_at.desc()).paginate(
         page=page, per_page=current_app.config['ADMIN_ITEMS_PER_PAGE'], error_out=False)
     return render_template('admin/users.html',
@@ -266,6 +271,17 @@ def users():
                            pagination=pagination,
                            search=search,
                            title='Manage Users')
+
+
+@admin_bp.route('/users/<int:user_id>/approve', methods=['POST'])
+@login_required
+@admin_required
+def user_approve(user_id):
+    user = User.query.get_or_404(user_id)
+    user.is_approved = True
+    db.session.commit()
+    flash(f'User {user.email} approved.', 'success')
+    return redirect(url_for('admin.users'))
 
 
 @admin_bp.route('/users/<int:user_id>/toggle-admin', methods=['POST'])

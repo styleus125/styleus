@@ -73,7 +73,7 @@ def create_app(config_class=Config):
 
         # Create admin user
         if not User.query.filter_by(email='admin@dlo.com').first():
-            admin = User(name='Admin', email='admin@dlo.com', is_admin=True)
+            admin = User(name='Admin', email='admin@dlo.com', is_admin=True, is_approved=True)
             admin.set_password('admin123')
             db.session.add(admin)
             click.echo('Created admin user: admin@dlo.com / admin123')
