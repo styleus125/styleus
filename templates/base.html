@@ -51,8 +51,8 @@
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
     <div class="flex items-center justify-between h-16">
       <!-- Logo -->
-      <a href="{{ url_for('shop.index') }}" class="flex items-center gap-2">
-        <span class="text-2xl font-black text-white tracking-tight">Styleus</span>
+      <a href="{{ url_for('shop.index') }}" class="flex items-center">
+        <img src="{{ url_for('static', filename='logo.svg') }}" alt="Styleus" class="h-9">
       </a>
 
       <!-- Search (desktop) -->
@@ -154,7 +154,9 @@
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
     <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
       <div class="col-span-1 md:col-span-2">
-        <a href="{{ url_for('shop.index') }}" class="text-2xl font-black text-white">Styleus</a>
+        <a href="{{ url_for('shop.index') }}">
+          <img src="{{ url_for('static', filename='logo.svg') }}" alt="Styleus" class="h-8">
+        </a>
         <p class="mt-3 text-sm leading-relaxed">Your one-stop shop for physical and digital products. Quality guaranteed.</p>
       </div>
       <div>

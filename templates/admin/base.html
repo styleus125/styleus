@@ -29,9 +29,9 @@
   <aside class="w-64 bg-navy-900 text-white flex flex-col shrink-0">
     <!-- Logo -->
     <div class="h-16 flex items-center px-6 border-b border-navy-800">
-      <a href="{{ url_for('admin.dashboard') }}" class="text-xl font-black tracking-tight">
-        Styleus
-        <span class="text-sm font-medium text-gray-300 ml-1">Admin</span>
+      <a href="{{ url_for('admin.dashboard') }}" class="flex items-center gap-2">
+        <img src="{{ url_for('static', filename='logo.svg') }}" alt="Styleus" class="h-7">
+        <span class="text-sm font-medium text-gray-300">Admin</span>
       </a>
     </div>
 
