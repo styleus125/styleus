@@ -1,6 +1,5 @@
 import os
 import click
-import random
 from flask import Flask, session
 from flask_login import LoginManager
 from flask_wtf.csrf import CSRFProtect
@@ -175,7 +174,10 @@ def create_app(config_class=Config):
             product = Product(
                 name=name,
                 slug=slug,
-                description=f'High quality {name.lower()}. {categories[cat_slug].description}. Perfect for everyday use.',
+                description=(
+                    f'High quality {name.lower()}. {categories[cat_slug].description}. '
+                    'Perfect for everyday use.'
+                ),
                 price=price,
                 stock=stock,
                 category_id=categories[cat_slug].id,

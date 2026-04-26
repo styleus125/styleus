@@ -1,4 +1,4 @@
-from flask import Blueprint, render_template, request, abort
+from flask import Blueprint, render_template, request
 from models import Product, Category
 
 shop_bp = Blueprint('shop', __name__)
@@ -82,7 +82,7 @@ def product_detail(slug):
     related = Product.query.filter(
         Product.category_id == product.category_id,
         Product.id != product.id,
-        Product.is_active == True
+        Product.is_active.is_(True)
     ).limit(4).all()
     return render_template('shop/product.html',
                            product=product,

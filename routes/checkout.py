@@ -1,7 +1,6 @@
-import json
 import stripe
-from flask import Blueprint, render_template, request, redirect, url_for, flash, session, current_app, jsonify
-from flask_login import current_user, login_required
+from flask import Blueprint, render_template, request, redirect, url_for, flash, session, current_app
+from flask_login import current_user
 from flask_wtf import FlaskForm
 from wtforms import StringField, SubmitField, TextAreaField
 from wtforms.validators import DataRequired, Email, Length
@@ -90,14 +89,11 @@ def checkout():
                 metadata={'email': form.email.data},
             )
             payment_intent_id = intent.id
-            client_secret = intent.client_secret
         except stripe.error.AuthenticationError:
             # Placeholder keys - simulate payment for demo
             payment_intent_id = 'pi_demo_' + str(int(total * 100))
-            client_secret = None
         except Exception:
             payment_intent_id = 'pi_demo_' + str(int(total * 100))
-            client_secret = None
 
         # Create order
         order = Order(

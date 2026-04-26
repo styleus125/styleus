@@ -1,5 +1,5 @@
 import os
-from datetime import datetime, timedelta
+from datetime import datetime
 from functools import wraps
 
 from flask import Blueprint, render_template, redirect, url_for, flash, request, abort, current_app
