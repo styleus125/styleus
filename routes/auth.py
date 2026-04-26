@@ -58,7 +58,7 @@ def register():
         db.session.commit()
         login_user(user)
         _merge_session_cart(user)
-        flash('Account created! Welcome to Delhi Outlook.', 'success')
+        flash('Account created! Welcome to Styleus.', 'success')
         return redirect(url_for('shop.index'))
     return render_template('auth/register.html', form=form, title='Create Account')
 

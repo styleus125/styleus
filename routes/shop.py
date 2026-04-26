@@ -13,7 +13,7 @@ def index():
                            featured=featured,
                            categories=categories,
                            new_arrivals=new_arrivals,
-                           title='Delhi Outlook')
+                           title='Styleus')
 
 
 @shop_bp.route('/products')
