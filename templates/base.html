@@ -100,6 +100,7 @@
             </button>
             <div class="absolute right-0 mt-2 w-48 bg-white rounded-lg shadow-xl border border-gray-100 opacity-0 group-hover:opacity-100 invisible group-hover:visible transition-all duration-200 z-50">
               <a href="{{ url_for('orders.history') }}" class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50">My Orders</a>
+              <a href="{{ url_for('sell.my_listings') }}" class="block px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50">My Listings</a>
               {% if current_user.is_admin %}
               <a href="{{ url_for('admin.dashboard') }}" class="block px-4 py-2.5 text-sm text-blue-600 font-medium hover:bg-gray-50">Admin Panel</a>
               {% endif %}
