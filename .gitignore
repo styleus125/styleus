@@ -25,3 +25,9 @@ static/downloads/*
 # OS
 .DS_Store
 Thumbs.db
+
+# Local development
+docker-compose.local.yml
+docker-compose.yml
+entrypoint.sh
+.claude/
