@@ -49,6 +49,21 @@
   </a>
 </div>
 
+{% if pending_listings > 0 %}
+<div class="mb-8">
+  <a href="{{ url_for('admin.listings', status='pending') }}"
+     class="flex items-center gap-4 bg-yellow-50 border border-yellow-300 rounded-xl p-5 hover:bg-yellow-100 transition">
+    <div class="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center text-white font-black text-lg">
+      {{ pending_listings }}
+    </div>
+    <div>
+      <p class="font-semibold text-yellow-800">User listing{{ 's' if pending_listings != 1 }} awaiting approval</p>
+      <p class="text-sm text-yellow-600">Click to review and approve or reject</p>
+    </div>
+  </a>
+</div>
+{% endif %}
+
 <!-- Recent Orders -->
 <div class="bg-white rounded-xl border border-gray-200">
   <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">

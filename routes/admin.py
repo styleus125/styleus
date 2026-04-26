@@ -11,7 +11,7 @@ from wtforms.validators import DataRequired, Length, NumberRange, Optional
 from werkzeug.utils import secure_filename
 from slugify import slugify
 
-from models import db, User, Category, Product, Order
+from models import db, User, Category, Product, Order, UserListing
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -81,6 +81,8 @@ def dashboard():
 
     recent_orders = Order.query.order_by(Order.created_at.desc()).limit(5).all()
 
+    pending_listings = UserListing.query.filter_by(status='pending').count()
+
     return render_template('admin/dashboard.html',
                            total_products=total_products,
                            total_orders=total_orders,
@@ -88,6 +90,7 @@ def dashboard():
                            total_revenue=total_revenue,
                            orders_today=orders_today,
                            recent_orders=recent_orders,
+                           pending_listings=pending_listings,
                            title='Admin Dashboard')
 
 
@@ -339,3 +342,46 @@ def category_delete(cat_id):
     db.session.commit()
     flash(f'Category "{name}" deleted.', 'success')
     return redirect(url_for('admin.categories'))
+
+
+# ── User Listings ─────────────────────────────────────────────────────────────
+
+@admin_bp.route('/listings')
+@login_required
+@admin_required
+def listings():
+    status_filter = request.args.get('status', 'pending')
+    query = UserListing.query
+    if status_filter in ('pending', 'approved', 'rejected'):
+        query = query.filter_by(status=status_filter)
+    items = query.order_by(UserListing.created_at.desc()).all()
+    pending_count = UserListing.query.filter_by(status='pending').count()
+    return render_template('admin/listings.html',
+                           listings=items,
+                           status_filter=status_filter,
+                           pending_count=pending_count,
+                           title='User Listings')
+
+
+@admin_bp.route('/listings/<int:listing_id>/approve', methods=['POST'])
+@login_required
+@admin_required
+def listing_approve(listing_id):
+    listing = UserListing.query.get_or_404(listing_id)
+    listing.status = 'approved'
+    listing.admin_note = request.form.get('note', '')
+    db.session.commit()
+    flash(f'Listing "{listing.title}" approved.', 'success')
+    return redirect(url_for('admin.listings'))
+
+
+@admin_bp.route('/listings/<int:listing_id>/reject', methods=['POST'])
+@login_required
+@admin_required
+def listing_reject(listing_id):
+    listing = UserListing.query.get_or_404(listing_id)
+    listing.status = 'rejected'
+    listing.admin_note = request.form.get('note', '')
+    db.session.commit()
+    flash(f'Listing "{listing.title}" rejected.', 'info')
+    return redirect(url_for('admin.listings'))

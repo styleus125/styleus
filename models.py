@@ -130,3 +130,25 @@ class OrderItem(db.Model):
 
     def __repr__(self):
         return f'<OrderItem order_id={self.order_id} product={self.product_name}>'
+
+
+class UserListing(db.Model):
+    __tablename__ = 'user_listings'
+
+    id = db.Column(db.Integer, primary_key=True)
+    seller_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    title = db.Column(db.String(200), nullable=False)
+    description = db.Column(db.Text, default='')
+    asking_price = db.Column(db.Float, nullable=True)
+    condition = db.Column(db.String(50), default='good')
+    image_url = db.Column(db.String(300), default='')
+    status = db.Column(db.String(20), default='pending')  # pending / approved / rejected
+    admin_note = db.Column(db.Text, default='')
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    seller = db.relationship('User', backref=db.backref('listings', lazy='dynamic'))
+
+    CONDITION_CHOICES = [('like_new', 'Like New'), ('good', 'Good'), ('fair', 'Fair'), ('poor', 'Poor')]
+
+    def __repr__(self):
+        return f'<UserListing #{self.id} {self.title}>'

@@ -35,6 +35,7 @@ def create_app(config_class=Config):
     from routes.checkout import checkout_bp
     from routes.orders import orders_bp
     from routes.admin import admin_bp
+    from routes.sell import sell_bp
 
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(shop_bp, url_prefix='/')
@@ -42,6 +43,7 @@ def create_app(config_class=Config):
     app.register_blueprint(checkout_bp, url_prefix='/checkout')
     app.register_blueprint(orders_bp, url_prefix='/orders')
     app.register_blueprint(admin_bp, url_prefix='/admin')
+    app.register_blueprint(sell_bp, url_prefix='/')
 
     # Context processor for cart count + date
     @app.context_processor
