@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, jsonify
 from flask_login import current_user
-from models import db, Product, Category, ProductLike
+from models import db, Product, Category, ProductLike, UserListing
 
 shop_bp = Blueprint('shop', __name__)
 
@@ -106,3 +106,24 @@ def product_detail(slug):
                            product=product,
                            related=related,
                            title=product.name)
+
+
+@shop_bp.route('/search')
+def search():
+    q = request.args.get('q', '').strip()
+    shop_results = []
+    used_results = []
+    if q:
+        shop_results = Product.query.filter(
+            Product.is_active.is_(True),
+            Product.name.ilike(f'%{q}%')
+        ).order_by(Product.created_at.desc()).limit(40).all()
+        used_results = UserListing.query.filter(
+            UserListing.status == 'approved',
+            UserListing.title.ilike(f'%{q}%')
+        ).order_by(UserListing.created_at.desc()).limit(40).all()
+    return render_template('shop/search_results.html',
+                           q=q,
+                           shop_results=shop_results,
+                           used_results=used_results,
+                           title=f'Search: {q}' if q else 'Search')
