@@ -50,6 +50,39 @@ function showToast(message, type = 'success') {
   }, 2800);
 }
 
+function toggleLike(productId, btnEl) {
+  fetch('/products/' + productId + '/like', {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': getCsrfToken(),
+    },
+  })
+  .then(res => {
+    if (res.status === 401) {
+      window.location.href = '/auth/login';
+      return null;
+    }
+    return res.json();
+  })
+  .then(data => {
+    if (!data) return;
+    const svg = btnEl.querySelector('svg');
+    if (data.liked) {
+      btnEl.classList.remove('border-gray-200', 'border-gray-300', 'text-gray-400', 'hover:border-red-300', 'hover:text-red-500');
+      btnEl.classList.add('border-red-300', 'bg-red-50', 'text-red-500');
+      if (svg) svg.setAttribute('fill', 'currentColor');
+      btnEl.title = 'Unlike';
+    } else {
+      btnEl.classList.remove('border-red-300', 'bg-red-50', 'text-red-500');
+      btnEl.classList.add('border-gray-200', 'text-gray-400', 'hover:border-red-300', 'hover:text-red-500');
+      if (svg) svg.setAttribute('fill', 'none');
+      btnEl.title = 'Like';
+    }
+  })
+  .catch(() => showToast('Could not update like. Please try again.', 'error'));
+}
+
 function addToCart(productId, quantity, btnEl) {
   const btn = btnEl;
   const originalText = btn ? btn.textContent : '';

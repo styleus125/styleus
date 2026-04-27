@@ -153,3 +153,17 @@ class UserListing(db.Model):
 
     def __repr__(self):
         return f'<UserListing #{self.id} {self.title}>'
+
+
+class ProductLike(db.Model):
+    __tablename__ = 'product_likes'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    __table_args__ = (db.UniqueConstraint('user_id', 'product_id'),)
+
+    def __repr__(self):
+        return f'<ProductLike user={self.user_id} product={self.product_id}>'

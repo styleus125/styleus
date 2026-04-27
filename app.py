@@ -51,6 +51,15 @@ def create_app(config_class=Config):
         return {'now': datetime.utcnow()}
 
     @app.context_processor
+    def inject_liked_ids():
+        from flask_login import current_user
+        from models import ProductLike
+        liked_ids = set()
+        if current_user.is_authenticated:
+            liked_ids = {lk.product_id for lk in ProductLike.query.filter_by(user_id=current_user.id).all()}
+        return {'liked_ids': liked_ids}
+
+    @app.context_processor
     def inject_cart_count():
         from flask_login import current_user
         from models import Cart

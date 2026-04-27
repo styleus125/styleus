@@ -1,5 +1,6 @@
-from flask import Blueprint, render_template, request
-from models import Product, Category
+from flask import Blueprint, render_template, request, jsonify
+from flask_login import current_user
+from models import db, Product, Category, ProductLike
 
 shop_bp = Blueprint('shop', __name__)
 
@@ -74,6 +75,23 @@ def products():
                            max_price=max_price,
                            sort=sort,
                            title='Shop')
+
+
+@shop_bp.route('/products/<int:product_id>/like', methods=['POST'])
+def toggle_like(product_id):
+    if not current_user.is_authenticated:
+        return jsonify({'error': 'login_required'}), 401
+    Product.query.get_or_404(product_id)
+    existing = ProductLike.query.filter_by(user_id=current_user.id, product_id=product_id).first()
+    if existing:
+        db.session.delete(existing)
+        liked = False
+    else:
+        db.session.add(ProductLike(user_id=current_user.id, product_id=product_id))
+        liked = True
+    db.session.commit()
+    count = ProductLike.query.filter_by(product_id=product_id).count()
+    return jsonify({'liked': liked, 'count': count})
 
 
 @shop_bp.route('/products/<slug>')

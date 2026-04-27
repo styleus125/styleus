@@ -105,6 +105,15 @@
         </form>
       </div>
 
+      <!-- Sell CTA -->
+      <div class="mb-4 flex items-center justify-between bg-green-50 border border-green-200 rounded-xl px-4 py-3">
+        <p class="text-sm text-green-800 font-medium">Have something to sell? List your item in minutes.</p>
+        <a href="{{ url_for('sell.sell_form') }}"
+           class="shrink-0 ml-4 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold px-4 py-1.5 rounded-lg transition">
+          + Sell Item
+        </a>
+      </div>
+
       {% if products %}
         <div class="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
           {% for product in products %}
