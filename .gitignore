@@ -29,5 +29,6 @@ Thumbs.db
 # Local development
 docker-compose.local.yml
 docker-compose.yml
+VPS_SETUP.md
 entrypoint.sh
 .claude/

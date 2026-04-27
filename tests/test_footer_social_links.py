@@ -71,14 +71,14 @@ class TestInstagramPill:
         assert 'rounded-full' in _enclosing_anchor(_html(client), 'https://instagram.com/styleus')
 
     def test_brand_color_applied(self, client):
-        assert '#e1306c' in _enclosing_anchor(_html(client), 'https://instagram.com/styleus')
+        assert '#22c55e' in _enclosing_anchor(_html(client), 'https://instagram.com/styleus')
 
     def test_dark_resting_background(self, client):
-        assert '#2d1a2b' in _enclosing_anchor(_html(client), 'https://instagram.com/styleus')
+        assert '#0a2a0f' in _enclosing_anchor(_html(client), 'https://instagram.com/styleus')
 
     def test_hover_fills_brand_color(self, client):
         section = _enclosing_anchor(_html(client), 'https://instagram.com/styleus')
-        assert "backgroundColor='#e1306c'" in section or 'backgroundColor="#e1306c"' in section
+        assert "backgroundColor='#22c55e'" in section or 'backgroundColor="#22c55e"' in section
 
     def test_aria_label(self, client):
         assert 'aria-label="Instagram"' in _enclosing_anchor(_html(client), 'https://instagram.com/styleus')
