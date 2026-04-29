@@ -30,5 +30,4 @@ Thumbs.db
 docker-compose.local.yml
 docker-compose.yml
 VPS_SETUP.md
-entrypoint.sh
 .claude/
