@@ -3,10 +3,9 @@ Tests for the Services navbar link restyling change.
 The plain text anchor was replaced with a purple pill button
 (bg-purple-600 hover:bg-purple-700) matching the Shop button pattern.
 """
-import pytest
-
 
 # ── Helpers ───────────────────────────────────────────────────────────────────
+
 
 def _get_html(client, path='/'):
     resp = client.get(path)
