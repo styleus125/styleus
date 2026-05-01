@@ -1,6 +1,6 @@
 from flask import Blueprint, render_template, request, jsonify
 from flask_login import current_user
-from models import db, Product, Category, ProductLike, UserListing
+from models import db, Product, Category, ProductLike, UserListing, Service
 
 shop_bp = Blueprint('shop', __name__)
 
@@ -10,10 +10,13 @@ def index():
     featured = Product.query.filter_by(is_active=True, is_featured=True).limit(8).all()
     categories = Category.query.all()
     new_arrivals = Product.query.filter_by(is_active=True).order_by(Product.created_at.desc()).limit(8).all()
+    highlight_services = (Service.query.filter_by(is_active=True)
+                          .order_by(Service.sort_order, Service.name).limit(6).all())
     return render_template('index.html',
                            featured=featured,
                            categories=categories,
                            new_arrivals=new_arrivals,
+                           highlight_services=highlight_services,
                            title='Styleus')
 
 
@@ -106,6 +109,12 @@ def product_detail(slug):
                            product=product,
                            related=related,
                            title=product.name)
+
+
+@shop_bp.route('/services')
+def services():
+    items = Service.query.filter_by(is_active=True).order_by(Service.sort_order, Service.name).all()
+    return render_template('services.html', services=items, title='Services')
 
 
 @shop_bp.route('/search')

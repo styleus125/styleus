@@ -128,6 +128,30 @@
   </div>
 </section>
 
+<!-- Services Section -->
+{% if highlight_services %}
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
+  <div class="flex items-center justify-between mb-8">
+    <h2 class="text-3xl font-bold text-gray-900">Services</h2>
+    <a href="{{ url_for('shop.services') }}" class="text-blue-600 hover:text-blue-700 font-medium text-sm">View all →</a>
+  </div>
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% for service in highlight_services %}
+    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 p-6 flex flex-col hover:shadow-md transition">
+      <div class="flex items-start justify-between mb-2">
+        <h3 class="text-base font-bold text-gray-900 leading-snug">{{ service.name }}</h3>
+        <span class="shrink-0 ml-4 text-blue-600 font-bold">₹{{ '%.0f' % service.price }}</span>
+      </div>
+      {% if service.description %}
+      <p class="text-sm text-gray-500 leading-relaxed flex-1 line-clamp-2">{{ service.description }}</p>
+      {% endif %}
+      <a href="{{ url_for('shop.services') }}" class="mt-4 text-sm text-blue-600 font-medium hover:underline">Learn more →</a>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+{% endif %}
+
 <!-- New Arrivals -->
 {% if new_arrivals %}
 <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">

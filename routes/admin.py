@@ -11,7 +11,7 @@ from wtforms.validators import DataRequired, Length, NumberRange, Optional
 from werkzeug.utils import secure_filename
 from slugify import slugify
 
-from models import db, User, Category, Product, Order, UserListing
+from models import db, User, Category, Product, Order, UserListing, Service
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -23,6 +23,15 @@ def admin_required(f):
             abort(403)
         return f(*args, **kwargs)
     return decorated
+
+
+class ServiceForm(FlaskForm):
+    name = StringField('Service Name', validators=[DataRequired(), Length(max=200)])
+    description = TextAreaField('Description', validators=[Optional()])
+    price = FloatField('Price (₹)', validators=[DataRequired(), NumberRange(min=0)])
+    is_active = BooleanField('Active')
+    sort_order = IntegerField('Sort Order', validators=[NumberRange(min=0)], default=0)
+    submit = SubmitField('Save Service')
 
 
 class CategoryForm(FlaskForm):
@@ -401,3 +410,83 @@ def listing_reject(listing_id):
     db.session.commit()
     flash(f'Listing "{listing.title}" rejected.', 'info')
     return redirect(url_for('admin.listings'))
+
+
+# ── Services ──────────────────────────────────────────────────────────────────
+
+@admin_bp.route('/services')
+@login_required
+@admin_required
+def services():
+    items = Service.query.order_by(Service.sort_order, Service.name).all()
+    form = ServiceForm()
+    return render_template('admin/services.html', services=items, form=form, title='Manage Services')
+
+
+@admin_bp.route('/services/new', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def service_new():
+    form = ServiceForm(is_active=True)
+    if form.validate_on_submit():
+        slug = slugify(form.name.data)
+        base_slug = slug
+        counter = 1
+        while Service.query.filter_by(slug=slug).first():
+            slug = f'{base_slug}-{counter}'
+            counter += 1
+        service = Service(
+            name=form.name.data,
+            slug=slug,
+            description=form.description.data or '',
+            price=form.price.data,
+            is_active=form.is_active.data,
+            sort_order=form.sort_order.data or 0,
+        )
+        db.session.add(service)
+        db.session.commit()
+        flash(f'Service "{service.name}" created.', 'success')
+        return redirect(url_for('admin.services'))
+    return render_template('admin/service_form.html', form=form, service=None, title='New Service')
+
+
+@admin_bp.route('/services/<int:service_id>/edit', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def service_edit(service_id):
+    service = Service.query.get_or_404(service_id)
+    form = ServiceForm(obj=service)
+    if form.validate_on_submit():
+        service.name = form.name.data
+        service.description = form.description.data or ''
+        service.price = form.price.data
+        service.is_active = form.is_active.data
+        service.sort_order = form.sort_order.data or 0
+        db.session.commit()
+        flash(f'Service "{service.name}" updated.', 'success')
+        return redirect(url_for('admin.services'))
+    return render_template('admin/service_form.html', form=form, service=service, title='Edit Service')
+
+
+@admin_bp.route('/services/<int:service_id>/delete', methods=['POST'])
+@login_required
+@admin_required
+def service_delete(service_id):
+    service = Service.query.get_or_404(service_id)
+    name = service.name
+    db.session.delete(service)
+    db.session.commit()
+    flash(f'Service "{name}" deleted.', 'success')
+    return redirect(url_for('admin.services'))
+
+
+@admin_bp.route('/services/<int:service_id>/toggle', methods=['POST'])
+@login_required
+@admin_required
+def service_toggle(service_id):
+    service = Service.query.get_or_404(service_id)
+    service.is_active = not service.is_active
+    db.session.commit()
+    status = 'activated' if service.is_active else 'deactivated'
+    flash(f'Service "{service.name}" {status}.', 'info')
+    return redirect(url_for('admin.services'))

@@ -155,6 +155,22 @@ class UserListing(db.Model):
         return f'<UserListing #{self.id} {self.title}>'
 
 
+class Service(db.Model):
+    __tablename__ = 'services'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(200), nullable=False)
+    slug = db.Column(db.String(220), unique=True, nullable=False, index=True)
+    description = db.Column(db.Text, default='')
+    price = db.Column(db.Float, nullable=False)
+    is_active = db.Column(db.Boolean, default=True)
+    sort_order = db.Column(db.Integer, default=0)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def __repr__(self):
+        return f'<Service {self.name}>'
+
+
 class ProductLike(db.Model):
     __tablename__ = 'product_likes'
 

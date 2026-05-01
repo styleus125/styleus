@@ -1,0 +1,79 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+  <h2 class="text-xl font-bold text-gray-800">Services</h2>
+  <a href="{{ url_for('admin.service_new') }}"
+     class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+    </svg>
+    New Service
+  </a>
+</div>
+
+{% if services %}
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-gray-50 border-b border-gray-200">
+      <tr>
+        <th class="text-left px-4 py-3 text-gray-600 font-semibold">Name</th>
+        <th class="text-left px-4 py-3 text-gray-600 font-semibold">Description</th>
+        <th class="text-left px-4 py-3 text-gray-600 font-semibold">Price</th>
+        <th class="text-center px-4 py-3 text-gray-600 font-semibold">Order</th>
+        <th class="text-center px-4 py-3 text-gray-600 font-semibold">Status</th>
+        <th class="text-right px-4 py-3 text-gray-600 font-semibold">Actions</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+      {% for service in services %}
+      <tr class="hover:bg-gray-50 transition">
+        <td class="px-4 py-3 font-medium text-gray-900">{{ service.name }}</td>
+        <td class="px-4 py-3 text-gray-500 max-w-xs truncate">{{ service.description or '—' }}</td>
+        <td class="px-4 py-3 text-gray-800">₹{{ '%.2f' % service.price }}</td>
+        <td class="px-4 py-3 text-center text-gray-500">{{ service.sort_order }}</td>
+        <td class="px-4 py-3 text-center">
+          {% if service.is_active %}
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">Active</span>
+          {% else %}
+            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-600">Inactive</span>
+          {% endif %}
+        </td>
+        <td class="px-4 py-3 text-right">
+          <div class="flex items-center justify-end gap-2">
+            <a href="{{ url_for('admin.service_edit', service_id=service.id) }}"
+               class="text-blue-600 hover:text-blue-800 text-xs font-medium px-2 py-1 rounded hover:bg-blue-50 transition">Edit</a>
+            <form method="post" action="{{ url_for('admin.service_toggle', service_id=service.id) }}" class="inline">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit"
+                      class="text-xs font-medium px-2 py-1 rounded transition
+                             {% if service.is_active %}text-yellow-600 hover:text-yellow-800 hover:bg-yellow-50
+                             {% else %}text-green-600 hover:text-green-800 hover:bg-green-50{% endif %}">
+                {{ 'Deactivate' if service.is_active else 'Activate' }}
+              </button>
+            </form>
+            <form method="post" action="{{ url_for('admin.service_delete', service_id=service.id) }}" class="inline"
+                  onsubmit="return confirm('Delete service \'{{ service.name }}\'?')">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="text-red-600 hover:text-red-800 text-xs font-medium px-2 py-1 rounded hover:bg-red-50 transition">Delete</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="bg-white rounded-xl shadow-sm border border-gray-200 p-12 text-center">
+  <svg class="w-12 h-12 text-gray-300 mx-auto mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+          d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
+  </svg>
+  <p class="text-gray-500 mb-4">No services yet.</p>
+  <a href="{{ url_for('admin.service_new') }}"
+     class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium px-4 py-2 rounded-lg transition">
+    Add First Service
+  </a>
+</div>
+{% endif %}
+{% endblock %}
