@@ -11,9 +11,24 @@
     {% endif %}
   </div>
 
+  <!-- Mobile filter toggle (visible only below lg) -->
+  <button id="filter-toggle-btn"
+          class="lg:hidden w-full flex items-center justify-between bg-white border border-gray-200 rounded-xl px-4 py-3 mb-4 text-sm font-medium text-gray-700 hover:bg-gray-50 transition">
+    <span class="flex items-center gap-2">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+              d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z"/>
+      </svg>
+      Filters &amp; Sort
+    </span>
+    <svg id="filter-chevron" class="w-4 h-4 transition-transform duration-200" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"/>
+    </svg>
+  </button>
+
   <div class="flex flex-col lg:flex-row gap-8">
     <!-- Sidebar filters -->
-    <aside class="lg:w-64 shrink-0">
+    <aside id="filter-sidebar" class="lg:w-64 shrink-0 hidden lg:block">
       <div class="bg-white rounded-xl border border-gray-200 p-5 sticky top-20">
         <form method="get" action="{{ url_for('shop.products') }}" id="filter-form">
           <input type="hidden" name="q" value="{{ search }}">
@@ -159,4 +174,20 @@
     </div>
   </div>
 </div>
+{% endblock %}
+
+{% block scripts %}
+<script>
+(function () {
+  var btn = document.getElementById('filter-toggle-btn');
+  var sidebar = document.getElementById('filter-sidebar');
+  var chevron = document.getElementById('filter-chevron');
+  if (btn && sidebar) {
+    btn.addEventListener('click', function () {
+      var hidden = sidebar.classList.toggle('hidden');
+      chevron.style.transform = hidden ? '' : 'rotate(180deg)';
+    });
+  }
+}());
+</script>
 {% endblock %}
