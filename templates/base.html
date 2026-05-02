@@ -42,6 +42,25 @@
       animation: ticker-scroll 20s linear infinite;
     }
     .ticker-track:hover { animation-play-state: paused; }
+
+    /* Prevent iOS Safari from zooming on input focus */
+    @media (max-width: 767px) {
+      input[type="text"],
+      input[type="email"],
+      input[type="password"],
+      input[type="number"],
+      input[type="tel"],
+      input[type="search"],
+      textarea,
+      select { font-size: 16px !important; }
+    }
+    /* Remove blue tap flash on mobile */
+    a, button, [role="button"] { -webkit-tap-highlight-color: transparent; }
+    /* Momentum scrolling on iOS for overflow containers */
+    .overflow-x-auto, .overflow-y-auto { -webkit-overflow-scrolling: touch; }
+    /* Hide scrollbar for category/ticker strips */
+    .scrollbar-hide::-webkit-scrollbar { display: none; }
+    .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans antialiased">

@@ -16,7 +16,7 @@
         <span class="absolute top-2 left-2 bg-blue-500 text-white text-xs font-bold px-2 py-0.5 rounded">Digital</span>
       {% endif %}
     </div>
-    <div class="p-4">
+    <div class="p-3 sm:p-4">
       <p class="text-xs text-gray-400 mb-1">{{ product.category.name if product.category else 'Uncategorized' }}</p>
       <h3 class="font-semibold text-gray-800 text-sm leading-snug mb-2 line-clamp-2 group-hover:text-blue-600 transition">
         {{ product.name }}
@@ -29,16 +29,16 @@
       </div>
     </div>
   </a>
-  <div class="px-4 pb-4">
+  <div class="px-3 sm:px-4 pb-3 sm:pb-4">
     <div class="flex gap-2">
       <button onclick="addToCart({{ product.id }}, 1, this)"
               {% if product.product_type == 'physical' and product.stock == 0 %}disabled{% endif %}
-              class="flex-1 bg-navy-900 hover:bg-navy-800 disabled:bg-gray-300 disabled:cursor-not-allowed text-white text-sm font-medium py-2 rounded-lg transition add-to-cart-btn">
+              class="flex-1 flex items-center justify-center bg-navy-900 hover:bg-navy-800 disabled:bg-gray-300 disabled:cursor-not-allowed text-white text-sm font-medium min-h-[44px] rounded-lg transition add-to-cart-btn">
         {% if product.product_type == 'physical' and product.stock == 0 %}Out of Stock{% else %}Add to Cart{% endif %}
       </button>
       <button onclick="toggleLike({{ product.id }}, this)"
               title="{% if product.id in liked_ids %}Unlike{% else %}Like{% endif %}"
-              class="like-btn p-2 rounded-lg border transition
+              class="like-btn flex items-center justify-center min-h-[44px] min-w-[44px] rounded-lg border transition
                      {% if product.id in liked_ids %}border-red-300 bg-red-50 text-red-500{% else %}border-gray-200 text-gray-400 hover:border-red-300 hover:text-red-500{% endif %}">
         <svg class="w-5 h-5" fill="{% if product.id in liked_ids %}currentColor{% else %}none{% endif %}" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
