@@ -1,6 +1,7 @@
-from flask import Blueprint, render_template, request, jsonify
-from flask_login import current_user
-from models import db, Product, Category, ProductLike, UserListing, Service
+from flask import Blueprint, render_template, request, jsonify, flash, redirect, url_for
+from flask_login import current_user, login_required
+from sqlalchemy import func
+from models import db, Product, Category, ProductLike, UserListing, Service, Review
 
 shop_bp = Blueprint('shop', __name__)
 
@@ -105,10 +106,62 @@ def product_detail(slug):
         Product.id != product.id,
         Product.is_active.is_(True)
     ).limit(4).all()
+
+    reviews = (Review.query.filter_by(product_id=product.id)
+               .order_by(Review.created_at.desc()).all())
+    avg_rating = (db.session.query(func.avg(Review.rating))
+                  .filter_by(product_id=product.id).scalar())
+    avg_rating = round(float(avg_rating), 1) if avg_rating else None
+
+    user_review = None
+    if current_user.is_authenticated:
+        user_review = Review.query.filter_by(
+            product_id=product.id, user_id=current_user.id).first()
+
+    liked_ids = []
+    if current_user.is_authenticated:
+        liked_ids = [
+            pl.product_id for pl in
+            ProductLike.query.filter_by(user_id=current_user.id).all()
+        ]
+
     return render_template('shop/product.html',
                            product=product,
                            related=related,
+                           reviews=reviews,
+                           avg_rating=avg_rating,
+                           user_review=user_review,
+                           liked_ids=liked_ids,
                            title=product.name)
+
+
+@shop_bp.route('/products/<slug>/review', methods=['POST'])
+@login_required
+def submit_review(slug):
+    product = Product.query.filter_by(slug=slug, is_active=True).first_or_404()
+    rating = request.form.get('rating', type=int)
+    body = request.form.get('body', '').strip()
+
+    if not rating or not (1 <= rating <= 5):
+        flash('Please select a star rating.', 'warning')
+        return redirect(url_for('shop.product_detail', slug=slug))
+
+    existing = Review.query.filter_by(product_id=product.id, user_id=current_user.id).first()
+    if existing:
+        existing.rating = rating
+        existing.body = body
+        flash('Your review has been updated.', 'success')
+    else:
+        db.session.add(Review(
+            product_id=product.id,
+            user_id=current_user.id,
+            rating=rating,
+            body=body
+        ))
+        flash('Review submitted — thank you!', 'success')
+
+    db.session.commit()
+    return redirect(url_for('shop.product_detail', slug=slug) + '#reviews')
 
 
 @shop_bp.route('/services')

@@ -64,6 +64,16 @@ class Product(db.Model):
     cart_items = db.relationship('CartItem', backref='product', lazy='dynamic')
     order_items = db.relationship('OrderItem', backref='product', lazy='dynamic')
 
+    @property
+    def review_count(self):
+        return self.reviews.count()
+
+    @property
+    def avg_rating(self):
+        from sqlalchemy import func
+        result = db.session.query(func.avg(Review.rating)).filter_by(product_id=self.id).scalar()
+        return round(float(result), 1) if result else None
+
     def __repr__(self):
         return f'<Product {self.name}>'
 
@@ -169,6 +179,25 @@ class Service(db.Model):
 
     def __repr__(self):
         return f'<Service {self.name}>'
+
+
+class Review(db.Model):
+    __tablename__ = 'reviews'
+
+    id = db.Column(db.Integer, primary_key=True)
+    product_id = db.Column(db.Integer, db.ForeignKey('products.id'), nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    rating = db.Column(db.Integer, nullable=False)   # 1–5
+    body = db.Column(db.Text, default='')
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    product = db.relationship('Product', backref=db.backref('reviews', lazy='dynamic', cascade='all, delete-orphan'))
+    user = db.relationship('User', backref=db.backref('reviews', lazy='dynamic'))
+
+    __table_args__ = (db.UniqueConstraint('user_id', 'product_id', name='uq_review_user_product'),)
+
+    def __repr__(self):
+        return f'<Review product={self.product_id} user={self.user_id} rating={self.rating}>'
 
 
 class ProductLike(db.Model):

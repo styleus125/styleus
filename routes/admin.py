@@ -11,7 +11,7 @@ from wtforms.validators import DataRequired, Length, NumberRange, Optional
 from werkzeug.utils import secure_filename
 from slugify import slugify
 
-from models import db, User, Category, Product, Order, UserListing, Service
+from models import db, User, Category, Product, Order, UserListing, Service, Review
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -490,3 +490,15 @@ def service_toggle(service_id):
     status = 'activated' if service.is_active else 'deactivated'
     flash(f'Service "{service.name}" {status}.', 'info')
     return redirect(url_for('admin.services'))
+
+
+@admin_bp.route('/reviews/<int:review_id>/delete', methods=['POST'])
+@login_required
+@admin_required
+def review_delete(review_id):
+    review = Review.query.get_or_404(review_id)
+    slug = review.product.slug
+    db.session.delete(review)
+    db.session.commit()
+    flash('Review deleted.', 'success')
+    return redirect(url_for('shop.product_detail', slug=slug) + '#reviews')
