@@ -11,7 +11,7 @@ from wtforms.validators import DataRequired, Length, NumberRange, Optional
 from werkzeug.utils import secure_filename
 from slugify import slugify
 
-from models import db, User, Category, Product, Order, UserListing, Service, Review, SellCategory
+from models import db, User, Category, Product, Order, UserListing, Service, Review, SellCategory, Enquiry
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -582,6 +582,32 @@ def sell_category_delete(cat_id):
     db.session.commit()
     flash(f'Sell category "{name}" deleted.', 'success')
     return redirect(url_for('admin.sell_categories'))
+
+
+# ── Enquiries ─────────────────────────────────────────────────────────────────
+
+@admin_bp.route('/enquiries')
+@login_required
+@admin_required
+def enquiries():
+    page = request.args.get('page', 1, type=int)
+    pagination = Enquiry.query.order_by(Enquiry.created_at.desc()).paginate(
+        page=page, per_page=current_app.config['ADMIN_ITEMS_PER_PAGE'], error_out=False)
+    return render_template('admin/enquiries.html',
+                           enquiries=pagination.items,
+                           pagination=pagination,
+                           title='Tech Enquiries')
+
+
+@admin_bp.route('/enquiries/<int:enquiry_id>/delete', methods=['POST'])
+@login_required
+@admin_required
+def enquiry_delete(enquiry_id):
+    enq = Enquiry.query.get_or_404(enquiry_id)
+    db.session.delete(enq)
+    db.session.commit()
+    flash('Enquiry deleted.', 'success')
+    return redirect(url_for('admin.enquiries'))
 
 
 @admin_bp.route('/reviews/<int:review_id>/delete', methods=['POST'])

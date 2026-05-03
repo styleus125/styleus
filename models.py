@@ -213,6 +213,19 @@ class Service(db.Model):
         return f'<Service {self.name}>'
 
 
+class Enquiry(db.Model):
+    __tablename__ = 'enquiries'
+
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(200), nullable=False)
+    phone = db.Column(db.String(20), nullable=False)
+    details = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def __repr__(self):
+        return f'<Enquiry {self.email}>'
+
+
 class Review(db.Model):
     __tablename__ = 'reviews'
 
