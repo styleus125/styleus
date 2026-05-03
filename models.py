@@ -12,6 +12,7 @@ class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(120), nullable=False)
     email = db.Column(db.String(200), unique=True, nullable=False, index=True)
+    phone = db.Column(db.String(20), nullable=False, default='')
     password_hash = db.Column(db.String(256), nullable=False)
     is_admin = db.Column(db.Boolean, default=False, nullable=False)
     is_approved = db.Column(db.Boolean, default=False, nullable=False, server_default='false')
@@ -56,6 +57,9 @@ class Product(db.Model):
     category_id = db.Column(db.Integer, db.ForeignKey('categories.id'), nullable=True)
     product_type = db.Column(db.String(20), default='physical')  # physical / digital
     image_url = db.Column(db.String(300), default='')
+    image_url_2 = db.Column(db.String(300), default='')
+    image_url_3 = db.Column(db.String(300), default='')
+    image_url_4 = db.Column(db.String(300), default='')
     digital_file_url = db.Column(db.String(300), default='')
     is_active = db.Column(db.Boolean, default=True)
     is_featured = db.Column(db.Boolean, default=False)
@@ -63,6 +67,10 @@ class Product(db.Model):
 
     cart_items = db.relationship('CartItem', backref='product', lazy='dynamic')
     order_items = db.relationship('OrderItem', backref='product', lazy='dynamic')
+
+    @property
+    def all_images(self):
+        return [u for u in [self.image_url, self.image_url_2, self.image_url_3, self.image_url_4] if u]
 
     @property
     def review_count(self):
@@ -143,16 +151,36 @@ class OrderItem(db.Model):
         return f'<OrderItem order_id={self.order_id} product={self.product_name}>'
 
 
+class SellCategory(db.Model):
+    __tablename__ = 'sell_categories'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    description = db.Column(db.Text, default='')
+    is_active = db.Column(db.Boolean, default=True, nullable=False)
+    sort_order = db.Column(db.Integer, default=0)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    listings = db.relationship('UserListing', backref='sell_category', lazy='dynamic')
+
+    def __repr__(self):
+        return f'<SellCategory {self.name}>'
+
+
 class UserListing(db.Model):
     __tablename__ = 'user_listings'
 
     id = db.Column(db.Integer, primary_key=True)
     seller_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    sell_category_id = db.Column(db.Integer, db.ForeignKey('sell_categories.id'), nullable=True)
     title = db.Column(db.String(200), nullable=False)
     description = db.Column(db.Text, default='')
     asking_price = db.Column(db.Float, nullable=True)
     condition = db.Column(db.String(50), default='good')
     image_url = db.Column(db.String(300), default='')
+    image_url_2 = db.Column(db.String(300), default='')
+    image_url_3 = db.Column(db.String(300), default='')
+    image_url_4 = db.Column(db.String(300), default='')
     status = db.Column(db.String(20), default='pending')  # pending / approved / rejected
     admin_note = db.Column(db.Text, default='')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
@@ -160,6 +188,10 @@ class UserListing(db.Model):
     seller = db.relationship('User', backref=db.backref('listings', lazy='dynamic'))
 
     CONDITION_CHOICES = [('like_new', 'Like New'), ('good', 'Good'), ('fair', 'Fair'), ('poor', 'Poor')]
+
+    @property
+    def all_images(self):
+        return [u for u in [self.image_url, self.image_url_2, self.image_url_3, self.image_url_4] if u]
 
     def __repr__(self):
         return f'<UserListing #{self.id} {self.title}>'

@@ -201,6 +201,12 @@ def create_app(config_class=Config):
         click.echo(f'Seeded {len(products_data)} products across 5 categories.')
         click.echo('Done!')
 
+    @app.errorhandler(413)
+    def request_too_large(e):
+        from flask import flash, redirect, request as req
+        flash('Total upload size exceeds 10 MB. Please use smaller photos (max 2 MB each).', 'danger')
+        return redirect(req.referrer or '/')
+
     return app
 
 

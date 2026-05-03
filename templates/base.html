@@ -69,7 +69,7 @@
 <div class="bg-navy-950 border-b border-navy-800" style="background-color:#0a1628;">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-1.5 flex items-center justify-between gap-4">
     <!-- Welcome (extreme left) -->
-    <span class="text-xs font-semibold tracking-wide flex-shrink-0" style="color:#FFD700; text-shadow:0 0 8px rgba(255,215,0,0.35);">
+    <span class="text-xs font-semibold tracking-wide flex-shrink-0 text-white">
       Welcome to Styleus!
     </span>
 
@@ -117,11 +117,11 @@
 
       <!-- Nav links -->
       <div class="flex items-center gap-4">
-        <a href="{{ url_for('shop.products') }}" class="hidden sm:inline bg-blue-500 hover:bg-blue-600 text-white text-sm font-medium px-3 py-1.5 rounded-lg transition">Shop</a>
-        <a href="{{ url_for('shop.services') }}" class="hidden sm:inline bg-purple-600 hover:bg-purple-700 text-white text-sm font-medium px-3 py-1.5 rounded-lg transition">Services</a>
-        <a href="{{ url_for('sell.public_listings') }}" class="hidden sm:inline text-gray-300 hover:text-white text-sm transition">Used Items</a>
+        <a href="{{ url_for('shop.index') }}" class="hidden sm:inline-flex items-center justify-center w-20 h-8 bg-blue-500 hover:bg-blue-600 text-white text-sm font-semibold rounded-lg transition">Home</a>
+        <a href="{{ url_for('shop.services') }}" class="hidden sm:inline-flex items-center justify-center w-20 h-8 bg-purple-600 hover:bg-purple-700 text-white text-sm font-semibold rounded-lg transition">Services</a>
+        <a href="{{ url_for('shop.products') }}" class="hidden sm:inline-flex items-center justify-center w-20 h-8 bg-green-500 hover:bg-green-600 text-white text-sm font-semibold rounded-lg transition">Buy</a>
         {% if current_user.is_authenticated %}
-        <a href="{{ url_for('sell.sell_form') }}" class="hidden sm:inline bg-green-600 hover:bg-green-700 text-white text-sm font-medium px-3 py-1.5 rounded-lg transition">+ Sell</a>
+        <a href="{{ url_for('sell.sell_form') }}" class="hidden sm:inline-flex items-center justify-center w-20 h-8 bg-amber-500 hover:bg-amber-600 text-white text-sm font-semibold rounded-lg transition">Sell</a>
         {% endif %}
 
         <!-- Cart -->
@@ -205,12 +205,12 @@
     </div>
     <!-- Nav links -->
     <nav class="flex-1 overflow-y-auto px-4 py-4 space-y-1">
-      <a href="{{ url_for('shop.products') }}"
+      <a href="{{ url_for('shop.index') }}"
          class="flex items-center gap-3 px-4 py-3 text-white rounded-xl transition text-sm font-medium hover:bg-white/10">
         <svg class="w-5 h-5 text-blue-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 12l2-2m0 0l7-7 7 7M5 10v10a1 1 0 001 1h3m10-11l2 2m-2-2v10a1 1 0 01-1 1h-3m-6 0a1 1 0 001-1v-4a1 1 0 011-1h2a1 1 0 011 1v4a1 1 0 001 1m-6 0h6"/>
         </svg>
-        Shop
+        Home
       </a>
       <a href="{{ url_for('shop.services') }}"
          class="flex items-center gap-3 px-4 py-3 text-white rounded-xl transition text-sm font-medium hover:bg-white/10">
@@ -219,20 +219,20 @@
         </svg>
         Services
       </a>
-      <a href="{{ url_for('sell.public_listings') }}"
-         class="flex items-center gap-3 px-4 py-3 text-white rounded-xl transition text-sm font-medium hover:bg-white/10">
-        <svg class="w-5 h-5 text-yellow-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
+      <a href="{{ url_for('shop.products') }}"
+         class="flex items-center gap-3 px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl transition text-sm font-semibold">
+        <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z"/>
         </svg>
-        Used Items
+        Buy
       </a>
       {% if current_user.is_authenticated %}
       <a href="{{ url_for('sell.sell_form') }}"
-         class="flex items-center gap-3 px-4 py-3 bg-green-600 hover:bg-green-700 text-white rounded-xl transition text-sm font-semibold">
+         class="flex items-center gap-3 px-4 py-3 bg-amber-500 hover:bg-amber-600 text-white rounded-xl transition text-sm font-semibold">
         <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
         </svg>
-        + Sell Item
+        Sell Item
       </a>
       {% endif %}
       <div class="border-t border-white/10 my-2"></div>

@@ -32,6 +32,7 @@
         <tr class="text-xs text-gray-500 uppercase tracking-wider bg-gray-50 border-b border-gray-200">
           <th class="text-left px-5 py-3">User</th>
           <th class="text-left px-5 py-3">Email</th>
+          <th class="text-left px-5 py-3 hidden md:table-cell">Phone</th>
           <th class="text-left px-5 py-3">Role</th>
           <th class="text-left px-5 py-3">Status</th>
           <th class="text-left px-5 py-3">Joined</th>
@@ -50,6 +51,7 @@
             </div>
           </td>
           <td class="px-5 py-3 text-sm text-gray-600">{{ user.email }}</td>
+          <td class="px-5 py-3 text-sm text-gray-600 hidden md:table-cell">{{ user.phone or '—' }}</td>
           <td class="px-5 py-3">
             <span class="text-xs font-semibold px-2 py-1 rounded-full
               {% if user.is_admin %}bg-blue-100 text-blue-700{% else %}bg-gray-100 text-gray-600{% endif %}">
@@ -83,7 +85,7 @@
           </td>
         </tr>
         {% else %}
-        <tr><td colspan="6" class="px-5 py-10 text-center text-gray-400">No users found</td></tr>
+        <tr><td colspan="7" class="px-5 py-10 text-center text-gray-400">No users found</td></tr>
         {% endfor %}
       </tbody>
     </table>

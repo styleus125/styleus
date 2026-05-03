@@ -1,0 +1,164 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+<div class="flex items-center justify-between mb-6">
+  <h2 class="text-xl font-bold text-gray-800">Sell Categories</h2>
+  <button onclick="document.getElementById('add-modal').classList.remove('hidden')"
+          class="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold rounded-lg transition">
+    + Add Category
+  </button>
+</div>
+
+{% if categories %}
+<div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-gray-50 border-b border-gray-200">
+      <tr>
+        <th class="text-left px-4 py-3 font-semibold text-gray-600">Name</th>
+        <th class="text-left px-4 py-3 font-semibold text-gray-600 hidden sm:table-cell">Description</th>
+        <th class="text-center px-4 py-3 font-semibold text-gray-600">Order</th>
+        <th class="text-center px-4 py-3 font-semibold text-gray-600">Status</th>
+        <th class="text-center px-4 py-3 font-semibold text-gray-600">Listings</th>
+        <th class="px-4 py-3"></th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+      {% for cat in categories %}
+      <tr class="hover:bg-gray-50">
+        <td class="px-4 py-3 font-medium text-gray-800">{{ cat.name }}</td>
+        <td class="px-4 py-3 text-gray-500 hidden sm:table-cell max-w-xs truncate">{{ cat.description or '—' }}</td>
+        <td class="px-4 py-3 text-center text-gray-500">{{ cat.sort_order }}</td>
+        <td class="px-4 py-3 text-center">
+          {% if cat.is_active %}
+            <span class="px-2 py-0.5 bg-green-100 text-green-700 text-xs font-semibold rounded-full">Active</span>
+          {% else %}
+            <span class="px-2 py-0.5 bg-gray-100 text-gray-500 text-xs font-semibold rounded-full">Inactive</span>
+          {% endif %}
+        </td>
+        <td class="px-4 py-3 text-center text-gray-500">{{ cat.listings.count() }}</td>
+        <td class="px-4 py-3 text-right">
+          <div class="flex items-center justify-end gap-2">
+            <button onclick="openEdit({{ cat.id }}, '{{ cat.name | e }}', '{{ cat.description | e }}', {{ 'true' if cat.is_active else 'false' }}, {{ cat.sort_order }})"
+                    class="px-3 py-1 text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 rounded-lg transition">
+              Edit
+            </button>
+            <form method="POST" action="{{ url_for('admin.sell_category_delete', cat_id=cat.id) }}"
+                  onsubmit="return confirm('Delete sell category \'{{ cat.name }}\'?')">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit"
+                      class="px-3 py-1 text-xs bg-red-50 hover:bg-red-100 text-red-600 rounded-lg transition">
+                Delete
+              </button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="text-center py-20 text-gray-400">
+  <p class="text-lg font-medium">No sell categories yet</p>
+  <p class="text-sm mt-1">Add some categories so users can classify their listings.</p>
+</div>
+{% endif %}
+
+<!-- Add Modal -->
+<div id="add-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+  <div class="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 p-6">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-lg font-bold text-gray-800">Add Sell Category</h3>
+      <button onclick="document.getElementById('add-modal').classList.add('hidden')"
+              class="text-gray-400 hover:text-gray-600">✕</button>
+    </div>
+    <form method="POST" action="{{ url_for('admin.sell_category_new') }}" class="space-y-4">
+      {{ form.hidden_tag() }}
+      <div>
+        {{ form.name.label(class="block text-sm font-medium text-gray-700 mb-1") }}
+        {{ form.name(class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-blue-400") }}
+      </div>
+      <div>
+        {{ form.description.label(class="block text-sm font-medium text-gray-700 mb-1") }}
+        {{ form.description(class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-blue-400 h-20 resize-none") }}
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          {{ form.sort_order.label(class="block text-sm font-medium text-gray-700 mb-1") }}
+          {{ form.sort_order(class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-blue-400") }}
+        </div>
+        <div class="flex items-end pb-2">
+          <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+            {{ form.is_active(class="w-4 h-4", checked=True) }}
+            Active
+          </label>
+        </div>
+      </div>
+      <div class="flex gap-3 pt-2">
+        {{ form.submit(class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-lg text-sm transition") }}
+        <button type="button" onclick="document.getElementById('add-modal').classList.add('hidden')"
+                class="px-5 py-2 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition">
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<!-- Edit Modal -->
+<div id="edit-modal" class="hidden fixed inset-0 z-50 flex items-center justify-center bg-black/50">
+  <div class="bg-white rounded-2xl shadow-xl w-full max-w-md mx-4 p-6">
+    <div class="flex items-center justify-between mb-4">
+      <h3 class="text-lg font-bold text-gray-800">Edit Sell Category</h3>
+      <button onclick="document.getElementById('edit-modal').classList.add('hidden')"
+              class="text-gray-400 hover:text-gray-600">✕</button>
+    </div>
+    <form id="edit-form" method="POST" class="space-y-4">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Name</label>
+        <input id="edit-name" name="name" type="text" required
+               class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-blue-400">
+      </div>
+      <div>
+        <label class="block text-sm font-medium text-gray-700 mb-1">Description</label>
+        <textarea id="edit-description" name="description"
+                  class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-blue-400 h-20 resize-none"></textarea>
+      </div>
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Sort Order</label>
+          <input id="edit-sort-order" name="sort_order" type="number" min="0"
+                 class="w-full px-4 py-2.5 border border-gray-300 rounded-lg text-sm focus:outline-none focus:border-blue-400">
+        </div>
+        <div class="flex items-end pb-2">
+          <label class="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+            <input id="edit-is-active" name="is_active" type="checkbox" value="1" class="w-4 h-4">
+            Active
+          </label>
+        </div>
+      </div>
+      <div class="flex gap-3 pt-2">
+        <button type="submit"
+                class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-5 py-2 rounded-lg text-sm transition">
+          Save Changes
+        </button>
+        <button type="button" onclick="document.getElementById('edit-modal').classList.add('hidden')"
+                class="px-5 py-2 border border-gray-300 rounded-lg text-sm text-gray-600 hover:bg-gray-50 transition">
+          Cancel
+        </button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+function openEdit(id, name, description, isActive, sortOrder) {
+  document.getElementById('edit-form').action = '/admin/sell-categories/' + id + '/edit';
+  document.getElementById('edit-name').value = name;
+  document.getElementById('edit-description').value = description;
+  document.getElementById('edit-sort-order').value = sortOrder;
+  document.getElementById('edit-is-active').checked = isActive;
+  document.getElementById('edit-modal').classList.remove('hidden');
+}
+</script>
+{% endblock %}

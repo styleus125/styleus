@@ -24,7 +24,8 @@ class Config:
 
     # File uploads
     UPLOAD_FOLDER = os.path.join(BASE_DIR, 'static', 'uploads')
-    MAX_CONTENT_LENGTH = 16 * 1024 * 1024  # 16MB max upload
+    MAX_CONTENT_LENGTH = 10 * 1024 * 1024   # 10 MB hard ceiling (4 × 2 MB + overhead)
+    MAX_IMAGE_SIZE     =  2 * 1024 * 1024   # 2 MB per individual photo
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 
     # Pagination

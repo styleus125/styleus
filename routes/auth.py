@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, login_required, current_user
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
-from wtforms.validators import DataRequired, Email, Length, EqualTo, ValidationError
+from wtforms.validators import DataRequired, Email, Length, EqualTo, ValidationError, Regexp
 
 from models import db, User
 
@@ -17,11 +17,16 @@ class LoginForm(FlaskForm):
 
 
 class RegisterForm(FlaskForm):
-    name = StringField('Full Name', validators=[DataRequired(), Length(min=2, max=120)])
+    name  = StringField('Full Name', validators=[DataRequired(), Length(min=2, max=120)])
     email = StringField('Email', validators=[DataRequired(), Email()])
+    phone = StringField('Phone Number', validators=[
+        DataRequired(),
+        Length(min=7, max=20),
+        Regexp(r'^[\d\+\-\s\(\)]+$', message='Enter a valid phone number.')
+    ])
     password = PasswordField('Password', validators=[DataRequired(), Length(min=6)])
-    confirm = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
-    submit = SubmitField('Create Account')
+    confirm  = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
+    submit   = SubmitField('Create Account')
 
     def validate_email(self, field):
         if User.query.filter_by(email=field.data.lower()).first():
@@ -54,7 +59,7 @@ def register():
         return redirect(url_for('shop.index'))
     form = RegisterForm()
     if form.validate_on_submit():
-        user = User(name=form.name.data, email=form.email.data.lower(), is_approved=False)
+        user = User(name=form.name.data, email=form.email.data.lower(), phone=form.phone.data.strip(), is_approved=False)
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
