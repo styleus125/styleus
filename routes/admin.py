@@ -11,7 +11,7 @@ from wtforms.validators import DataRequired, Length, NumberRange, Optional
 from werkzeug.utils import secure_filename
 from slugify import slugify
 
-from models import db, User, Category, Product, Order, UserListing, Service
+from models import db, User, Category, Product, Order, UserListing, Service, Review, SellCategory
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -40,6 +40,14 @@ class CategoryForm(FlaskForm):
     submit = SubmitField('Save Category')
 
 
+class SellCategoryForm(FlaskForm):
+    name = StringField('Name', validators=[DataRequired(), Length(max=100)])
+    description = TextAreaField('Description', validators=[Optional()])
+    is_active = BooleanField('Active', default=True)
+    sort_order = IntegerField('Sort Order', validators=[NumberRange(min=0)], default=0)
+    submit = SubmitField('Save')
+
+
 class ProductForm(FlaskForm):
     name = StringField('Product Name', validators=[DataRequired(), Length(max=200)])
     description = TextAreaField('Description', validators=[Optional()])
@@ -50,7 +58,10 @@ class ProductForm(FlaskForm):
     digital_file_url = StringField('Digital File URL', validators=[Optional(), Length(max=300)])
     is_active = BooleanField('Active')
     is_featured = BooleanField('Featured')
-    image = FileField('Product Image', validators=[FileAllowed(['jpg', 'jpeg', 'png', 'gif', 'webp'], 'Images only')])
+    image = FileField('Photo 1', validators=[FileAllowed(['jpg', 'jpeg', 'png', 'gif', 'webp'], 'Images only')])
+    image2 = FileField('Photo 2', validators=[FileAllowed(['jpg', 'jpeg', 'png', 'gif', 'webp'], 'Images only')])
+    image3 = FileField('Photo 3', validators=[FileAllowed(['jpg', 'jpeg', 'png', 'gif', 'webp'], 'Images only')])
+    image4 = FileField('Photo 4', validators=[FileAllowed(['jpg', 'jpeg', 'png', 'gif', 'webp'], 'Images only')])
     submit = SubmitField('Save Product')
 
 
@@ -60,6 +71,11 @@ def allowed_file(filename):
 
 def save_product_image(file):
     if file and file.filename:
+        file.seek(0, 2)
+        size = file.tell()
+        file.seek(0)
+        if size > current_app.config['MAX_IMAGE_SIZE']:
+            raise ValueError(f'"{file.filename}" is {size // (1024*1024) or "<1"} MB — maximum allowed is 2 MB.')
         filename = secure_filename(file.filename)
         import time
         name, ext = os.path.splitext(filename)
@@ -134,7 +150,14 @@ def product_new():
         (c.id, c.name) for c in Category.query.order_by(Category.name).all()
     ]
     if form.validate_on_submit():
-        image_url = save_product_image(request.files.get('image')) or ''
+        try:
+            image_url = save_product_image(request.files.get('image')) or ''
+            img2 = save_product_image(request.files.get('image2')) or ''
+            img3 = save_product_image(request.files.get('image3')) or ''
+            img4 = save_product_image(request.files.get('image4')) or ''
+        except ValueError as e:
+            flash(str(e), 'danger')
+            return render_template('admin/product_form.html', form=form, product=None, title='New Product')
         slug = slugify(form.name.data)
         # Ensure unique slug
         base_slug = slug
@@ -155,6 +178,9 @@ def product_new():
             is_active=form.is_active.data,
             is_featured=form.is_featured.data,
             image_url=image_url,
+            image_url_2=img2,
+            image_url_3=img3,
+            image_url_4=img4,
         )
         db.session.add(product)
         db.session.commit()
@@ -173,9 +199,17 @@ def product_edit(product_id):
         (c.id, c.name) for c in Category.query.order_by(Category.name).all()
     ]
     if form.validate_on_submit():
-        new_image = save_product_image(request.files.get('image'))
-        if new_image:
-            product.image_url = new_image
+        try:
+            for slot, field in [('image_url', 'image'), ('image_url_2', 'image2'),
+                                ('image_url_3', 'image3'), ('image_url_4', 'image4')]:
+                new_img = save_product_image(request.files.get(field))
+                if new_img:
+                    setattr(product, slot, new_img)
+                elif request.form.get(f'clear_{field}'):
+                    setattr(product, slot, '')
+        except ValueError as e:
+            flash(str(e), 'danger')
+            return render_template('admin/product_form.html', form=form, product=product, title='Edit Product')
         product.name = form.name.data
         product.description = form.description.data or ''
         product.price = form.price.data
@@ -490,3 +524,73 @@ def service_toggle(service_id):
     status = 'activated' if service.is_active else 'deactivated'
     flash(f'Service "{service.name}" {status}.', 'info')
     return redirect(url_for('admin.services'))
+
+
+# ── Sell Categories ───────────────────────────────────────────────────────────
+
+@admin_bp.route('/sell-categories')
+@login_required
+@admin_required
+def sell_categories():
+    cats = SellCategory.query.order_by(SellCategory.sort_order, SellCategory.name).all()
+    form = SellCategoryForm()
+    return render_template('admin/sell_categories.html', categories=cats, form=form, title='Sell Categories')
+
+
+@admin_bp.route('/sell-categories/new', methods=['POST'])
+@login_required
+@admin_required
+def sell_category_new():
+    form = SellCategoryForm()
+    if form.validate_on_submit():
+        cat = SellCategory(
+            name=form.name.data,
+            description=form.description.data or '',
+            is_active=form.is_active.data,
+            sort_order=form.sort_order.data or 0,
+        )
+        db.session.add(cat)
+        db.session.commit()
+        flash(f'Sell category "{cat.name}" created.', 'success')
+    else:
+        flash('Invalid form data.', 'danger')
+    return redirect(url_for('admin.sell_categories'))
+
+
+@admin_bp.route('/sell-categories/<int:cat_id>/edit', methods=['POST'])
+@login_required
+@admin_required
+def sell_category_edit(cat_id):
+    cat = SellCategory.query.get_or_404(cat_id)
+    cat.name = request.form.get('name', cat.name).strip() or cat.name
+    cat.description = request.form.get('description', '').strip()
+    cat.is_active = bool(request.form.get('is_active'))
+    cat.sort_order = int(request.form.get('sort_order', 0) or 0)
+    db.session.commit()
+    flash(f'Sell category "{cat.name}" updated.', 'success')
+    return redirect(url_for('admin.sell_categories'))
+
+
+@admin_bp.route('/sell-categories/<int:cat_id>/delete', methods=['POST'])
+@login_required
+@admin_required
+def sell_category_delete(cat_id):
+    cat = SellCategory.query.get_or_404(cat_id)
+    name = cat.name
+    UserListing.query.filter_by(sell_category_id=cat.id).update({'sell_category_id': None})
+    db.session.delete(cat)
+    db.session.commit()
+    flash(f'Sell category "{name}" deleted.', 'success')
+    return redirect(url_for('admin.sell_categories'))
+
+
+@admin_bp.route('/reviews/<int:review_id>/delete', methods=['POST'])
+@login_required
+@admin_required
+def review_delete(review_id):
+    review = Review.query.get_or_404(review_id)
+    slug = review.product.slug
+    db.session.delete(review)
+    db.session.commit()
+    flash('Review deleted.', 'success')
+    return redirect(url_for('shop.product_detail', slug=slug) + '#reviews')

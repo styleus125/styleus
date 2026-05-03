@@ -42,6 +42,7 @@
             by <strong>{{ listing.seller.name }}</strong> ({{ listing.seller.email }}) ·
             {{ listing.created_at.strftime('%d %b %Y %H:%M') }} ·
             Condition: {{ dict(listing.CONDITION_CHOICES)[listing.condition] }}
+            {% if listing.sell_category %} · <span class="text-blue-600 font-medium">{{ listing.sell_category.name }}</span>{% endif %}
             {% if listing.asking_price %} · ₹{{ '%.0f' | format(listing.asking_price) }}{% endif %}
           </p>
         </div>
