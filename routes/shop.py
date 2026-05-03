@@ -1,7 +1,9 @@
+import re
+
 from flask import Blueprint, render_template, request, jsonify, flash, redirect, url_for
 from flask_login import current_user, login_required
 from sqlalchemy import func
-from models import db, Product, Category, ProductLike, UserListing, Service, Review
+from models import db, Product, Category, ProductLike, UserListing, Service, Review, Enquiry
 
 shop_bp = Blueprint('shop', __name__)
 
@@ -168,6 +170,44 @@ def submit_review(slug):
 def services():
     items = Service.query.filter_by(is_active=True).order_by(Service.sort_order, Service.name).all()
     return render_template('services.html', services=items, title='Services')
+
+
+_EMAIL_RE = re.compile(r'^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$')
+_PHONE_RE = re.compile(r'^(\+91|91|0)?[6-9]\d{9}$')
+
+
+@shop_bp.route('/enquiry', methods=['GET', 'POST'])
+def enquiry():
+    errors = {}
+    form_data = {}
+    if request.method == 'POST':
+        email = request.form.get('email', '').strip()
+        phone = re.sub(r'[\s\-\(\)]', '', request.form.get('phone', ''))
+        details = request.form.get('details', '').strip()
+        form_data = {'email': email, 'phone': request.form.get('phone', ''), 'details': details}
+
+        if not email:
+            errors['email'] = 'Email is required.'
+        elif not _EMAIL_RE.match(email):
+            errors['email'] = 'Enter a valid email address.'
+
+        if not phone:
+            errors['phone'] = 'Phone number is required.'
+        elif not _PHONE_RE.match(phone):
+            errors['phone'] = 'Enter a valid 10-digit Indian mobile number.'
+
+        if not details:
+            errors['details'] = 'Details are required.'
+        elif len(details) < 25:
+            errors['details'] = f'Details must be at least 25 characters (currently {len(details)}).'
+
+        if not errors:
+            db.session.add(Enquiry(email=email, phone=phone, details=details))
+            db.session.commit()
+            flash('Your query has been submitted. You will receive a response within 24 hours.', 'success')
+            return redirect(url_for('shop.enquiry'))
+
+    return render_template('enquiry.html', errors=errors, form_data=form_data, title='Tech Enquiries')
 
 
 @shop_bp.route('/search')
