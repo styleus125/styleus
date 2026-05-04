@@ -45,6 +45,15 @@
             {% for e in form.confirm.errors %}<p class="text-red-500 text-xs mt-1">{{ e }}</p>{% endfor %}
           </div>
 
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">
+              Instagram / Facebook / Other ID
+              <span class="text-gray-400 font-normal ml-1">(optional)</span>
+            </label>
+            {{ form.social_handle(class="w-full border border-gray-300 rounded-xl px-4 py-3 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400", placeholder="e.g. @yourhandle or profile URL") }}
+            {% for e in form.social_handle.errors %}<p class="text-red-500 text-xs mt-1">{{ e }}</p>{% endfor %}
+          </div>
+
           <button type="submit"
                   class="w-full bg-navy-900 hover:bg-navy-800 text-white font-bold py-3 rounded-xl transition text-sm">
             Create Account

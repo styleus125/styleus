@@ -64,7 +64,6 @@
       {% if listing.status == 'pending' %}
       <div class="flex gap-3 mt-4">
         <form method="POST" action="{{ url_for('admin.listing_approve', listing_id=listing.id) }}" class="flex gap-2">
-          {{ csrf_token_input() if csrf_token_input is defined else '<input type="hidden" name="csrf_token" value="' ~ csrf_token() ~ '">'.format() | safe }}
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
           <input type="text" name="note" placeholder="Optional note…"
                  class="px-3 py-1.5 border border-gray-300 rounded-lg text-xs focus:outline-none focus:border-blue-400 w-48">
