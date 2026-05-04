@@ -2,7 +2,7 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request
 from flask_login import login_user, logout_user, login_required, current_user
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
-from wtforms.validators import DataRequired, Email, Length, EqualTo, ValidationError, Regexp
+from wtforms.validators import DataRequired, Email, Length, EqualTo, ValidationError, Regexp, Optional
 
 from models import db, User
 
@@ -26,6 +26,7 @@ class RegisterForm(FlaskForm):
     ])
     password = PasswordField('Password', validators=[DataRequired(), Length(min=6)])
     confirm  = PasswordField('Confirm Password', validators=[DataRequired(), EqualTo('password')])
+    social_handle = StringField('Instagram / Facebook / Other ID', validators=[Optional(), Length(max=200)])
     submit   = SubmitField('Create Account')
 
     def validate_email(self, field):
@@ -59,7 +60,9 @@ def register():
         return redirect(url_for('shop.index'))
     form = RegisterForm()
     if form.validate_on_submit():
-        user = User(name=form.name.data, email=form.email.data.lower(), phone=form.phone.data.strip(), is_approved=False)
+        user = User(name=form.name.data, email=form.email.data.lower(), phone=form.phone.data.strip(),
+                    social_handle=form.social_handle.data.strip() if form.social_handle.data else '',
+                    is_approved=False)
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()

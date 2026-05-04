@@ -16,6 +16,7 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(256), nullable=False)
     is_admin = db.Column(db.Boolean, default=False, nullable=False)
     is_approved = db.Column(db.Boolean, default=False, nullable=False, server_default='false')
+    social_handle = db.Column(db.String(200), nullable=False, default='', server_default='')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     cart = db.relationship('Cart', backref='user', uselist=False, cascade='all, delete-orphan')
