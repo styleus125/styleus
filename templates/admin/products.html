@@ -1,10 +1,10 @@
 {% extends 'admin/base.html' %}
 {% block content %}
 
-<div class="flex items-center justify-between mb-6">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 mb-5">
   <h2 class="text-xl font-bold text-gray-800">Products</h2>
   <a href="{{ url_for('admin.product_new') }}"
-     class="bg-navy-900 text-white text-sm font-semibold px-4 py-2 rounded-lg hover:bg-navy-800 transition flex items-center gap-2">
+     class="inline-flex items-center justify-center gap-2 bg-navy-900 text-white text-sm font-semibold px-4 py-2.5 rounded-lg hover:bg-navy-800 transition">
     <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
     </svg>
@@ -12,17 +12,62 @@
   </a>
 </div>
 
-<!-- Search -->
-<form method="get" action="{{ url_for('admin.products') }}" class="mb-5">
-  <div class="flex gap-3">
+<form method="get" action="{{ url_for('admin.products') }}" class="mb-4">
+  <div class="flex gap-2">
     <input type="text" name="q" value="{{ search }}" placeholder="Search products…"
-           class="flex-1 max-w-sm border border-gray-300 rounded-lg px-4 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
-    <button type="submit" class="bg-gray-800 text-white px-4 py-2 rounded-lg text-sm hover:bg-gray-700 transition">Search</button>
-    {% if search %}<a href="{{ url_for('admin.products') }}" class="px-4 py-2 border border-gray-300 rounded-lg text-sm text-gray-500 hover:bg-gray-50">Clear</a>{% endif %}
+           class="flex-1 border border-gray-300 rounded-lg px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-blue-400">
+    <button type="submit" class="bg-gray-800 text-white px-4 py-2.5 rounded-lg text-sm hover:bg-gray-700 transition shrink-0">Search</button>
+    {% if search %}<a href="{{ url_for('admin.products') }}" class="px-3 py-2.5 border border-gray-300 rounded-lg text-sm text-gray-500 hover:bg-gray-50 shrink-0">✕</a>{% endif %}
   </div>
 </form>
 
-<div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+<!-- Mobile cards -->
+<div class="space-y-3 md:hidden">
+  {% for product in products %}
+  <div class="bg-white rounded-xl border border-gray-200 p-4">
+    <div class="flex items-start gap-3">
+      <div class="w-14 h-14 bg-gray-100 rounded-lg overflow-hidden shrink-0">
+        {% if product.image_url %}<img src="{{ product.image_url }}" alt="" class="w-full h-full object-cover">{% endif %}
+      </div>
+      <div class="flex-1 min-w-0">
+        <div class="flex items-start justify-between gap-2">
+          <p class="font-semibold text-gray-800 text-sm leading-snug">{{ product.name }}</p>
+          <span class="shrink-0 text-xs font-semibold px-2 py-0.5 rounded-full
+            {% if product.is_active %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-600{% endif %}">
+            {{ 'Active' if product.is_active else 'Inactive' }}
+          </span>
+        </div>
+        <div class="flex items-center gap-2 mt-1 flex-wrap">
+          <span class="text-sm font-bold text-gray-900">₹{{ '%.2f' | format(product.price) }}</span>
+          <span class="text-xs px-1.5 py-0.5 rounded bg-gray-100 text-gray-600">{{ product.product_type }}</span>
+          {% if product.category %}<span class="text-xs text-gray-400">{{ product.category.name }}</span>{% endif %}
+        </div>
+        {% if product.product_type == 'physical' %}<p class="text-xs text-gray-400 mt-0.5">Stock: {{ product.stock }}</p>{% endif %}
+      </div>
+    </div>
+    <div class="flex gap-2 mt-3 pt-3 border-t border-gray-100">
+      <a href="{{ url_for('admin.product_edit', product_id=product.id) }}"
+         class="flex-1 text-center text-xs font-semibold py-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition">Edit</a>
+      <form action="{{ url_for('admin.product_toggle', product_id=product.id) }}" method="post" class="flex-1">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="w-full text-xs font-semibold py-2 rounded-lg bg-gray-100 text-gray-600 hover:bg-gray-200 transition">
+          {{ 'Deactivate' if product.is_active else 'Activate' }}
+        </button>
+      </form>
+      <form action="{{ url_for('admin.product_delete', product_id=product.id) }}" method="post"
+            onsubmit="return confirm('Delete {{ product.name }}?')" class="flex-1">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="w-full text-xs font-semibold py-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition">Delete</button>
+      </form>
+    </div>
+  </div>
+  {% else %}
+  <div class="bg-white rounded-xl border border-gray-200 p-10 text-center text-gray-400 text-sm">No products found</div>
+  {% endfor %}
+</div>
+
+<!-- Desktop table -->
+<div class="hidden md:block bg-white rounded-xl border border-gray-200 overflow-hidden">
   <div class="overflow-x-auto">
     <table class="w-full">
       <thead>
@@ -42,9 +87,7 @@
           <td class="px-5 py-3">
             <div class="flex items-center gap-3">
               <div class="w-10 h-10 bg-gray-100 rounded-lg overflow-hidden shrink-0">
-                {% if product.image_url %}
-                  <img src="{{ product.image_url }}" alt="" class="w-full h-full object-cover">
-                {% endif %}
+                {% if product.image_url %}<img src="{{ product.image_url }}" alt="" class="w-full h-full object-cover">{% endif %}
               </div>
               <div>
                 <p class="text-sm font-medium text-gray-800 line-clamp-1">{{ product.name }}</p>
@@ -60,9 +103,7 @@
             </span>
           </td>
           <td class="px-5 py-3 text-sm font-semibold">₹{{ '%.2f' | format(product.price) }}</td>
-          <td class="px-5 py-3 text-sm text-gray-600">
-            {% if product.product_type == 'digital' %}∞{% else %}{{ product.stock }}{% endif %}
-          </td>
+          <td class="px-5 py-3 text-sm text-gray-600">{% if product.product_type == 'digital' %}∞{% else %}{{ product.stock }}{% endif %}</td>
           <td class="px-5 py-3">
             <span class="text-xs font-medium px-2 py-1 rounded-full
               {% if product.is_active %}bg-green-100 text-green-700{% else %}bg-red-100 text-red-600{% endif %}">
@@ -71,13 +112,10 @@
           </td>
           <td class="px-5 py-3">
             <div class="flex items-center gap-2">
-              <a href="{{ url_for('admin.product_edit', product_id=product.id) }}"
-                 class="text-xs text-blue-600 hover:underline">Edit</a>
+              <a href="{{ url_for('admin.product_edit', product_id=product.id) }}" class="text-xs text-blue-600 hover:underline">Edit</a>
               <form action="{{ url_for('admin.product_toggle', product_id=product.id) }}" method="post" class="inline">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                <button type="submit" class="text-xs text-gray-500 hover:text-gray-700">
-                  {{ 'Deactivate' if product.is_active else 'Activate' }}
-                </button>
+                <button type="submit" class="text-xs text-gray-500 hover:text-gray-700">{{ 'Deactivate' if product.is_active else 'Activate' }}</button>
               </form>
               <form action="{{ url_for('admin.product_delete', product_id=product.id) }}" method="post" class="inline"
                     onsubmit="return confirm('Delete {{ product.name }}?')">
@@ -94,32 +132,30 @@
     </table>
   </div>
 
-  <!-- Pagination -->
   {% if pagination.pages > 1 %}
   <div class="px-5 py-4 border-t border-gray-200 flex items-center justify-between">
-    <p class="text-sm text-gray-500">Showing {{ pagination.items|length }} of {{ pagination.total }}</p>
+    <p class="text-sm text-gray-500">{{ pagination.total }} products</p>
     <div class="flex gap-1">
-      {% if pagination.has_prev %}
-        <a href="{{ url_for('admin.products', page=pagination.prev_num, q=search) }}"
-           class="px-3 py-1.5 border rounded text-sm hover:bg-gray-50">&larr;</a>
-      {% endif %}
+      {% if pagination.has_prev %}<a href="{{ url_for('admin.products', page=pagination.prev_num, q=search) }}" class="px-3 py-1.5 border rounded text-sm hover:bg-gray-50">&larr;</a>{% endif %}
       {% for p in pagination.iter_pages(left_edge=1, right_edge=1, left_current=2, right_current=2) %}
-        {% if p %}
-          <a href="{{ url_for('admin.products', page=p, q=search) }}"
-             class="px-3 py-1.5 border rounded text-sm transition
-                    {% if p == pagination.page %}bg-navy-900 text-white border-navy-900{% else %}hover:bg-gray-50{% endif %}">
-            {{ p }}
-          </a>
-        {% else %}
-          <span class="px-2 py-1.5 text-gray-400">…</span>
-        {% endif %}
+        {% if p %}<a href="{{ url_for('admin.products', page=p, q=search) }}" class="px-3 py-1.5 border rounded text-sm {% if p == pagination.page %}bg-navy-900 text-white border-navy-900{% else %}hover:bg-gray-50{% endif %}">{{ p }}</a>
+        {% else %}<span class="px-2 py-1.5 text-gray-400">…</span>{% endif %}
       {% endfor %}
-      {% if pagination.has_next %}
-        <a href="{{ url_for('admin.products', page=pagination.next_num, q=search) }}"
-           class="px-3 py-1.5 border rounded text-sm hover:bg-gray-50">&rarr;</a>
-      {% endif %}
+      {% if pagination.has_next %}<a href="{{ url_for('admin.products', page=pagination.next_num, q=search) }}" class="px-3 py-1.5 border rounded text-sm hover:bg-gray-50">&rarr;</a>{% endif %}
     </div>
   </div>
   {% endif %}
 </div>
+
+<!-- Mobile pagination -->
+{% if pagination.pages > 1 %}
+<div class="md:hidden flex items-center justify-between mt-4">
+  <p class="text-sm text-gray-500">{{ pagination.total }} products</p>
+  <div class="flex gap-1">
+    {% if pagination.has_prev %}<a href="{{ url_for('admin.products', page=pagination.prev_num, q=search) }}" class="px-3 py-2 border rounded-lg text-sm hover:bg-gray-50">&larr;</a>{% endif %}
+    <span class="px-3 py-2 text-sm text-gray-600">{{ pagination.page }}/{{ pagination.pages }}</span>
+    {% if pagination.has_next %}<a href="{{ url_for('admin.products', page=pagination.next_num, q=search) }}" class="px-3 py-2 border rounded-lg text-sm hover:bg-gray-50">&rarr;</a>{% endif %}
+  </div>
+</div>
+{% endif %}
 {% endblock %}

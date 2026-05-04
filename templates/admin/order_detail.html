@@ -1,7 +1,7 @@
 {% extends 'admin/base.html' %}
 {% block content %}
 
-<div class="flex items-center gap-3 mb-6">
+<div class="flex items-center gap-3 mb-5">
   <a href="{{ url_for('admin.orders') }}" class="text-gray-400 hover:text-gray-600">
     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
@@ -10,42 +10,61 @@
   <h2 class="text-xl font-bold text-gray-800">Order #{{ order.id }}</h2>
 </div>
 
-<div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-6">
-  <div class="bg-white rounded-xl border border-gray-200 p-5">
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-5">
+  <div class="bg-white rounded-xl border border-gray-200 p-4">
     <p class="text-xs text-gray-400 uppercase tracking-wider mb-2">Customer</p>
-    <p class="font-medium text-sm">{{ order.customer_email }}</p>
-    {% if order.user %}<p class="text-xs text-gray-400">{{ order.user.name }}</p>{% endif %}
+    <p class="font-medium text-sm break-all">{{ order.customer_email }}</p>
+    {% if order.user %}<p class="text-xs text-gray-400 mt-0.5">{{ order.user.name }}</p>{% endif %}
   </div>
-  <div class="bg-white rounded-xl border border-gray-200 p-5">
+  <div class="bg-white rounded-xl border border-gray-200 p-4">
     <p class="text-xs text-gray-400 uppercase tracking-wider mb-2">Order Date</p>
     <p class="font-medium text-sm">{{ order.created_at.strftime('%B %d, %Y %H:%M') }}</p>
   </div>
-  <div class="bg-white rounded-xl border border-gray-200 p-5">
+  <div class="bg-white rounded-xl border border-gray-200 p-4">
     <p class="text-xs text-gray-400 uppercase tracking-wider mb-2">Status</p>
     <form action="{{ url_for('admin.order_status', order_id=order.id) }}" method="post" class="flex gap-2">
       <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-      <select name="status" class="flex-1 border border-gray-300 rounded px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-400">
+      <select name="status" class="flex-1 min-w-0 border border-gray-300 rounded px-2 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-400">
         {% for s in ['pending','processing','shipped','delivered','cancelled'] %}
           <option value="{{ s }}" {% if s == order.status %}selected{% endif %}>{{ s }}</option>
         {% endfor %}
       </select>
-      <button type="submit" class="bg-navy-900 text-white text-sm px-3 py-1.5 rounded hover:bg-navy-800 transition">Save</button>
+      <button type="submit" class="shrink-0 bg-navy-900 text-white text-sm px-3 py-1.5 rounded hover:bg-navy-800 transition">Save</button>
     </form>
   </div>
 </div>
 
 {% if order.shipping_address %}
-<div class="bg-white rounded-xl border border-gray-200 p-5 mb-5">
+<div class="bg-white rounded-xl border border-gray-200 p-4 mb-4">
   <p class="text-xs text-gray-400 uppercase tracking-wider mb-2">Shipping Address</p>
   <p class="text-sm text-gray-700 whitespace-pre-line">{{ order.shipping_address }}</p>
 </div>
 {% endif %}
 
 <div class="bg-white rounded-xl border border-gray-200">
-  <div class="px-5 py-4 border-b border-gray-200">
-    <h3 class="font-semibold text-gray-700">Order Items</h3>
+  <div class="px-4 py-4 border-b border-gray-200">
+    <h3 class="font-semibold text-gray-700 text-sm">Order Items</h3>
   </div>
-  <div class="overflow-x-auto">
+
+  <!-- Mobile stacked items -->
+  <div class="divide-y divide-gray-100 md:hidden">
+    {% for item in order.items %}
+    <div class="px-4 py-3">
+      <p class="text-sm font-medium text-gray-800 mb-1">{{ item.product_name }}</p>
+      <div class="flex items-center justify-between text-xs text-gray-500">
+        <span>₹{{ '%.2f' | format(item.price_at_purchase) }} × {{ item.quantity }}</span>
+        <span class="font-semibold text-gray-800">₹{{ '%.2f' | format(item.price_at_purchase * item.quantity) }}</span>
+      </div>
+    </div>
+    {% endfor %}
+    <div class="px-4 py-3 bg-gray-50 flex items-center justify-between">
+      <span class="text-sm font-bold text-gray-700">Total</span>
+      <span class="text-sm font-black text-gray-900">₹{{ '%.2f' | format(order.total) }}</span>
+    </div>
+  </div>
+
+  <!-- Desktop table -->
+  <div class="hidden md:block overflow-x-auto">
     <table class="w-full">
       <thead>
         <tr class="text-xs text-gray-500 uppercase tracking-wider bg-gray-50 border-b border-gray-100">
