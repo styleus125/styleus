@@ -2,7 +2,7 @@
 {% block content %}
 
 <!-- Stats cards -->
-<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-5 mb-8">
+<div class="grid grid-cols-2 xl:grid-cols-4 gap-3 sm:gap-5 mb-6">
   {% set cards = [
     ('Total Revenue', '₹' ~ ('%.2f' | format(total_revenue)), 'bg-blue-500', 'M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z'),
     ('Total Orders', total_orders, 'bg-green-500', 'M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2'),
@@ -10,70 +10,66 @@
     ('Active Products', total_products, 'bg-orange-500', 'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4'),
   ] %}
   {% for label, value, color, icon_path in cards %}
-  <div class="bg-white rounded-xl border border-gray-200 p-5 flex items-center gap-4">
-    <div class="w-12 h-12 {{ color }} rounded-xl flex items-center justify-center shrink-0">
-      <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+  <div class="bg-white rounded-xl border border-gray-200 p-4 flex items-center gap-3">
+    <div class="w-10 h-10 {{ color }} rounded-xl flex items-center justify-center shrink-0">
+      <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ icon_path }}"/>
       </svg>
     </div>
-    <div>
-      <p class="text-2xl font-black text-gray-900">{{ value }}</p>
-      <p class="text-sm text-gray-500">{{ label }}</p>
+    <div class="min-w-0">
+      <p class="text-lg sm:text-2xl font-black text-gray-900 truncate">{{ value }}</p>
+      <p class="text-xs text-gray-500 truncate">{{ label }}</p>
     </div>
   </div>
   {% endfor %}
 </div>
 
 <!-- Quick links -->
-<div class="grid grid-cols-1 md:grid-cols-3 gap-5 mb-8">
+<div class="grid grid-cols-1 sm:grid-cols-3 gap-3 sm:gap-5 mb-6">
   <a href="{{ url_for('admin.product_new') }}"
-     class="bg-navy-900 text-white rounded-xl p-5 hover:bg-navy-800 transition flex items-center gap-3">
-    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+     class="bg-navy-900 text-white rounded-xl p-4 hover:bg-navy-800 transition flex items-center gap-3">
+    <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
     </svg>
-    <span class="font-semibold">Add New Product</span>
+    <span class="font-semibold text-sm">Add New Product</span>
   </a>
   <a href="{{ url_for('admin.orders') }}"
-     class="bg-blue-600 text-white rounded-xl p-5 hover:bg-blue-700 transition flex items-center gap-3">
-    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+     class="bg-blue-600 text-white rounded-xl p-4 hover:bg-blue-700 transition flex items-center gap-3">
+    <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"/>
     </svg>
-    <span class="font-semibold">Manage Orders</span>
+    <span class="font-semibold text-sm">Manage Orders</span>
   </a>
   <a href="{{ url_for('admin.categories') }}"
-     class="bg-green-600 text-white rounded-xl p-5 hover:bg-green-700 transition flex items-center gap-3">
-    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+     class="bg-green-600 text-white rounded-xl p-4 hover:bg-green-700 transition flex items-center gap-3">
+    <svg class="w-5 h-5 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"/>
     </svg>
-    <span class="font-semibold">Categories</span>
+    <span class="font-semibold text-sm">Categories</span>
   </a>
 </div>
 
 {% if pending_users > 0 %}
-<div class="mb-4">
+<div class="mb-3">
   <a href="{{ url_for('admin.users', filter='pending') }}"
-     class="flex items-center gap-4 bg-blue-50 border border-blue-300 rounded-xl p-5 hover:bg-blue-100 transition">
-    <div class="w-10 h-10 bg-blue-500 rounded-full flex items-center justify-center text-white font-black text-lg">
-      {{ pending_users }}
-    </div>
+     class="flex items-center gap-3 bg-blue-50 border border-blue-300 rounded-xl p-4 hover:bg-blue-100 transition">
+    <div class="w-9 h-9 bg-blue-500 rounded-full flex items-center justify-center text-white font-black text-base shrink-0">{{ pending_users }}</div>
     <div>
-      <p class="font-semibold text-blue-800">New user registration{{ 's' if pending_users != 1 }} awaiting approval</p>
-      <p class="text-sm text-blue-600">Click to review and approve</p>
+      <p class="font-semibold text-blue-800 text-sm">{{ pending_users }} user registration{{ 's' if pending_users != 1 }} awaiting approval</p>
+      <p class="text-xs text-blue-600">Tap to review</p>
     </div>
   </a>
 </div>
 {% endif %}
 
 {% if pending_listings > 0 %}
-<div class="mb-8">
+<div class="mb-6">
   <a href="{{ url_for('admin.listings', status='pending') }}"
-     class="flex items-center gap-4 bg-yellow-50 border border-yellow-300 rounded-xl p-5 hover:bg-yellow-100 transition">
-    <div class="w-10 h-10 bg-yellow-400 rounded-full flex items-center justify-center text-white font-black text-lg">
-      {{ pending_listings }}
-    </div>
+     class="flex items-center gap-3 bg-yellow-50 border border-yellow-300 rounded-xl p-4 hover:bg-yellow-100 transition">
+    <div class="w-9 h-9 bg-yellow-400 rounded-full flex items-center justify-center text-white font-black text-base shrink-0">{{ pending_listings }}</div>
     <div>
-      <p class="font-semibold text-yellow-800">User listing{{ 's' if pending_listings != 1 }} awaiting approval</p>
-      <p class="text-sm text-yellow-600">Click to review and approve or reject</p>
+      <p class="font-semibold text-yellow-800 text-sm">{{ pending_listings }} listing{{ 's' if pending_listings != 1 }} awaiting approval</p>
+      <p class="text-xs text-yellow-600">Tap to review</p>
     </div>
   </a>
 </div>
@@ -81,11 +77,33 @@
 
 <!-- Recent Orders -->
 <div class="bg-white rounded-xl border border-gray-200">
-  <div class="flex items-center justify-between px-6 py-4 border-b border-gray-200">
-    <h2 class="font-bold text-gray-800">Recent Orders</h2>
+  <div class="flex items-center justify-between px-4 sm:px-6 py-4 border-b border-gray-200">
+    <h2 class="font-bold text-gray-800 text-sm sm:text-base">Recent Orders</h2>
     <a href="{{ url_for('admin.orders') }}" class="text-sm text-blue-600 hover:underline">View all</a>
   </div>
-  <div class="overflow-x-auto">
+
+  <!-- Mobile cards -->
+  <div class="divide-y divide-gray-100 md:hidden">
+    {% for order in recent_orders %}
+    {% set status_colors = {'pending':'bg-yellow-100 text-yellow-700','processing':'bg-blue-100 text-blue-700','shipped':'bg-purple-100 text-purple-700','delivered':'bg-green-100 text-green-700','cancelled':'bg-red-100 text-red-700'} %}
+    <div class="px-4 py-3">
+      <div class="flex items-center justify-between mb-1">
+        <a href="{{ url_for('admin.order_detail', order_id=order.id) }}" class="font-semibold text-blue-600 text-sm">#{{ order.id }}</a>
+        <span class="text-xs font-semibold px-2 py-0.5 rounded-full capitalize {{ status_colors.get(order.status, 'bg-gray-100 text-gray-600') }}">{{ order.status }}</span>
+      </div>
+      <p class="text-xs text-gray-500 truncate">{{ order.customer_email or (order.user.email if order.user else '–') }}</p>
+      <div class="flex items-center justify-between mt-1">
+        <span class="text-sm font-bold text-gray-800">₹{{ '%.2f' | format(order.total) }}</span>
+        <span class="text-xs text-gray-400">{{ order.created_at.strftime('%b %d, %Y') }}</span>
+      </div>
+    </div>
+    {% else %}
+    <p class="px-4 py-8 text-center text-gray-400 text-sm">No orders yet</p>
+    {% endfor %}
+  </div>
+
+  <!-- Desktop table -->
+  <div class="hidden md:block overflow-x-auto">
     <table class="w-full">
       <thead>
         <tr class="text-xs text-gray-500 uppercase tracking-wider border-b border-gray-100">
@@ -98,22 +116,12 @@
       </thead>
       <tbody class="divide-y divide-gray-50">
         {% for order in recent_orders %}
-        {% set status_colors = {
-          'pending': 'bg-yellow-100 text-yellow-700',
-          'processing': 'bg-blue-100 text-blue-700',
-          'shipped': 'bg-purple-100 text-purple-700',
-          'delivered': 'bg-green-100 text-green-700',
-          'cancelled': 'bg-red-100 text-red-700'
-        } %}
+        {% set status_colors = {'pending':'bg-yellow-100 text-yellow-700','processing':'bg-blue-100 text-blue-700','shipped':'bg-purple-100 text-purple-700','delivered':'bg-green-100 text-green-700','cancelled':'bg-red-100 text-red-700'} %}
         <tr class="hover:bg-gray-50 transition">
           <td class="px-6 py-3 text-sm font-medium">#{{ order.id }}</td>
           <td class="px-6 py-3 text-sm text-gray-600">{{ order.customer_email or (order.user.email if order.user else '–') }}</td>
           <td class="px-6 py-3 text-sm font-semibold">₹{{ '%.2f' | format(order.total) }}</td>
-          <td class="px-6 py-3">
-            <span class="text-xs font-semibold px-2 py-1 rounded-full capitalize {{ status_colors.get(order.status, 'bg-gray-100 text-gray-600') }}">
-              {{ order.status }}
-            </span>
-          </td>
+          <td class="px-6 py-3"><span class="text-xs font-semibold px-2 py-1 rounded-full capitalize {{ status_colors.get(order.status, 'bg-gray-100 text-gray-600') }}">{{ order.status }}</span></td>
           <td class="px-6 py-3 text-sm text-gray-500">{{ order.created_at.strftime('%b %d, %Y') }}</td>
         </tr>
         {% else %}

@@ -121,7 +121,7 @@
     <h2 class="text-3xl font-bold text-gray-900">Featured Products</h2>
     <a href="{{ url_for('shop.products') }}" class="text-blue-600 hover:text-blue-700 font-medium text-sm">View all →</a>
   </div>
-  <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+  <div class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-3">
     {% for product in featured %}
     {% include '_product_card.html' %}
     {% endfor %}
@@ -172,7 +172,7 @@
     <h2 class="text-3xl font-bold text-gray-900">New Arrivals</h2>
     <a href="{{ url_for('shop.products') }}?sort=newest" class="text-blue-600 hover:text-blue-700 font-medium text-sm">View all →</a>
   </div>
-  <div class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-6">
+  <div class="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-5 gap-3">
     {% for product in new_arrivals %}
     {% include '_product_card.html' %}
     {% endfor %}
