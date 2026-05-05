@@ -620,3 +620,10 @@ def review_delete(review_id):
     db.session.commit()
     flash('Review deleted.', 'success')
     return redirect(url_for('shop.product_detail', slug=slug) + '#reviews')
+
+
+@admin_bp.route('/whatsapp')
+@login_required
+@admin_required
+def whatsapp():
+    return render_template('admin/whatsapp.html', title='WhatsApp Connect')
