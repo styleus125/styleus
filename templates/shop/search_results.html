@@ -9,43 +9,50 @@
     {% if q %}
     <p class="text-gray-500 mt-1 text-sm">
       {{ shop_results|length }} shop item{{ 's' if shop_results|length != 1 else '' }},
-      {{ used_results|length }} used item{{ 's' if used_results|length != 1 else '' }}
+      {{ used_results|length }} user deal{{ 's' if used_results|length != 1 else '' }},
+      {{ service_results|length }} service{{ 's' if service_results|length != 1 else '' }}
     </p>
     {% endif %}
   </div>
 
   {% if not q %}
-  <p class="text-gray-400">Enter a search term above to find products and used items.</p>
-  {% elif not shop_results and not used_results %}
-  <div class="text-center py-20 text-gray-400">
-    <p class="text-lg font-medium mb-2">No results found for "{{ q }}"</p>
-    <a href="{{ url_for('shop.products') }}" class="text-blue-500 hover:underline text-sm">Browse all shop items</a>
-    <span class="text-gray-300 mx-2">|</span>
-    <a href="{{ url_for('sell.public_listings') }}" class="text-blue-500 hover:underline text-sm">Browse used items</a>
-  </div>
+  <p class="text-gray-400">Enter a search term above to find products and member listings.</p>
   {% else %}
 
-  {% if shop_results %}
-  <section class="mb-12">
+  <!-- Shop Products (admin-listed) -->
+  <section class="mb-14">
     <div class="flex items-center justify-between mb-4">
-      <h2 class="text-lg font-semibold text-gray-800">Shop Items</h2>
+      <div>
+        <h2 class="text-lg font-semibold text-gray-800">Shop Products</h2>
+        <p class="text-xs text-gray-400 mt-0.5">Listed by Styleus</p>
+      </div>
       <a href="{{ url_for('shop.products', q=q) }}" class="text-sm text-blue-500 hover:underline">View all in shop</a>
     </div>
+    {% if shop_results %}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       {% set liked_ids = [] %}
       {% for product in shop_results %}
         {% include '_product_card.html' %}
       {% endfor %}
     </div>
+    {% else %}
+    <div class="rounded-xl border border-gray-100 bg-gray-50 py-10 text-center text-gray-400">
+      <p class="text-sm">No shop products found for "{{ q }}".</p>
+      <a href="{{ url_for('shop.products') }}" class="text-blue-500 hover:underline text-sm mt-1 inline-block">Browse all shop products</a>
+    </div>
+    {% endif %}
   </section>
-  {% endif %}
 
-  {% if used_results %}
+  <!-- Member Listings (user-listed) -->
   <section>
     <div class="flex items-center justify-between mb-4">
-      <h2 class="text-lg font-semibold text-gray-800">Used Items</h2>
-      <a href="{{ url_for('sell.public_listings') }}" class="text-sm text-blue-500 hover:underline">Browse all used items</a>
+      <div>
+        <h2 class="text-lg font-semibold text-gray-800">User Deals</h2>
+        <p class="text-xs text-gray-400 mt-0.5">Pre-loved items listed by users</p>
+      </div>
+      <a href="{{ url_for('sell.public_listings') }}" class="text-sm text-blue-500 hover:underline">Browse all user deals</a>
     </div>
+    {% if used_results %}
     <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
       {% for listing in used_results %}
       <div class="bg-white rounded-xl border border-gray-200 overflow-hidden hover:shadow-lg transition">
@@ -64,7 +71,7 @@
         </div>
         <div class="p-4">
           <span class="text-xs font-medium text-gray-400 uppercase tracking-wide">
-            Used &middot; {{ dict(listing.CONDITION_CHOICES)[listing.condition] }}
+            Pre-loved &middot; {{ dict(listing.CONDITION_CHOICES)[listing.condition] }}
           </span>
           <h3 class="font-semibold text-gray-800 mt-1 mb-1 line-clamp-2">{{ listing.title }}</h3>
           <p class="text-xs text-gray-500 line-clamp-2 mb-3">{{ listing.description }}</p>
@@ -88,8 +95,45 @@
       </div>
       {% endfor %}
     </div>
+    {% else %}
+    <div class="rounded-xl border border-gray-100 bg-gray-50 py-10 text-center text-gray-400">
+      <p class="text-sm">No user deals found for "{{ q }}".</p>
+      <a href="{{ url_for('sell.public_listings') }}" class="text-blue-500 hover:underline text-sm mt-1 inline-block">Browse all user deals</a>
+    </div>
+    {% endif %}
   </section>
-  {% endif %}
+
+  <!-- Services -->
+  <section class="mt-14">
+    <div class="flex items-center justify-between mb-4">
+      <div>
+        <h2 class="text-lg font-semibold text-gray-800">Services</h2>
+        <p class="text-xs text-gray-400 mt-0.5">Offered by Styleus</p>
+      </div>
+      <a href="{{ url_for('shop.services') }}" class="text-sm text-blue-500 hover:underline">Browse all services</a>
+    </div>
+    {% if service_results %}
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {% for service in service_results %}
+      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col hover:shadow-md transition">
+        <div class="flex items-start justify-between mb-2">
+          <h3 class="text-base font-bold text-gray-900 leading-snug">{{ service.name }}</h3>
+          <span class="shrink-0 ml-4 text-blue-600 font-bold">₹{{ '%.0f' % service.price }}</span>
+        </div>
+        {% if service.description %}
+        <p class="text-sm text-gray-500 leading-relaxed flex-1 line-clamp-2">{{ service.description }}</p>
+        {% endif %}
+        <a href="{{ url_for('shop.services') }}" class="mt-4 text-sm text-blue-600 font-medium hover:underline">Learn more →</a>
+      </div>
+      {% endfor %}
+    </div>
+    {% else %}
+    <div class="rounded-xl border border-gray-100 bg-gray-50 py-10 text-center text-gray-400">
+      <p class="text-sm">No services found for "{{ q }}".</p>
+      <a href="{{ url_for('shop.services') }}" class="text-blue-500 hover:underline text-sm mt-1 inline-block">Browse all services</a>
+    </div>
+    {% endif %}
+  </section>
 
   {% endif %}
 </div>

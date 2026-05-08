@@ -317,12 +317,18 @@
           <span class="font-bold text-xl tracking-tight select-none"><span class="text-white">Style</span><span class="text-blue-400">us</span></span>
         </a>
         <p class="mt-3 text-sm leading-relaxed">Your one-stop shop for physical and digital products. Quality guaranteed.</p>
-        <div class="mt-4 flex items-center gap-3">
-          <img src="{{ url_for('static', filename='styleus_qr.png') }}" alt="Scan to visit Styleus"
-               class="w-20 h-20 rounded-lg border border-navy-700 bg-white p-1">
-          <div>
+        <div class="mt-4 flex items-center gap-5">
+          <div class="flex flex-col items-center gap-1 cursor-pointer" onclick="openQrModal('{{ url_for('static', filename='styleus_qr.png') }}', 'Scan to Visit Styleus')">
+            <img src="{{ url_for('static', filename='styleus_qr.png') }}" alt="Scan to visit Styleus"
+                 class="w-20 h-20 rounded-lg border border-navy-700 bg-white p-1 hover:opacity-80 transition">
             <p class="text-white text-xs font-semibold">Scan to visit</p>
             <p class="text-xs text-gray-500">styleus.co.in</p>
+          </div>
+          <div class="flex flex-col items-center gap-1 cursor-pointer" onclick="openQrModal('{{ url_for('static', filename='payment_qr.png') }}', 'Scan to Pay — PhonePe')">
+            <img src="{{ url_for('static', filename='payment_qr.png') }}" alt="Scan to pay"
+                 class="w-20 h-20 rounded-lg border border-navy-700 bg-white p-1 hover:opacity-80 transition">
+            <p class="text-white text-xs font-semibold">Payments</p>
+            <p class="text-xs text-gray-500">PhonePe</p>
           </div>
         </div>
       </div>
@@ -418,5 +424,28 @@
 }());
 </script>
 {% block scripts %}{% endblock %}
+
+<!-- QR Code Enlarge Modal -->
+<div id="qr-modal" class="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm hidden" onclick="closeQrModal()">
+  <div class="bg-white rounded-2xl p-6 mx-4 flex flex-col items-center gap-4 shadow-2xl max-w-xs w-full" onclick="event.stopPropagation()">
+    <p id="qr-modal-title" class="text-gray-800 font-semibold text-base text-center"></p>
+    <img id="qr-modal-img" src="" alt="QR Code" class="w-64 h-64 object-contain rounded-xl border border-gray-200 p-2">
+    <p class="text-xs text-gray-400 text-center">Point your camera at the QR code to scan</p>
+    <button onclick="closeQrModal()" class="w-full py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-sm font-medium text-gray-700 transition">Close</button>
+  </div>
+</div>
+<script>
+  function openQrModal(src, title) {
+    document.getElementById('qr-modal-img').src = src;
+    document.getElementById('qr-modal-title').textContent = title;
+    document.getElementById('qr-modal').classList.remove('hidden');
+    document.body.style.overflow = 'hidden';
+  }
+  function closeQrModal() {
+    document.getElementById('qr-modal').classList.add('hidden');
+    document.body.style.overflow = '';
+  }
+  document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeQrModal(); });
+</script>
 </body>
 </html>

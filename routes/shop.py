@@ -15,11 +15,14 @@ def index():
     new_arrivals = Product.query.filter_by(is_active=True).order_by(Product.created_at.desc()).limit(8).all()
     highlight_services = (Service.query.filter_by(is_active=True)
                           .order_by(Service.sort_order, Service.name).limit(6).all())
+    user_deals = (UserListing.query.filter_by(status='approved')
+                  .order_by(UserListing.created_at.desc()).limit(8).all())
     return render_template('index.html',
                            featured=featured,
                            categories=categories,
                            new_arrivals=new_arrivals,
                            highlight_services=highlight_services,
+                           user_deals=user_deals,
                            title='Styleus')
 
 
@@ -215,6 +218,7 @@ def search():
     q = request.args.get('q', '').strip()
     shop_results = []
     used_results = []
+    service_results = []
     if q:
         shop_results = Product.query.filter(
             Product.is_active.is_(True),
@@ -224,8 +228,13 @@ def search():
             UserListing.status == 'approved',
             UserListing.title.ilike(f'%{q}%')
         ).order_by(UserListing.created_at.desc()).limit(40).all()
+        service_results = Service.query.filter(
+            Service.is_active.is_(True),
+            Service.name.ilike(f'%{q}%')
+        ).order_by(Service.sort_order, Service.name).all()
     return render_template('shop/search_results.html',
                            q=q,
                            shop_results=shop_results,
                            used_results=used_results,
+                           service_results=service_results,
                            title=f'Search: {q}' if q else 'Search')
