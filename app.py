@@ -1,6 +1,8 @@
 import os
+import uuid
 import click
-from flask import Flask, session
+from datetime import datetime, timedelta
+from flask import Flask, session, request as flask_request
 from flask_login import LoginManager
 from flask_wtf.csrf import CSRFProtect
 
@@ -72,6 +74,29 @@ def create_app(config_class=Config):
             session_cart = session.get('cart', {})
             count = sum(session_cart.values())
         return {'cart_count': count}
+
+    # Active visitor tracking
+    @app.before_request
+    def track_visitor():
+        if flask_request.path.startswith('/static'):
+            return
+        try:
+            if 'visitor_id' not in session:
+                session['visitor_id'] = uuid.uuid4().hex
+            vid = session['visitor_id']
+            now = datetime.utcnow()
+            last_update = session.get('visitor_last_update')
+            if last_update is None or (now - datetime.fromisoformat(last_update)).total_seconds() > 60:
+                from models import ActiveVisitor
+                visitor = ActiveVisitor.query.filter_by(session_id=vid).first()
+                if visitor:
+                    visitor.last_seen = now
+                else:
+                    db.session.add(ActiveVisitor(session_id=vid, last_seen=now))
+                db.session.commit()
+                session['visitor_last_update'] = now.isoformat()
+        except Exception:
+            db.session.rollback()
 
     # Seed CLI command
     @app.cli.command('seed')

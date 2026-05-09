@@ -183,6 +183,7 @@ class UserListing(db.Model):
     image_url_3 = db.Column(db.String(300), default='')
     image_url_4 = db.Column(db.String(300), default='')
     status = db.Column(db.String(20), default='pending')  # pending / approved / rejected
+    is_active = db.Column(db.Boolean, default=True, nullable=False)
     admin_note = db.Column(db.Text, default='')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
@@ -258,3 +259,14 @@ class ProductLike(db.Model):
 
     def __repr__(self):
         return f'<ProductLike user={self.user_id} product={self.product_id}>'
+
+
+class ActiveVisitor(db.Model):
+    __tablename__ = 'active_visitors'
+
+    id = db.Column(db.Integer, primary_key=True)
+    session_id = db.Column(db.String(64), unique=True, nullable=False, index=True)
+    last_seen = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+    def __repr__(self):
+        return f'<ActiveVisitor {self.session_id[:8]} last_seen={self.last_seen}>'

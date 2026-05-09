@@ -11,7 +11,7 @@ from wtforms.validators import DataRequired, Length, NumberRange, Optional
 from werkzeug.utils import secure_filename
 from slugify import slugify
 
-from models import db, User, Category, Product, Order, UserListing, Service, Review, SellCategory, Enquiry
+from models import db, User, Category, Product, Order, UserListing, Service, Review, SellCategory, Enquiry, ActiveVisitor
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -109,6 +109,10 @@ def dashboard():
     pending_listings = UserListing.query.filter_by(status='pending').count()
     pending_users = User.query.filter_by(is_approved=False).count()
 
+    from datetime import timedelta
+    cutoff = datetime.utcnow() - timedelta(minutes=5)
+    active_visitors = ActiveVisitor.query.filter(ActiveVisitor.last_seen >= cutoff).count()
+
     return render_template('admin/dashboard.html',
                            total_products=total_products,
                            total_orders=total_orders,
@@ -118,6 +122,7 @@ def dashboard():
                            recent_orders=recent_orders,
                            pending_listings=pending_listings,
                            pending_users=pending_users,
+                           active_visitors=active_visitors,
                            title='Admin Dashboard')
 
 
@@ -444,6 +449,18 @@ def listing_reject(listing_id):
     db.session.commit()
     flash(f'Listing "{listing.title}" rejected.', 'info')
     return redirect(url_for('admin.listings'))
+
+
+@admin_bp.route('/listings/<int:listing_id>/toggle-active', methods=['POST'])
+@login_required
+@admin_required
+def listing_toggle_active(listing_id):
+    listing = UserListing.query.get_or_404(listing_id)
+    listing.is_active = not listing.is_active
+    db.session.commit()
+    state = 'activated' if listing.is_active else 'deactivated'
+    flash(f'Listing "{listing.title}" {state}.', 'success')
+    return redirect(url_for('admin.listings', status=listing.status))
 
 
 # ── Services ──────────────────────────────────────────────────────────────────
