@@ -10,12 +10,12 @@ shop_bp = Blueprint('shop', __name__)
 
 @shop_bp.route('/')
 def index():
-    featured = Product.query.filter_by(is_active=True, is_featured=True).limit(8).all()
+    featured = Product.query.filter_by(is_active=True, is_featured=True).limit(10).all()
     categories = Category.query.all()
     new_arrivals = Product.query.filter_by(is_active=True).order_by(Product.created_at.desc()).limit(8).all()
     highlight_services = (Service.query.filter_by(is_active=True)
                           .order_by(Service.sort_order, Service.name).limit(6).all())
-    user_deals = (UserListing.query.filter_by(status='approved')
+    user_deals = (UserListing.query.filter_by(status='approved', is_active=True)
                   .order_by(UserListing.created_at.desc()).limit(8).all())
     return render_template('index.html',
                            featured=featured,
@@ -226,6 +226,7 @@ def search():
         ).order_by(Product.created_at.desc()).limit(40).all()
         used_results = UserListing.query.filter(
             UserListing.status == 'approved',
+            UserListing.is_active.is_(True),
             UserListing.title.ilike(f'%{q}%')
         ).order_by(UserListing.created_at.desc()).limit(40).all()
         service_results = Service.query.filter(
