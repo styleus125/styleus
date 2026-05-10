@@ -5,6 +5,7 @@ from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import DataRequired, Email, Length, EqualTo, ValidationError, Regexp, Optional
 
 from models import db, User
+from telegram import send_telegram
 
 auth_bp = Blueprint('auth', __name__)
 
@@ -66,6 +67,13 @@ def register():
         user.set_password(form.password.data)
         db.session.add(user)
         db.session.commit()
+        send_telegram(
+            f"👤 <b>New Registration</b>\n"
+            f"Name: {user.name}\n"
+            f"Email: {user.email}\n"
+            f"Phone: {user.phone}\n"
+            f"⏳ Pending admin approval"
+        )
         flash('Account created! Your account is pending admin approval. You will be notified once approved.', 'success')
         return redirect(url_for('auth.login'))
     return render_template('auth/register.html', form=form, title='Create Account')

@@ -4,6 +4,7 @@ from flask import Blueprint, render_template, request, jsonify, flash, redirect,
 from flask_login import current_user, login_required
 from sqlalchemy import func
 from models import db, Product, Category, ProductLike, UserListing, Service, Review, Enquiry
+from telegram import send_telegram
 
 shop_bp = Blueprint('shop', __name__)
 
@@ -207,6 +208,12 @@ def enquiry():
         if not errors:
             db.session.add(Enquiry(email=email, phone=phone, details=details))
             db.session.commit()
+            send_telegram(
+                f"🔧 <b>New Tech Enquiry</b>\n"
+                f"Email: {email}\n"
+                f"Phone: {phone}\n"
+                f"Details: {details[:300]}"
+            )
             flash('Your query has been submitted. You will receive a response within 24 hours.', 'success')
             return redirect(url_for('shop.enquiry'))
 

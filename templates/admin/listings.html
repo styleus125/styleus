@@ -90,19 +90,30 @@
     {% endif %}
 
     {% if listing.status == 'approved' %}
-    <div class="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between gap-3">
+    <div class="mt-4 pt-4 border-t border-gray-100 flex items-center justify-between gap-3 flex-wrap">
       <span class="text-xs {% if listing.is_active %}text-green-600{% else %}text-gray-400{% endif %} font-medium">
         {{ 'Visible on site' if listing.is_active else 'Hidden from site' }}
       </span>
-      <form method="POST" action="{{ url_for('admin.listing_toggle_active', listing_id=listing.id) }}">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <button type="submit"
-                class="px-4 py-1.5 text-xs font-semibold rounded-lg transition
-                       {% if listing.is_active %}bg-red-50 text-red-600 border border-red-200 hover:bg-red-100
-                       {% else %}bg-green-50 text-green-700 border border-green-200 hover:bg-green-100{% endif %}">
-          {{ 'Deactivate' if listing.is_active else 'Activate' }}
-        </button>
-      </form>
+      <div class="flex gap-2">
+        <form method="POST" action="{{ url_for('admin.listing_toggle_phone', listing_id=listing.id) }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit"
+                  class="px-4 py-1.5 text-xs font-semibold rounded-lg transition
+                         {% if listing.show_phone %}bg-orange-50 text-orange-600 border border-orange-200 hover:bg-orange-100
+                         {% else %}bg-blue-50 text-blue-600 border border-blue-200 hover:bg-blue-100{% endif %}">
+            {{ 'Hide Phone' if listing.show_phone else 'Show Phone' }}
+          </button>
+        </form>
+        <form method="POST" action="{{ url_for('admin.listing_toggle_active', listing_id=listing.id) }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button type="submit"
+                  class="px-4 py-1.5 text-xs font-semibold rounded-lg transition
+                         {% if listing.is_active %}bg-red-50 text-red-600 border border-red-200 hover:bg-red-100
+                         {% else %}bg-green-50 text-green-700 border border-green-200 hover:bg-green-100{% endif %}">
+            {{ 'Deactivate' if listing.is_active else 'Activate' }}
+          </button>
+        </form>
+      </div>
     </div>
     {% endif %}
   </div>
