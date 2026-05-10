@@ -189,7 +189,12 @@ class UserListing(db.Model):
 
     seller = db.relationship('User', backref=db.backref('listings', lazy='dynamic'))
 
-    CONDITION_CHOICES = [('like_new', 'Like New'), ('good', 'Good'), ('fair', 'Fair'), ('poor', 'Poor')]
+    seller_name  = db.Column(db.String(120), default='', server_default='')
+    seller_email = db.Column(db.String(200), default='', server_default='')
+    seller_phone = db.Column(db.String(20),  default='', server_default='')
+    show_phone   = db.Column(db.Boolean, default=False, nullable=False, server_default='false')
+
+    CONDITION_CHOICES = [('brand_new', 'Brand New'), ('like_new', 'Like New'), ('good', 'Good'), ('fair', 'Fair'), ('poor', 'Poor')]
 
     @property
     def all_images(self):

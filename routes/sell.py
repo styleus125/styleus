@@ -4,16 +4,20 @@ from flask import Blueprint, render_template, redirect, url_for, flash, request,
 from flask_login import login_required, current_user
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
-from wtforms import StringField, TextAreaField, FloatField, SelectField, SubmitField
-from wtforms.validators import DataRequired, Length, Optional, NumberRange
+from wtforms import StringField, TextAreaField, FloatField, SelectField, SubmitField, TelField
+from wtforms.validators import DataRequired, Length, Optional, NumberRange, Email
 from werkzeug.utils import secure_filename
 
 from models import db, UserListing, SellCategory
+from telegram import send_telegram
 
 sell_bp = Blueprint('sell', __name__)
 
 
 class ListingForm(FlaskForm):
+    seller_name  = StringField('Your Name',  validators=[DataRequired(), Length(max=120)])
+    seller_email = StringField('Your Email', validators=[DataRequired(), Email(), Length(max=200)])
+    seller_phone = StringField('Your Phone', validators=[DataRequired(), Length(min=10, max=20)])
     title = StringField('Item Title', validators=[DataRequired(), Length(max=200)])
     description = TextAreaField('Description', validators=[DataRequired(), Length(max=2000)])
     sell_category_id = SelectField('Category', coerce=int, validators=[Optional()])
@@ -59,6 +63,9 @@ def sell_form():
             return render_template('sell/sell_form.html', form=form, title='Sell Your Item')
         listing = UserListing(
             seller_id=current_user.id,
+            seller_name=form.seller_name.data,
+            seller_email=form.seller_email.data,
+            seller_phone=form.seller_phone.data,
             sell_category_id=form.sell_category_id.data or None,
             title=form.title.data,
             description=form.description.data,
@@ -71,6 +78,15 @@ def sell_form():
         )
         db.session.add(listing)
         db.session.commit()
+        price_str = f"₹{listing.asking_price:,.0f}" if listing.asking_price else "Not set"
+        send_telegram(
+            f"🛍️ <b>New Sell Listing</b>\n"
+            f"Item: {listing.title}\n"
+            f"Condition: {listing.condition}\n"
+            f"Price: {price_str}\n"
+            f"Seller: {listing.seller_name} ({listing.seller_phone})\n"
+            f"⏳ Pending admin approval"
+        )
         flash('Your listing has been submitted and is pending admin approval.', 'success')
         return redirect(url_for('sell.my_listings'))
     return render_template('sell/sell_form.html', form=form, title='Sell Your Item')
@@ -86,6 +102,6 @@ def my_listings():
 
 @sell_bp.route('/sell/listings')
 def public_listings():
-    listings = UserListing.query.filter_by(status='approved')\
+    listings = UserListing.query.filter_by(status='approved', is_active=True)\
         .order_by(UserListing.created_at.desc()).all()
     return render_template('sell/listings.html', listings=listings, title='Used Items for Sale')

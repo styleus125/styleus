@@ -463,6 +463,16 @@ def listing_toggle_active(listing_id):
     return redirect(url_for('admin.listings', status=listing.status))
 
 
+@admin_bp.route('/listings/<int:listing_id>/toggle-phone', methods=['POST'])
+@login_required
+@admin_required
+def listing_toggle_phone(listing_id):
+    listing = UserListing.query.get_or_404(listing_id)
+    listing.show_phone = not listing.show_phone
+    db.session.commit()
+    return redirect(url_for('admin.listings', status=listing.status))
+
+
 # ── Services ──────────────────────────────────────────────────────────────────
 
 @admin_bp.route('/services')

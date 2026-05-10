@@ -6,6 +6,7 @@ from wtforms import StringField, SubmitField, TextAreaField
 from wtforms.validators import DataRequired, Email, Length
 
 from models import db, Cart, CartItem, Product, Order, OrderItem
+from telegram import send_telegram
 
 checkout_bp = Blueprint('checkout', __name__)
 
@@ -129,6 +130,16 @@ def checkout():
             session.pop('cart', None)
 
         db.session.commit()
+
+        items_summary = ', '.join(
+            f"{i['product'].name} x{i['quantity']}" for i in items
+        )
+        send_telegram(
+            f"🛒 <b>New Order #{order.id}</b>\n"
+            f"Customer: {order.customer_email}\n"
+            f"Total: ₹{order.total:,.2f}\n"
+            f"Items: {items_summary}"
+        )
 
         # Store order id in session for success page
         session['last_order_id'] = order.id

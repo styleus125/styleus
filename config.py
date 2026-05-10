@@ -28,6 +28,10 @@ class Config:
     MAX_IMAGE_SIZE     =  2 * 1024 * 1024   # 2 MB per individual photo
     ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
 
+    # Telegram notifications
+    TELEGRAM_BOT_TOKEN = os.environ.get('TELEGRAM_BOT_TOKEN')
+    TELEGRAM_CHAT_ID = os.environ.get('TELEGRAM_CHAT_ID')
+
     # Pagination
     PRODUCTS_PER_PAGE = 20
     ADMIN_ITEMS_PER_PAGE = 25
