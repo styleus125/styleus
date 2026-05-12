@@ -210,7 +210,7 @@ def product_edit(product_id):
                 new_img = save_product_image(request.files.get(field))
                 if new_img:
                     setattr(product, slot, new_img)
-                elif request.form.get(f'clear_{field}'):
+                elif request.form.get(f'clear_{slot}'):
                     setattr(product, slot, '')
         except ValueError as e:
             flash(str(e), 'danger')

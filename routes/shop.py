@@ -11,7 +11,7 @@ shop_bp = Blueprint('shop', __name__)
 
 @shop_bp.route('/')
 def index():
-    featured = Product.query.filter_by(is_active=True, is_featured=True).limit(10).all()
+    featured = Product.query.filter_by(is_active=True, is_featured=True).order_by(func.random()).limit(10).all()
     categories = Category.query.all()
     new_arrivals = Product.query.filter_by(is_active=True).order_by(Product.created_at.desc()).limit(8).all()
     highlight_services = (Service.query.filter_by(is_active=True)

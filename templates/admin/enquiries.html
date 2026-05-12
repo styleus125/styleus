@@ -19,7 +19,7 @@
     <div class="flex items-start justify-between gap-2 mb-2">
       <div class="flex-1 min-w-0">
         <p class="font-semibold text-gray-800 text-sm truncate">{{ enq.email }}</p>
-        <p class="text-xs text-gray-500">{{ enq.phone }}</p>
+        <p class="text-xs text-gray-500">{{ enq.phone | mask_phone }}</p>
       </div>
       <span class="shrink-0 text-xs text-gray-400 font-mono">#{{ enq.id }}</span>
     </div>
@@ -57,7 +57,7 @@
         <tr class="hover:bg-gray-50 transition">
           <td class="px-5 py-4 text-gray-400 font-mono text-xs">{{ enq.id }}</td>
           <td class="px-5 py-4 text-gray-800 font-medium">{{ enq.email }}</td>
-          <td class="px-5 py-4 text-gray-700">{{ enq.phone }}</td>
+          <td class="px-5 py-4 text-gray-700">{{ enq.phone | mask_phone }}</td>
           <td class="px-5 py-4 text-gray-600 max-w-xs">
             <span title="{{ enq.details }}">{{ enq.details[:120] }}{% if enq.details|length > 120 %}…{% endif %}</span>
           </td>
