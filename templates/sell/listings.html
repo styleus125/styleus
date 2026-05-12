@@ -43,9 +43,7 @@
         <p class="text-[10px] text-gray-600 font-medium mb-0.5 truncate">{{ listing.seller_name }}</p>
         {% endif %}
         {% if listing.seller_phone %}
-        <p class="text-[10px] text-gray-400 font-mono">
-          {% if listing.show_phone %}{{ listing.seller_phone }}{% else %}{{ listing.seller_phone[:6] }}xxxx{% endif %}
-        </p>
+        <p class="text-[10px] text-gray-400 font-mono">{{ listing.seller_phone | mask_phone }}</p>
         {% endif %}
       </div>
       <div class="px-2 pb-2 pt-1 flex-shrink-0">

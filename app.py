@@ -46,6 +46,17 @@ def create_app(config_class=Config):
     app.register_blueprint(admin_bp, url_prefix='/admin')
     app.register_blueprint(sell_bp, url_prefix='/')
 
+    # Jinja filter: mask middle digits of a phone number (e.g. 98680###89)
+    def _mask_phone(phone):
+        if not phone:
+            return '—'
+        p = str(phone).strip()
+        if len(p) < 7:
+            return p
+        return p[:-5] + '###' + p[-2:]
+
+    app.jinja_env.filters['mask_phone'] = _mask_phone
+
     # Context processor for cart count + date
     @app.context_processor
     def inject_globals():

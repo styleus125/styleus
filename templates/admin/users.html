@@ -36,7 +36,7 @@
       </div>
     </div>
     <div class="flex items-center justify-between text-xs text-gray-400 mb-3">
-      <span>{{ user.phone or '—' }}</span>
+      <span>{{ user.phone | mask_phone }}</span>
       <span>Joined {{ user.created_at.strftime('%b %d, %Y') }}</span>
     </div>
     {% if user.id != current_user.id %}
@@ -86,7 +86,7 @@
             </div>
           </td>
           <td class="px-5 py-3 text-sm text-gray-600">{{ user.email }}</td>
-          <td class="px-5 py-3 text-sm text-gray-600">{{ user.phone or '—' }}</td>
+          <td class="px-5 py-3 text-sm text-gray-600">{{ user.phone | mask_phone }}</td>
           <td class="px-5 py-3"><span class="text-xs font-semibold px-2 py-1 rounded-full {% if user.is_admin %}bg-blue-100 text-blue-700{% else %}bg-gray-100 text-gray-600{% endif %}">{{ 'Admin' if user.is_admin else 'Customer' }}</span></td>
           <td class="px-5 py-3"><span class="text-xs font-semibold px-2 py-1 rounded-full {% if user.is_approved %}bg-green-100 text-green-700{% else %}bg-yellow-100 text-yellow-700{% endif %}">{{ 'Approved' if user.is_approved else 'Pending' }}</span></td>
           <td class="px-5 py-3 text-sm text-gray-500">{{ user.created_at.strftime('%b %d, %Y') }}</td>
