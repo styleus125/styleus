@@ -31,15 +31,39 @@
   <link rel="icon" type="image/svg+xml" href="{{ url_for('static', filename='favicon.svg') }}">
   <meta name="csrf-token" content="{{ csrf_token() }}" />
   {% block head %}{% endblock %}
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Raleway:wght@700&display=swap" rel="stylesheet">
   <style>
     @keyframes ticker-scroll {
       0%   { transform: translateX(0); }
       100% { transform: translateX(-50%); }
     }
+    @keyframes ticker-shimmer {
+      0%   { background-position: -300% center; }
+      100% { background-position: 300% center; }
+    }
     .ticker-track {
       display: inline-block;
       white-space: nowrap;
-      animation: ticker-scroll 20s linear infinite;
+      font-family: 'Raleway', sans-serif;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      background: linear-gradient(90deg,
+        #93c5fd 0%,
+        #bfdbfe 15%,
+        #ffffff 28%,
+        #fde68a 40%,
+        #ffffff 52%,
+        #fde68a 64%,
+        #ffffff 76%,
+        #bfdbfe 88%,
+        #93c5fd 100%
+      );
+      background-size: 300% auto;
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      background-clip: text;
+      animation: ticker-scroll 25s linear infinite, ticker-shimmer 4s linear infinite;
     }
     .ticker-track:hover { animation-play-state: paused; }
 
@@ -76,8 +100,8 @@
     <!-- Scrolling ticker (centre, fills available space) -->
     <div class="overflow-hidden flex-1 hidden sm:block"
          style="border-left:1px solid rgba(255,255,255,0.15); border-right:1px solid rgba(255,255,255,0.15); padding:0 12px;">
-      <div class="ticker-track text-xs" style="color:#93c5fd;">
-        Free shipping on orders over Rs.999 &nbsp;&nbsp;&bull;&nbsp;&nbsp; Exclusive deals every week &nbsp;&nbsp;&bull;&nbsp;&nbsp; Premium quality guaranteed &nbsp;&nbsp;&bull;&nbsp;&nbsp; New arrivals daily &nbsp;&nbsp;&bull;&nbsp;&nbsp; Free shipping on orders over Rs.999 &nbsp;&nbsp;&bull;&nbsp;&nbsp; Exclusive deals every week &nbsp;&nbsp;&bull;&nbsp;&nbsp; Premium quality guaranteed &nbsp;&nbsp;&bull;&nbsp;&nbsp; New arrivals daily &nbsp;&nbsp;&bull;&nbsp;&nbsp;
+      <div class="ticker-track text-xs">
+        Register today and start selling online instantly &nbsp;&nbsp;✦&nbsp;&nbsp; List new &amp; used items — gadgets, books, furniture, fashion, services and more &nbsp;&nbsp;✦&nbsp;&nbsp; Follow our page to stay updated with the latest listings &nbsp;&nbsp;✦&nbsp;&nbsp; Recommend us to friends &amp; family &nbsp;&nbsp;✦&nbsp;&nbsp; Share with others and help your community buy &amp; sell smarter &nbsp;&nbsp;✦&nbsp;&nbsp; Register today and start selling online instantly &nbsp;&nbsp;✦&nbsp;&nbsp; List new &amp; used items — gadgets, books, furniture, fashion, services and more &nbsp;&nbsp;✦&nbsp;&nbsp; Follow our page to stay updated with the latest listings &nbsp;&nbsp;✦&nbsp;&nbsp; Recommend us to friends &amp; family &nbsp;&nbsp;✦&nbsp;&nbsp; Share with others and help your community buy &amp; sell smarter &nbsp;&nbsp;✦&nbsp;&nbsp;
       </div>
     </div>
 
@@ -367,7 +391,7 @@
           <span class="text-xs font-semibold">Facebook</span>
         </a>
         <!-- Instagram -->
-        <a href="https://instagram.com/styleus" target="_blank" rel="noopener noreferrer"
+        <a href="https://instagram.com/styleus2026" target="_blank" rel="noopener noreferrer"
            class="flex items-center gap-1.5 px-3 py-1.5 rounded-full transition"
            style="background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888); color:#fff;"
            onmouseover="this.style.opacity='0.85';"

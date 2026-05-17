@@ -1,0 +1,191 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<!-- Hero -->
+<section class="bg-gradient-to-br from-navy-900 via-navy-800 to-blue-900 text-white py-20">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <div class="inline-flex items-center gap-2 bg-blue-500/20 border border-blue-400/30 rounded-full px-4 py-1.5 text-blue-300 text-sm font-medium mb-6">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4"/>
+      </svg>
+      Custom · Scalable · Delivered on Time
+    </div>
+    <h1 class="text-4xl md:text-5xl font-black tracking-tight mb-5">
+      Software <span class="text-blue-400">Development</span>
+    </h1>
+    <p class="text-lg text-gray-300 max-w-2xl mx-auto mb-8">
+      From idea to fully functional product — we build custom web apps, desktop software, automation tools, and business systems tailored to your exact needs.
+    </p>
+    <a href="https://wa.me/919958808898?text=Hi%2C+I%27m+interested+in+Software+Development+services"
+       target="_blank" rel="noopener noreferrer"
+       class="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-semibold px-8 py-3 rounded-xl transition shadow-lg text-base">
+      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+      </svg>
+      Discuss Your Project on WhatsApp
+    </a>
+  </div>
+</section>
+
+<!-- What We Build -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+  <div class="text-center mb-12">
+    <h2 class="text-3xl font-bold text-gray-900 mb-3">What We Build</h2>
+    <p class="text-gray-500 max-w-xl mx-auto">End-to-end development across a wide range of platforms and industries.</p>
+  </div>
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+    {% set services = [
+      ('Web Applications', 'Full-stack web apps built with modern frameworks — dashboards, portals, CRMs, e-commerce platforms, and more.', 'M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9'),
+      ('Desktop Software', 'Powerful cross-platform desktop applications for Windows, macOS, and Linux tailored to your workflow.', 'M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z'),
+      ('Business Automation', 'Automate repetitive tasks, data entry, reporting, and workflows to save time and reduce errors.', 'M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15'),
+      ('API Development & Integration', 'Build robust REST APIs or integrate third-party services like payment gateways, SMS, maps, and more.', 'M8 9l3 3-3 3m5 0h3M5 20h14a2 2 0 002-2V6a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z'),
+      ('Database Design', 'Efficient, scalable database architecture — PostgreSQL, MySQL, MongoDB — designed for your data needs.', 'M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4'),
+      ('Software Maintenance & Support', 'Ongoing bug fixes, feature additions, performance tuning, and technical support for existing software.', 'M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z M15 12a3 3 0 11-6 0 3 3 0 016 0z')
+    ] %}
+    {% for title, desc, icon in services %}
+    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 hover:shadow-md transition">
+      <div class="w-11 h-11 bg-blue-50 rounded-xl flex items-center justify-center mb-4">
+        <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ icon }}"/>
+        </svg>
+      </div>
+      <h3 class="font-bold text-gray-900 mb-2">{{ title }}</h3>
+      <p class="text-sm text-gray-500 leading-relaxed">{{ desc }}</p>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- Engagement Models -->
+<section class="bg-gray-50 border-t border-gray-100 py-16">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-12">
+      <h2 class="text-3xl font-bold text-gray-900 mb-3">Engagement Models</h2>
+      <p class="text-gray-500 max-w-xl mx-auto">Flexible pricing to suit projects of any size.</p>
+    </div>
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+      <!-- Fixed Price -->
+      <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-8 flex flex-col hover:shadow-md transition">
+        <div class="mb-6">
+          <span class="text-xs font-semibold uppercase tracking-widest text-blue-500 bg-blue-50 px-3 py-1 rounded-full">Fixed Price</span>
+          <div class="mt-4">
+            <span class="text-3xl font-black text-gray-900">Starting ₹4,999</span>
+          </div>
+          <p class="text-sm text-gray-500 mt-2">Best for well-defined projects with clear requirements.</p>
+        </div>
+        <ul class="space-y-3 flex-1 mb-8">
+          {% for f in ['Defined scope & deliverables', 'Fixed timeline', 'Milestone-based payments', 'Full source code handover', 'Post-launch support (30 days)'] %}
+          <li class="flex items-center gap-2 text-sm text-gray-700">
+            <svg class="w-4 h-4 text-green-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+            </svg>{{ f }}
+          </li>
+          {% endfor %}
+        </ul>
+        <a href="https://wa.me/919958808898?text=Hi%2C+I%27m+interested+in+a+Fixed+Price+software+project"
+           target="_blank" rel="noopener noreferrer"
+           class="block text-center bg-gray-900 hover:bg-gray-700 text-white font-semibold py-3 rounded-xl transition text-sm">
+          Get a Quote
+        </a>
+      </div>
+
+      <!-- Monthly Retainer (highlighted) -->
+      <div class="bg-navy-900 rounded-2xl border border-blue-500/30 shadow-xl p-8 flex flex-col relative">
+        <div class="absolute -top-3 left-1/2 -translate-x-1/2">
+          <span class="bg-blue-500 text-white text-xs font-bold px-4 py-1 rounded-full shadow">Most Popular</span>
+        </div>
+        <div class="mb-6">
+          <span class="text-xs font-semibold uppercase tracking-widest text-blue-300 bg-blue-500/20 px-3 py-1 rounded-full">Monthly Retainer</span>
+          <div class="mt-4">
+            <span class="text-3xl font-black text-white">₹9,999</span>
+            <span class="text-gray-400"> /month</span>
+          </div>
+          <p class="text-sm text-gray-400 mt-2">Ongoing development with a dedicated team working on your product.</p>
+        </div>
+        <ul class="space-y-3 flex-1 mb-8">
+          {% for f in ['Up to 80 hrs/month development', 'Weekly progress updates', 'Unlimited revision cycles', 'Bug fixes included', 'Monthly code reviews', 'Priority turnaround', 'Full source code access'] %}
+          <li class="flex items-center gap-2 text-sm text-gray-200">
+            <svg class="w-4 h-4 text-blue-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+            </svg>{{ f }}
+          </li>
+          {% endfor %}
+        </ul>
+        <a href="https://wa.me/919958808898?text=Hi%2C+I%27m+interested+in+a+Monthly+Retainer+for+software+development"
+           target="_blank" rel="noopener noreferrer"
+           class="block text-center bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 rounded-xl transition text-sm">
+          Get Started
+        </a>
+      </div>
+
+      <!-- Hourly -->
+      <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-8 flex flex-col hover:shadow-md transition">
+        <div class="mb-6">
+          <span class="text-xs font-semibold uppercase tracking-widest text-purple-500 bg-purple-50 px-3 py-1 rounded-full">Hourly</span>
+          <div class="mt-4">
+            <span class="text-3xl font-black text-gray-900">₹499</span>
+            <span class="text-gray-400"> /hour</span>
+          </div>
+          <p class="text-sm text-gray-500 mt-2">Flexible engagement for small tasks, fixes, or consulting.</p>
+        </div>
+        <ul class="space-y-3 flex-1 mb-8">
+          {% for f in ['No minimum commitment', 'Pay only for hours worked', 'Detailed time logs', 'Bug fixes & quick tasks', 'Technical consulting'] %}
+          <li class="flex items-center gap-2 text-sm text-gray-700">
+            <svg class="w-4 h-4 text-green-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+            </svg>{{ f }}
+          </li>
+          {% endfor %}
+        </ul>
+        <a href="https://wa.me/919958808898?text=Hi%2C+I%27m+interested+in+hourly+software+development"
+           target="_blank" rel="noopener noreferrer"
+           class="block text-center bg-gray-900 hover:bg-gray-700 text-white font-semibold py-3 rounded-xl transition text-sm">
+          Get Started
+        </a>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- Our Process -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+  <div class="text-center mb-12">
+    <h2 class="text-3xl font-bold text-gray-900 mb-3">Our Development Process</h2>
+    <p class="text-gray-500 max-w-xl mx-auto">A transparent, structured approach from brief to launch.</p>
+  </div>
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+    {% set steps = [
+      ('01', 'Discovery', 'We understand your goals, users, and requirements through detailed consultation.'),
+      ('02', 'Planning', 'We map out the architecture, timeline, and tech stack best suited for your project.'),
+      ('03', 'Development', 'Iterative builds with regular demos so you see progress at every milestone.'),
+      ('04', 'Launch & Support', 'We deploy, test, and provide ongoing support to ensure everything runs smoothly.')
+    ] %}
+    {% for num, title, desc in steps %}
+    <div class="relative bg-white rounded-2xl border border-gray-100 shadow-sm p-6 hover:shadow-md transition">
+      <span class="text-5xl font-black text-gray-100 absolute top-4 right-5 select-none">{{ num }}</span>
+      <h3 class="font-bold text-gray-900 mb-2 relative">{{ title }}</h3>
+      <p class="text-sm text-gray-500 leading-relaxed relative">{{ desc }}</p>
+    </div>
+    {% endfor %}
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="bg-navy-900 py-16">
+  <div class="max-w-3xl mx-auto px-4 text-center">
+    <h2 class="text-3xl font-bold text-white mb-4">Have a project in mind?</h2>
+    <p class="text-gray-400 mb-8">Tell us what you need and we'll come back with a free estimate within 24 hours.</p>
+    <a href="https://wa.me/919958808898?text=Hi%2C+I%27d+like+to+discuss+a+software+development+project"
+       target="_blank" rel="noopener noreferrer"
+       class="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-semibold px-10 py-4 rounded-xl transition shadow-lg text-base">
+      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+      </svg>
+      Chat with Us on WhatsApp
+    </a>
+  </div>
+</section>
+
+{% endblock %}

@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<!-- Hero -->
+<section class="bg-gradient-to-br from-navy-900 via-navy-800 to-blue-900 text-white py-20">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <div class="inline-flex items-center gap-2 bg-blue-500/20 border border-blue-400/30 rounded-full px-4 py-1.5 text-blue-300 text-sm font-medium mb-6">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 12H3m18 0h-2M12 5V3m0 18v-2m4.22-13.22l-1.42 1.42M5.2 18.8l1.42-1.42M18.8 18.8l-1.42-1.42M6.62 6.62L5.2 5.2M12 8a4 4 0 100 8 4 4 0 000-8z"/>
+      </svg>
+      Reliable · Secure · Always Online
+    </div>
+    <h1 class="text-4xl md:text-5xl font-black tracking-tight mb-5">
+      Web Hosting &amp; <span class="text-blue-400">Maintenance</span>
+    </h1>
+    <p class="text-lg text-gray-300 max-w-2xl mx-auto mb-8">
+      Professional hosting solutions and ongoing website maintenance to keep your business running smoothly — 24/7 uptime, fast load times, and expert support.
+    </p>
+    <a href="https://wa.me/919958808898?text=Hi%2C+I%27m+interested+in+Web+Hosting+%26+Maintenance+services"
+       target="_blank" rel="noopener noreferrer"
+       class="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-semibold px-8 py-3 rounded-xl transition shadow-lg text-base">
+      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+      </svg>
+      Get a Free Quote on WhatsApp
+    </a>
+  </div>
+</section>
+
+<!-- Hosting Plans -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16">
+  <div class="text-center mb-12">
+    <h2 class="text-3xl font-bold text-gray-900 mb-3">Hosting Plans</h2>
+    <p class="text-gray-500 max-w-xl mx-auto">Choose a plan that fits your business. All plans include free SSL, daily backups, and email support.</p>
+  </div>
+  <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+
+    <!-- Starter -->
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-8 flex flex-col hover:shadow-md transition">
+      <div class="mb-6">
+        <span class="text-xs font-semibold uppercase tracking-widest text-blue-500 bg-blue-50 px-3 py-1 rounded-full">Starter</span>
+        <div class="mt-4 flex items-end gap-1">
+          <span class="text-4xl font-black text-gray-900">₹999</span>
+          <span class="text-gray-400 mb-1">/month</span>
+        </div>
+        <p class="text-sm text-gray-500 mt-2">Perfect for small businesses and personal websites.</p>
+      </div>
+      <ul class="space-y-3 flex-1 mb-8">
+        {% for feature in ['5 GB SSD Storage', '1 Website', 'Free SSL Certificate', '10 Email Accounts', '99.9% Uptime Guarantee', 'Daily Backups', 'Email Support'] %}
+        <li class="flex items-center gap-2 text-sm text-gray-700">
+          <svg class="w-4 h-4 text-green-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+          </svg>
+          {{ feature }}
+        </li>
+        {% endfor %}
+      </ul>
+      <a href="https://wa.me/919958808898?text=Hi%2C+I%27m+interested+in+the+Starter+Hosting+Plan"
+         target="_blank" rel="noopener noreferrer"
+         class="block text-center bg-gray-900 hover:bg-gray-700 text-white font-semibold py-3 rounded-xl transition text-sm">
+        Get Started
+      </a>
+    </div>
+
+    <!-- Business (highlighted) -->
+    <div class="bg-navy-900 rounded-2xl border border-blue-500/30 shadow-xl p-8 flex flex-col relative">
+      <div class="absolute -top-3 left-1/2 -translate-x-1/2">
+        <span class="bg-blue-500 text-white text-xs font-bold px-4 py-1 rounded-full shadow">Most Popular</span>
+      </div>
+      <div class="mb-6">
+        <span class="text-xs font-semibold uppercase tracking-widest text-blue-300 bg-blue-500/20 px-3 py-1 rounded-full">Business</span>
+        <div class="mt-4 flex items-end gap-1">
+          <span class="text-4xl font-black text-white">₹1,999</span>
+          <span class="text-gray-400 mb-1">/month</span>
+        </div>
+        <p class="text-sm text-gray-400 mt-2">Ideal for growing businesses needing more power.</p>
+      </div>
+      <ul class="space-y-3 flex-1 mb-8">
+        {% for feature in ['25 GB SSD Storage', '5 Websites', 'Free SSL Certificate', 'Unlimited Email Accounts', '99.9% Uptime Guarantee', 'Daily Backups', 'Priority Support', 'Free Domain (1 Year)', 'Monthly Performance Report'] %}
+        <li class="flex items-center gap-2 text-sm text-gray-200">
+          <svg class="w-4 h-4 text-blue-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+          </svg>
+          {{ feature }}
+        </li>
+        {% endfor %}
+      </ul>
+      <a href="https://wa.me/919958808898?text=Hi%2C+I%27m+interested+in+the+Business+Hosting+Plan"
+         target="_blank" rel="noopener noreferrer"
+         class="block text-center bg-blue-500 hover:bg-blue-600 text-white font-semibold py-3 rounded-xl transition text-sm">
+        Get Started
+      </a>
+    </div>
+
+    <!-- Enterprise -->
+    <div class="bg-white rounded-2xl border border-gray-200 shadow-sm p-8 flex flex-col hover:shadow-md transition">
+      <div class="mb-6">
+        <span class="text-xs font-semibold uppercase tracking-widest text-purple-500 bg-purple-50 px-3 py-1 rounded-full">Enterprise</span>
+        <div class="mt-4 flex items-end gap-1">
+          <span class="text-4xl font-black text-gray-900">₹4,999</span>
+          <span class="text-gray-400 mb-1">/month</span>
+        </div>
+        <p class="text-sm text-gray-500 mt-2">High-traffic sites and mission-critical applications.</p>
+      </div>
+      <ul class="space-y-3 flex-1 mb-8">
+        {% for feature in ['100 GB SSD Storage', 'Unlimited Websites', 'Free SSL Certificate', 'Unlimited Email Accounts', '99.99% Uptime SLA', 'Hourly Backups', '24/7 Dedicated Support', 'Free Domain (1 Year)', 'Weekly Performance Report', 'Custom Server Configuration'] %}
+        <li class="flex items-center gap-2 text-sm text-gray-700">
+          <svg class="w-4 h-4 text-green-500 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 13l4 4L19 7"/>
+          </svg>
+          {{ feature }}
+        </li>
+        {% endfor %}
+      </ul>
+      <a href="https://wa.me/919958808898?text=Hi%2C+I%27m+interested+in+the+Enterprise+Hosting+Plan"
+         target="_blank" rel="noopener noreferrer"
+         class="block text-center bg-gray-900 hover:bg-gray-700 text-white font-semibold py-3 rounded-xl transition text-sm">
+        Get Started
+      </a>
+    </div>
+
+  </div>
+</section>
+
+<!-- Maintenance Services -->
+<section class="bg-gray-50 border-t border-gray-100 py-16">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+    <div class="text-center mb-12">
+      <h2 class="text-3xl font-bold text-gray-900 mb-3">Website Maintenance</h2>
+      <p class="text-gray-500 max-w-xl mx-auto">Keep your website secure, fast, and up to date with our ongoing maintenance packages.</p>
+    </div>
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+      {% set maintenance = [
+        ('Security Updates', 'Regular CMS, plugin, and theme updates to patch vulnerabilities and protect your data.', 'M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z'),
+        ('Performance Optimisation', 'Speed audits, image compression, caching setup, and CDN configuration for faster load times.', 'M13 10V3L4 14h7v7l9-11h-7z'),
+        ('Daily Backups & Recovery', 'Automated daily backups stored offsite with one-click restore in case of any issues.', 'M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-8l-4-4m0 0L8 8m4-4v12'),
+        ('Uptime Monitoring', '24/7 monitoring with instant alerts and rapid response if your site goes down.', 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z'),
+        ('Content Updates', 'Text, image, and product updates handled for you so your site always stays current.', 'M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z'),
+        ('SSL & Domain Management', 'SSL renewal, domain configuration, DNS management, and email setup handled for you.', 'M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z')
+      ] %}
+      {% for title, desc, icon in maintenance %}
+      <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 hover:shadow-md transition">
+        <div class="w-11 h-11 bg-blue-50 rounded-xl flex items-center justify-center mb-4">
+          <svg class="w-5 h-5 text-blue-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ icon }}"/>
+          </svg>
+        </div>
+        <h3 class="font-bold text-gray-900 mb-2">{{ title }}</h3>
+        <p class="text-sm text-gray-500 leading-relaxed">{{ desc }}</p>
+      </div>
+      {% endfor %}
+    </div>
+  </div>
+</section>
+
+<!-- CTA -->
+<section class="bg-navy-900 py-16">
+  <div class="max-w-3xl mx-auto px-4 text-center">
+    <h2 class="text-3xl font-bold text-white mb-4">Ready to get started?</h2>
+    <p class="text-gray-400 mb-8">Contact us on WhatsApp for a free consultation and custom quote tailored to your needs.</p>
+    <a href="https://wa.me/919958808898?text=Hi%2C+I%27d+like+to+discuss+Web+Hosting+%26+Maintenance+for+my+website"
+       target="_blank" rel="noopener noreferrer"
+       class="inline-flex items-center gap-2 bg-green-500 hover:bg-green-600 text-white font-semibold px-10 py-4 rounded-xl transition shadow-lg text-base">
+      <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 01-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 01-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 012.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0012.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 005.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 00-3.48-8.413z"/>
+      </svg>
+      Chat with Us on WhatsApp
+    </a>
+  </div>
+</section>
+
+{% endblock %}
