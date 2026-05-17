@@ -36,41 +36,37 @@
     </div>
   </div>
 
-  <!-- Scrolling Clothing Images -->
-  <div class="relative pb-10">
-    <!-- fade edges -->
+  <!-- Scrolling Category Cards -->
+  <div class="relative pb-10 overflow-hidden">
     <div class="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-navy-900 to-transparent z-10 pointer-events-none"></div>
     <div class="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-blue-900 to-transparent z-10 pointer-events-none"></div>
 
-    <div class="flex gap-4 hero-scroll-track">
-      {% set clothing_images = [
-        ('https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=220&h=300&fit=crop', 'Laptop'),
-        ('https://images.unsplash.com/photo-1505740420928-5e560c06d30e?w=220&h=300&fit=crop', 'Headphones'),
-        ('https://images.unsplash.com/photo-1518770660439-4636190af475?w=220&h=300&fit=crop', 'Circuit Board'),
-        ('https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?w=220&h=300&fit=crop', 'Smartphone'),
-        ('https://images.unsplash.com/photo-1484788984921-03950022c9ef?w=220&h=300&fit=crop', 'Dev Workspace'),
-        ('https://images.unsplash.com/photo-1526374965328-7f61d4dc18c5?w=220&h=300&fit=crop', 'Matrix Code'),
-        ('https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=220&h=300&fit=crop', 'Programming'),
-        ('https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=220&h=300&fit=crop', 'Developer'),
-        ('https://images.unsplash.com/photo-1542751371-adc38448a05e?w=220&h=300&fit=crop', 'Gaming'),
-        ('https://images.unsplash.com/photo-1593642632559-0c6d3fc62b89?w=220&h=300&fit=crop', 'Monitor Setup'),
-        ('https://images.unsplash.com/photo-1563013544-824ae1b704d3?w=220&h=300&fit=crop', 'Network Cables'),
-        ('https://images.unsplash.com/photo-1531492746076-161ca9bcad58?w=220&h=300&fit=crop', 'Hard Drive'),
-        ('https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=220&h=300&fit=crop', 'Server'),
-        ('https://images.unsplash.com/photo-1558494949-ef010cbdcc31?w=220&h=300&fit=crop', 'Keyboard'),
-        ('https://images.unsplash.com/photo-1587829741301-dc798b83add3?w=220&h=300&fit=crop', 'Screen Display'),
-        ('https://images.unsplash.com/photo-1527864550417-7fd91fc51a46?w=220&h=300&fit=crop', 'PC Hardware')
+    <div class="hero-scroll-track">
+      {% set categories_scroll = [
+        ('Software Development', 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=220&h=300&fit=crop', url_for('shop.software_development')),
+        ('Web Hosting & Maintenance', 'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=220&h=300&fit=crop', url_for('shop.webhosting')),
+        ('Refurbished Laptops', 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=220&h=300&fit=crop', ''),
+        ('Assembled Computers', 'https://images.unsplash.com/photo-1547082299-de196ea013d6?w=220&h=300&fit=crop', ''),
+        ('Used Items', 'https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=220&h=300&fit=crop', ''),
+        ('Online Support', 'https://images.unsplash.com/photo-1553775282-20af80779df7?w=220&h=300&fit=crop', ''),
+        ('Advertise with Us', 'https://images.unsplash.com/photo-1533750349088-cd871a92f312?w=220&h=300&fit=crop', ''),
+        ('Buy Direct from Sellers', 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=220&h=300&fit=crop', '')
       ] %}
-      <!-- First set -->
-      {% for src, label in clothing_images %}
-      <div class="shrink-0 rounded-2xl overflow-hidden shadow-xl border border-white/10 hero-scroll-item">
-        <img src="{{ src }}" alt="{{ label }}" class="w-[140px] h-[190px] sm:w-[180px] sm:h-[240px] object-cover" loading="lazy">
-      </div>
-      {% endfor %}
-      <!-- Duplicate for seamless loop -->
-      {% for src, label in clothing_images %}
-      <div class="shrink-0 rounded-2xl overflow-hidden shadow-xl border border-white/10 hero-scroll-item" aria-hidden="true">
-        <img src="{{ src }}" alt="" class="w-[140px] h-[190px] sm:w-[180px] sm:h-[240px] object-cover" loading="lazy">
+      {% for set_i in range(4) %}
+      <div class="hero-scroll-set" {% if set_i > 0 %}aria-hidden="true"{% endif %}>
+        {% for label, src, url in categories_scroll %}
+        {% if url %}
+        <a href="{{ url }}" class="category-card">
+        {% else %}
+        <div class="category-card">
+        {% endif %}
+          <img src="{{ src }}" alt="{{ label if set_i == 0 else '' }}" class="w-full h-full object-cover" loading="lazy">
+          <div class="category-card-overlay"></div>
+          <div class="category-card-label">
+            <p>{{ label }}</p>
+          </div>
+        {% if url %}</a>{% else %}</div>{% endif %}
+        {% endfor %}
       </div>
       {% endfor %}
     </div>
@@ -80,17 +76,53 @@
 <style>
 .hero-scroll-track {
   display: flex;
-  gap: 1rem;
-  animation: heroScroll 30s linear infinite;
   width: max-content;
-  padding: 0 1rem;
+  animation: heroScroll 32s linear infinite;
+  will-change: transform;
 }
-.hero-scroll-track:hover {
-  animation-play-state: paused;
+.hero-scroll-track:hover { animation-play-state: paused; }
+.hero-scroll-set {
+  display: flex;
+  gap: 1.25rem;
+  padding-right: 1.25rem;
+  flex-shrink: 0;
+}
+.category-card {
+  position: relative;
+  width: 170px;
+  height: 230px;
+  border-radius: 16px;
+  overflow: hidden;
+  flex-shrink: 0;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.4);
+  border: 1px solid rgba(255,255,255,0.08);
+}
+.category-card img { width: 100%; height: 100%; object-fit: cover; display: block; transition: transform 0.5s ease; }
+.category-card:hover img { transform: scale(1.06); }
+.category-card-overlay {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.88) 0%, rgba(0,0,0,0.3) 55%, rgba(0,0,0,0.05) 100%);
+}
+.category-card-label {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  padding: 0 14px 16px;
+}
+.category-card-label p {
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  text-align: center;
+  line-height: 1.35;
+  letter-spacing: 0.01em;
+  text-shadow: 0 1px 4px rgba(0,0,0,0.6);
 }
 @keyframes heroScroll {
   0%   { transform: translateX(0); }
-  100% { transform: translateX(-50%); }
+  100% { transform: translateX(-25%); }
 }
 </style>
 

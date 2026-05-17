@@ -1,6 +1,7 @@
 import re
+from datetime import date
 
-from flask import Blueprint, render_template, request, jsonify, flash, redirect, url_for
+from flask import Blueprint, render_template, request, jsonify, flash, redirect, url_for, Response
 from flask_login import current_user, login_required
 from sqlalchemy import func
 from models import db, Product, Category, ProductLike, UserListing, Service, Review, Enquiry
@@ -174,6 +175,85 @@ def submit_review(slug):
 def services():
     items = Service.query.filter_by(is_active=True).order_by(Service.sort_order, Service.name).all()
     return render_template('services.html', services=items, title='Services')
+
+
+@shop_bp.route('/webhosting')
+def webhosting():
+    return render_template('webhosting.html', title='Web Hosting & Maintenance')
+
+
+@shop_bp.route('/software-development')
+def software_development():
+    return render_template('software_development.html', title='Software Development')
+
+
+@shop_bp.route('/sitemap.xml')
+def sitemap():
+    today = date.today().isoformat()
+    base = request.host_url.rstrip('/')
+
+    static_urls = [
+        ('/', 'daily', '1.0'),
+        ('/products', 'daily', '0.9'),
+        ('/services', 'weekly', '0.8'),
+        ('/webhosting', 'weekly', '0.8'),
+        ('/software-development', 'weekly', '0.8'),
+        ('/sell/listings', 'daily', '0.7'),
+        ('/sell', 'weekly', '0.6'),
+        ('/enquiry', 'monthly', '0.6'),
+        ('/auth/login', 'monthly', '0.3'),
+        ('/auth/register', 'monthly', '0.3'),
+    ]
+
+    products = Product.query.filter_by(is_active=True).all()
+    categories = Category.query.all()
+
+    urls = []
+    for path, freq, priority in static_urls:
+        urls.append(f"""  <url>
+    <loc>{base}{path}</loc>
+    <lastmod>{today}</lastmod>
+    <changefreq>{freq}</changefreq>
+    <priority>{priority}</priority>
+  </url>""")
+
+    for product in products:
+        urls.append(f"""  <url>
+    <loc>{base}/products/{product.slug}</loc>
+    <lastmod>{today}</lastmod>
+    <changefreq>weekly</changefreq>
+    <priority>0.8</priority>
+  </url>""")
+
+    for cat in categories:
+        urls.append(f"""  <url>
+    <loc>{base}/products?category={cat.slug}</loc>
+    <lastmod>{today}</lastmod>
+    <changefreq>daily</changefreq>
+    <priority>0.7</priority>
+  </url>""")
+
+    xml = '<?xml version="1.0" encoding="UTF-8"?>\n'
+    xml += '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+    xml += '\n'.join(urls)
+    xml += '\n</urlset>'
+
+    return Response(xml, mimetype='application/xml')
+
+
+@shop_bp.route('/robots.txt')
+def robots():
+    base = request.host_url.rstrip('/')
+    content = f"""User-agent: *
+Allow: /
+Disallow: /admin/
+Disallow: /cart/
+Disallow: /orders
+Disallow: /auth/
+
+Sitemap: {base}/sitemap.xml
+"""
+    return Response(content, mimetype='text/plain')
 
 
 _EMAIL_RE = re.compile(r'^[a-zA-Z0-9._%+\-]+@[a-zA-Z0-9.\-]+\.[a-zA-Z]{2,}$')
