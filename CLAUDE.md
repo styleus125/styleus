@@ -1,4 +1,4 @@
-# Styleus – dlo Project Instructions
+# Styleus Project Instructions
 
 ## Project Overview
 Flask e-commerce app (Styleus) with PostgreSQL, served via Gunicorn behind Nginx, containerised with Docker.
@@ -7,7 +7,7 @@ Flask e-commerce app (Styleus) with PostgreSQL, served via Gunicorn behind Nginx
 - **DB**: PostgreSQL (SQLAlchemy, no Alembic — use `db.create_all()`)
 - **Local URL**: http://localhost:8082
 - **Admin**: http://localhost:8082/admin (requires admin login)
-- **Container name**: `dlo_app_local` (web), `dlo_db_local` (postgres)
+- **Container name**: `stylus_app` (web), `stylus_db` (postgres)
 
 ---
 
@@ -55,9 +55,9 @@ After editing files you MUST:
 
 1. Restart the container so gunicorn picks up the new code AND `db.create_all()` runs:
    ```bash
-   docker restart dlo_app_local
+   docker restart stylus_app
    sleep 8
-   docker logs dlo_app_local --tail=20
+   docker logs stylus_app --tail=20
    ```
 2. Confirm gunicorn started with no errors in the logs.
 3. Run a curl smoke test on every affected route:
@@ -70,7 +70,7 @@ After editing files you MUST:
 
 ### Database Changes
 - New table → add model to `models.py`, restart container. `db.create_all()` inside `flask seed` creates it automatically.
-- New column on existing table → add column to the model with a `default` or `server_default` so existing rows are valid, then restart. For PostgreSQL `db.create_all()` does NOT add new columns to existing tables — use `docker exec dlo_db_local psql -U dlo -d dlo -c "ALTER TABLE ..."` if needed.
+- New column on existing table → add column to the model with a `default` or `server_default` so existing rows are valid, then restart. For PostgreSQL `db.create_all()` does NOT add new columns to existing tables — use `docker exec stylus_db psql -U dlo -d dlo -c "ALTER TABLE ..."` if needed.
 - **Always note any database changes clearly in the end-of-task summary.**
 
 ---
