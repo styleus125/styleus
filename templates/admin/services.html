@@ -40,7 +40,7 @@
         </button>
       </form>
       <form method="post" action="{{ url_for('admin.service_delete', service_id=service.id) }}" class="flex-1"
-            onsubmit="return confirm('Delete service \'{{ service.name }}\'?')">
+            data-confirm="Delete service '{{ service.name }}'? This cannot be undone.">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <button type="submit" class="w-full text-xs font-semibold py-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition">Delete</button>
       </form>
@@ -85,7 +85,7 @@
                 </button>
               </form>
               <form method="post" action="{{ url_for('admin.service_delete', service_id=service.id) }}" class="inline"
-                    onsubmit="return confirm('Delete service \'{{ service.name }}\'?')">
+                    data-confirm="Delete service '{{ service.name }}'? This cannot be undone.">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <button type="submit" class="text-xs text-red-500 hover:text-red-700">Delete</button>
               </form>

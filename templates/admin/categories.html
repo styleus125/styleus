@@ -21,7 +21,7 @@
           <button onclick="openEditModal({{ cat.id }}, '{{ cat.name }}', '{{ cat.description }}')"
                   class="flex-1 text-xs font-semibold py-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition">Edit</button>
           <form action="{{ url_for('admin.category_delete', cat_id=cat.id) }}" method="post"
-                onsubmit="return confirm('Delete category {{ cat.name }}? Products will be uncategorized.')" class="flex-1">
+                data-confirm="Delete category '{{ cat.name }}'? Products will become uncategorized." class="flex-1">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
             <button type="submit" class="w-full text-xs font-semibold py-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition">Delete</button>
           </form>
@@ -55,7 +55,7 @@
                   <button onclick="openEditModal({{ cat.id }}, '{{ cat.name }}', '{{ cat.description }}')"
                           class="text-xs text-blue-600 hover:underline">Edit</button>
                   <form action="{{ url_for('admin.category_delete', cat_id=cat.id) }}" method="post"
-                        onsubmit="return confirm('Delete category {{ cat.name }}? Products will be uncategorized.')" class="inline">
+                        data-confirm="Delete category '{{ cat.name }}'? Products will become uncategorized." class="inline">
                     <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                     <button type="submit" class="text-xs text-red-500 hover:text-red-700">Delete</button>
                   </form>

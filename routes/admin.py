@@ -11,7 +11,7 @@ from wtforms.validators import DataRequired, Length, NumberRange, Optional
 from werkzeug.utils import secure_filename
 from slugify import slugify
 
-from models import db, User, Category, Product, Order, UserListing, Service, Review, SellCategory, Enquiry, ActiveVisitor
+from models import db, User, Category, Product, Order, UserListing, Service, Review, SellCategory, Enquiry, ActiveVisitor, Professional
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -654,3 +654,56 @@ def review_delete(review_id):
 @admin_required
 def whatsapp():
     return render_template('admin/whatsapp.html', title='WhatsApp Connect')
+
+
+# ── Professionals ─────────────────────────────────────────────────────────────
+
+@admin_bp.route('/professionals')
+@login_required
+@admin_required
+def professionals():
+    status_filter = request.args.get('status', 'pending')
+    query = Professional.query
+    if status_filter in ('pending', 'approved', 'rejected'):
+        query = query.filter_by(status=status_filter)
+    items = query.order_by(Professional.created_at.desc()).all()
+    pending_count = Professional.query.filter_by(status='pending').count()
+    return render_template('admin/professionals.html',
+                           professionals=items,
+                           status_filter=status_filter,
+                           pending_count=pending_count,
+                           title='Professionals')
+
+
+@admin_bp.route('/professionals/<int:prof_id>/approve', methods=['POST'])
+@login_required
+@admin_required
+def professional_approve(prof_id):
+    prof = Professional.query.get_or_404(prof_id)
+    prof.status = 'approved'
+    db.session.commit()
+    flash(f'"{prof.name}" approved.', 'success')
+    return redirect(url_for('admin.professionals'))
+
+
+@admin_bp.route('/professionals/<int:prof_id>/reject', methods=['POST'])
+@login_required
+@admin_required
+def professional_reject(prof_id):
+    prof = Professional.query.get_or_404(prof_id)
+    prof.status = 'rejected'
+    db.session.commit()
+    flash(f'"{prof.name}" rejected.', 'info')
+    return redirect(url_for('admin.professionals'))
+
+
+@admin_bp.route('/professionals/<int:prof_id>/delete', methods=['POST'])
+@login_required
+@admin_required
+def professional_delete(prof_id):
+    prof = Professional.query.get_or_404(prof_id)
+    name = prof.name
+    db.session.delete(prof)
+    db.session.commit()
+    flash(f'"{name}" deleted.', 'success')
+    return redirect(url_for('admin.professionals'))

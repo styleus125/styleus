@@ -4,7 +4,7 @@ from datetime import date
 from flask import Blueprint, render_template, request, jsonify, flash, redirect, url_for, Response
 from flask_login import current_user, login_required
 from sqlalchemy import func
-from models import db, Product, Category, ProductLike, UserListing, Service, Review, Enquiry
+from models import db, Product, Category, ProductLike, UserListing, Service, Review, Enquiry, Professional
 from telegram import send_telegram
 
 shop_bp = Blueprint('shop', __name__)
@@ -300,12 +300,67 @@ def enquiry():
     return render_template('enquiry.html', errors=errors, form_data=form_data, title='Tech Enquiries')
 
 
+@shop_bp.route('/about')
+def about():
+    return render_template('about.html', title='About Us')
+
+
+@shop_bp.route('/privacy')
+def privacy():
+    return render_template('privacy.html', title='Privacy Policy')
+
+
+@shop_bp.route('/professionals')
+def professionals():
+    items = Professional.query.filter_by(status='approved').order_by(Professional.created_at.desc()).all()
+    return render_template('professionals.html', professionals=items, title='Professionals')
+
+
+@shop_bp.route('/professionals/register', methods=['GET', 'POST'])
+@login_required
+def professional_register():
+    existing = Professional.query.filter_by(user_id=current_user.id).first()
+    errors = {}
+    if request.method == 'POST':
+        name = request.form.get('name', '').strip()
+        address = request.form.get('address', '').strip()
+        phone = request.form.get('phone', '').strip()
+        profession = request.form.get('profession', '').strip()
+        if not name:
+            errors['name'] = 'Name / Company is required.'
+        if not address:
+            errors['address'] = 'Address is required.'
+        if not phone:
+            errors['phone'] = 'Phone number is required.'
+        elif not re.fullmatch(r'[6-9]\d{9}', phone.replace(' ', '').replace('-', '')):
+            errors['phone'] = 'Enter a valid 10-digit Indian mobile number (starting with 6–9).'
+        if not profession:
+            errors['profession'] = 'Area of Work / Profession is required.'
+        elif len(profession) < 100:
+            errors['profession'] = f'Please describe in at least 100 characters ({len(profession)}/100).'
+        if not errors:
+            if existing:
+                existing.name = name
+                existing.address = address
+                existing.phone = phone
+                existing.profession = profession
+                existing.status = 'pending'
+            else:
+                db.session.add(Professional(user_id=current_user.id, name=name, address=address, phone=phone, profession=profession))
+            db.session.commit()
+            flash('Your professional details have been submitted for approval.', 'success')
+            return redirect(url_for('shop.professionals'))
+        return render_template('professional_register.html', errors=errors, existing=existing, title='Register as Professional')
+    return render_template('professional_register.html', errors=errors, existing=existing, title='Register as Professional')
+
+
 @shop_bp.route('/search')
 def search():
     q = request.args.get('q', '').strip()
     shop_results = []
     used_results = []
     service_results = []
+    professional_results = []
     if q:
         shop_results = Product.query.filter(
             Product.is_active.is_(True),
@@ -320,9 +375,14 @@ def search():
             Service.is_active.is_(True),
             Service.name.ilike(f'%{q}%')
         ).order_by(Service.sort_order, Service.name).all()
+        professional_results = Professional.query.filter(
+            Professional.status == 'approved',
+            Professional.name.ilike(f'%{q}%')
+        ).order_by(Professional.created_at.desc()).limit(20).all()
     return render_template('shop/search_results.html',
                            q=q,
                            shop_results=shop_results,
                            used_results=used_results,
                            service_results=service_results,
+                           professional_results=professional_results,
                            title=f'Search: {q}' if q else 'Search')

@@ -55,7 +55,7 @@
         </button>
       </form>
       <form action="{{ url_for('admin.product_delete', product_id=product.id) }}" method="post"
-            onsubmit="return confirm('Delete {{ product.name }}?')" class="flex-1">
+            data-confirm="Delete product '{{ product.name }}'? This cannot be undone." class="flex-1">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <button type="submit" class="w-full text-xs font-semibold py-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition">Delete</button>
       </form>
@@ -118,7 +118,7 @@
                 <button type="submit" class="text-xs text-gray-500 hover:text-gray-700">{{ 'Deactivate' if product.is_active else 'Activate' }}</button>
               </form>
               <form action="{{ url_for('admin.product_delete', product_id=product.id) }}" method="post" class="inline"
-                    onsubmit="return confirm('Delete {{ product.name }}?')">
+                    data-confirm="Delete product '{{ product.name }}'? This cannot be undone.">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <button type="submit" class="text-xs text-red-500 hover:text-red-700">Delete</button>
               </form>
