@@ -1,0 +1,86 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+
+<div class="flex flex-wrap gap-2 mb-6">
+  {% for s, label in [('pending', 'Pending'), ('approved', 'Approved'), ('rejected', 'Rejected')] %}
+  <a href="{{ url_for('admin.professionals', status=s) }}"
+     class="px-4 py-1.5 rounded-full text-sm font-medium transition
+            {{ 'bg-navy-900 text-white' if status_filter == s else 'bg-white border border-gray-300 text-gray-600 hover:bg-gray-50' }}">
+    {{ label }}{% if s == 'pending' and pending_count %} <span class="ml-1 bg-red-500 text-white text-xs rounded-full px-1.5">{{ pending_count }}</span>{% endif %}
+  </a>
+  {% endfor %}
+</div>
+
+{% if professionals %}
+<div class="bg-white rounded-xl border border-gray-200 overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-gray-50 text-xs text-gray-500 uppercase tracking-wider">
+      <tr>
+        <th class="px-5 py-3 text-left">Name / Company</th>
+        <th class="px-5 py-3 text-left hidden sm:table-cell">Address</th>
+        <th class="px-5 py-3 text-left hidden lg:table-cell">Profession</th>
+        <th class="px-5 py-3 text-left hidden md:table-cell">Phone</th>
+        <th class="px-5 py-3 text-left hidden lg:table-cell">Submitted</th>
+        <th class="px-5 py-3 text-left">Status</th>
+        <th class="px-5 py-3 text-right">Actions</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-100">
+      {% for prof in professionals %}
+      <tr class="hover:bg-gray-50">
+        <td class="px-5 py-3 font-medium text-gray-900">
+          {{ prof.name }}
+          <div class="text-xs text-gray-400 font-normal">{{ prof.user.email }}</div>
+        </td>
+        <td class="px-5 py-3 text-gray-600 hidden sm:table-cell max-w-xs">
+          <span class="line-clamp-2">{{ prof.address }}</span>
+        </td>
+        <td class="px-5 py-3 text-gray-500 hidden lg:table-cell max-w-xs">
+          <span class="line-clamp-2 text-xs">{{ prof.profession or '—' }}</span>
+        </td>
+        <td class="px-5 py-3 text-gray-600 hidden md:table-cell">{{ prof.phone }}</td>
+        <td class="px-5 py-3 text-gray-400 hidden lg:table-cell">{{ prof.created_at.strftime('%d %b %Y') }}</td>
+        <td class="px-5 py-3">
+          <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold
+            {% if prof.status == 'approved' %}bg-green-100 text-green-700
+            {% elif prof.status == 'rejected' %}bg-red-100 text-red-700
+            {% else %}bg-yellow-100 text-yellow-700{% endif %}">
+            {{ prof.status|capitalize }}
+          </span>
+        </td>
+        <td class="px-5 py-3">
+          <div class="flex items-center gap-2 justify-end flex-wrap">
+            {% if prof.status != 'approved' %}
+            <form method="POST" action="{{ url_for('admin.professional_approve', prof_id=prof.id) }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-green-50 text-green-700 hover:bg-green-100 transition">Approve</button>
+            </form>
+            {% endif %}
+            {% if prof.status != 'rejected' %}
+            <form method="POST" action="{{ url_for('admin.professional_reject', prof_id=prof.id) }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-yellow-50 text-yellow-700 hover:bg-yellow-100 transition">Reject</button>
+            </form>
+            {% endif %}
+            <form method="POST" action="{{ url_for('admin.professional_delete', prof_id=prof.id) }}"
+                  data-confirm="Delete '{{ prof.name }}'? This cannot be undone.">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="text-xs font-semibold px-3 py-1.5 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition">Delete</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="text-center py-20 text-gray-400">
+  <svg class="w-12 h-12 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z"/>
+  </svg>
+  <p class="font-medium text-gray-500">No {{ status_filter }} professionals.</p>
+</div>
+{% endif %}
+
+{% endblock %}

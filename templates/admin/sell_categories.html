@@ -30,7 +30,7 @@
       <button onclick="openEdit({{ cat.id }}, '{{ cat.name | e }}', '{{ cat.description | e }}', {{ 'true' if cat.is_active else 'false' }}, {{ cat.sort_order }})"
               class="flex-1 text-xs font-semibold py-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition">Edit</button>
       <form method="POST" action="{{ url_for('admin.sell_category_delete', cat_id=cat.id) }}"
-            onsubmit="return confirm('Delete sell category \'{{ cat.name }}\'?')" class="flex-1">
+            data-confirm="Delete sell category '{{ cat.name }}'? This cannot be undone." class="flex-1">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
         <button type="submit" class="w-full text-xs font-semibold py-2 rounded-lg bg-red-50 text-red-600 hover:bg-red-100 transition">Delete</button>
       </form>
@@ -70,7 +70,7 @@
               <button onclick="openEdit({{ cat.id }}, '{{ cat.name | e }}', '{{ cat.description | e }}', {{ 'true' if cat.is_active else 'false' }}, {{ cat.sort_order }})"
                       class="text-xs text-blue-600 hover:underline">Edit</button>
               <form method="POST" action="{{ url_for('admin.sell_category_delete', cat_id=cat.id) }}"
-                    onsubmit="return confirm('Delete sell category \'{{ cat.name }}\'?')" class="inline">
+                    data-confirm="Delete sell category '{{ cat.name }}'? This cannot be undone." class="inline">
                 <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
                 <button type="submit" class="text-xs text-red-500 hover:text-red-700">Delete</button>
               </form>

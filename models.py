@@ -266,6 +266,24 @@ class ProductLike(db.Model):
         return f'<ProductLike user={self.user_id} product={self.product_id}>'
 
 
+class Professional(db.Model):
+    __tablename__ = 'professionals'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    name = db.Column(db.String(200), nullable=False)
+    profession = db.Column(db.Text, nullable=False, default='', server_default='')
+    address = db.Column(db.Text, nullable=False)
+    phone = db.Column(db.String(20), nullable=False)
+    status = db.Column(db.String(20), default='pending')  # pending/approved/rejected
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    user = db.relationship('User', backref=db.backref('professional', uselist=False))
+
+    def __repr__(self):
+        return f'<Professional {self.name}>'
+
+
 class ActiveVisitor(db.Model):
     __tablename__ = 'active_visitors'
 
