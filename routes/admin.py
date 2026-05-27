@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 from functools import wraps
 
-from flask import Blueprint, render_template, redirect, url_for, flash, request, abort, current_app
+from flask import Blueprint, render_template, redirect, url_for, flash, request, abort, current_app, jsonify
 from flask_login import login_required, current_user
 from flask_wtf import FlaskForm
 from flask_wtf.file import FileField, FileAllowed
@@ -11,9 +11,16 @@ from wtforms.validators import DataRequired, Length, NumberRange, Optional
 from werkzeug.utils import secure_filename
 from slugify import slugify
 
-from models import db, User, Category, Product, Order, UserListing, Service, Review, SellCategory, Enquiry, ActiveVisitor, Professional
+from models import db, User, Category, Product, Order, UserListing, Service, Review, SellCategory, Enquiry, ActiveVisitor, Professional, BlogPost
 
 admin_bp = Blueprint('admin', __name__)
+
+
+@admin_bp.before_request
+def require_login():
+    if not current_user.is_authenticated:
+        from flask import redirect, url_for
+        return redirect(url_for('auth.login'))
 
 
 def admin_required(f):
@@ -707,3 +714,108 @@ def professional_delete(prof_id):
     db.session.commit()
     flash(f'"{name}" deleted.', 'success')
     return redirect(url_for('admin.professionals'))
+
+
+# ── Blog ──────────────────────────────────────────────────────────────────────
+
+@admin_bp.route('/blog')
+@login_required
+@admin_required
+def blog():
+    posts = BlogPost.query.order_by(BlogPost.created_at.desc()).all()
+    return render_template('admin/blog.html', posts=posts, title='Blog Posts')
+
+
+@admin_bp.route('/blog/new', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def blog_new():
+    errors = {}
+    form_data = {}
+    if request.method == 'POST':
+        form_data = request.form
+        title = request.form.get('title', '').strip()
+        excerpt = request.form.get('excerpt', '').strip()
+        body = request.form.get('body', '').strip()
+        cover_image_url = request.form.get('cover_image_url', '').strip()
+        is_published = request.form.get('is_published') == '1'
+        if not title:
+            errors['title'] = 'Title is required.'
+        if not excerpt:
+            errors['excerpt'] = 'Excerpt is required for SEO.'
+        if not body:
+            errors['body'] = 'Body content is required.'
+        if not errors:
+            slug = slugify(title)
+            base_slug = slug
+            counter = 1
+            while BlogPost.query.filter_by(slug=slug).first():
+                slug = f'{base_slug}-{counter}'
+                counter += 1
+            post = BlogPost(
+                title=title, slug=slug, excerpt=excerpt,
+                body=body, cover_image_url=cover_image_url,
+                is_published=is_published
+            )
+            db.session.add(post)
+            db.session.commit()
+            flash(f'"{title}" published.' if is_published else f'"{title}" saved as draft.', 'success')
+            return redirect(url_for('admin.blog'))
+    return render_template('admin/blog_form.html', errors=errors, form_data=form_data, post=None, title='New Blog Post')
+
+
+@admin_bp.route('/blog/<int:post_id>/edit', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def blog_edit(post_id):
+    post = BlogPost.query.get_or_404(post_id)
+    errors = {}
+    form_data = {}
+    if request.method == 'POST':
+        form_data = request.form
+        title = request.form.get('title', '').strip()
+        excerpt = request.form.get('excerpt', '').strip()
+        body = request.form.get('body', '').strip()
+        cover_image_url = request.form.get('cover_image_url', '').strip()
+        is_published = request.form.get('is_published') == '1'
+        if not title:
+            errors['title'] = 'Title is required.'
+        if not excerpt:
+            errors['excerpt'] = 'Excerpt is required for SEO.'
+        if not body:
+            errors['body'] = 'Body content is required.'
+        if not errors:
+            post.title = title
+            post.excerpt = excerpt
+            post.body = body
+            post.cover_image_url = cover_image_url
+            post.is_published = is_published
+            post.updated_at = datetime.utcnow()
+            db.session.commit()
+            flash(f'"{title}" updated.', 'success')
+            return redirect(url_for('admin.blog'))
+    return render_template('admin/blog_form.html', errors=errors, form_data=form_data, post=post, title='Edit Blog Post')
+
+
+@admin_bp.route('/blog/<int:post_id>/toggle', methods=['POST'])
+@login_required
+@admin_required
+def blog_toggle(post_id):
+    post = BlogPost.query.get_or_404(post_id)
+    post.is_published = not post.is_published
+    db.session.commit()
+    flash(f'"{post.title}" {"published" if post.is_published else "set to draft"}.', 'success')
+    return redirect(url_for('admin.blog'))
+
+
+@admin_bp.route('/blog/<int:post_id>/delete', methods=['POST'])
+@login_required
+@admin_required
+def blog_delete(post_id):
+    post = BlogPost.query.get_or_404(post_id)
+    title = post.title
+    db.session.delete(post)
+    db.session.commit()
+    flash(f'"{title}" deleted.', 'success')
+    return redirect(url_for('admin.blog'))
+

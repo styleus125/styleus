@@ -284,6 +284,23 @@ class Professional(db.Model):
         return f'<Professional {self.name}>'
 
 
+class BlogPost(db.Model):
+    __tablename__ = 'blog_posts'
+
+    id = db.Column(db.Integer, primary_key=True)
+    title = db.Column(db.String(300), nullable=False)
+    slug = db.Column(db.String(320), unique=True, nullable=False, index=True)
+    excerpt = db.Column(db.Text, default='')
+    body = db.Column(db.Text, default='')
+    cover_image_url = db.Column(db.String(300), default='')
+    is_published = db.Column(db.Boolean, default=False, nullable=False, server_default='false')
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def __repr__(self):
+        return f'<BlogPost {self.slug}>'
+
+
 class ActiveVisitor(db.Model):
     __tablename__ = 'active_visitors'
 

@@ -1,0 +1,137 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+
+<div class="max-w-3xl">
+  <div class="mb-6">
+    <a href="{{ url_for('admin.blog') }}" class="text-sm text-gray-500 hover:text-gray-800 transition">← Back to Blog Posts</a>
+  </div>
+
+  <form method="POST" class="space-y-6">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+    <!-- Title -->
+    <div>
+      <label class="block text-sm font-semibold text-gray-700 mb-1">Title <span class="text-red-500">*</span></label>
+      <input type="text" name="title"
+             value="{{ form_data.get('title', post.title if post else '') }}"
+             placeholder="Post title"
+             class="w-full border {{ 'border-red-400' if errors.get('title') else 'border-gray-300' }} rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+      {% if errors.get('title') %}
+        <p class="text-xs text-red-500 mt-1">{{ errors.title }}</p>
+      {% endif %}
+    </div>
+
+    <!-- Excerpt -->
+    <div>
+      <label class="block text-sm font-semibold text-gray-700 mb-1">Excerpt <span class="text-red-500">*</span> <span class="text-gray-400 font-normal">(shown on listing card &amp; used as meta description)</span></label>
+      <textarea name="excerpt" rows="2"
+                placeholder="Brief summary of the post (1–2 sentences)"
+                class="w-full border {{ 'border-red-400' if errors.get('excerpt') else 'border-gray-300' }} rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">{{ form_data.get('excerpt', post.excerpt if post else '') }}</textarea>
+      {% if errors.get('excerpt') %}
+        <p class="text-xs text-red-500 mt-1">{{ errors.excerpt }}</p>
+      {% endif %}
+    </div>
+
+    <!-- Cover image URL -->
+    <div>
+      <label class="block text-sm font-semibold text-gray-700 mb-1">Cover Image URL <span class="text-gray-400 font-normal">(paste any URL or /static/uploads/… path)</span></label>
+      <input type="text" name="cover_image_url"
+             value="{{ form_data.get('cover_image_url', post.cover_image_url if post else '') }}"
+             placeholder="https://example.com/image.jpg  or  /static/uploads/image.jpg"
+             class="w-full border border-gray-300 rounded-xl px-4 py-2.5 text-sm focus:outline-none focus:ring-2 focus:ring-indigo-400">
+    </div>
+
+    <!-- Body -->
+    <div>
+      <div class="flex items-center justify-between mb-1">
+        <label class="block text-sm font-semibold text-gray-700">Body <span class="text-red-500">*</span> <span class="text-gray-400 font-normal">(Markdown)</span></label>
+        <button type="button" id="preview-toggle"
+                class="text-xs text-indigo-600 hover:underline">Show Preview</button>
+      </div>
+      <textarea name="body" id="body-editor" rows="20"
+                placeholder="Write your post in Markdown..."
+                class="w-full border {{ 'border-red-400' if errors.get('body') else 'border-gray-300' }} rounded-xl px-4 py-3 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-indigo-400">{{ form_data.get('body', post.body if post else '') }}</textarea>
+      {% if errors.get('body') %}
+        <p class="text-xs text-red-500 mt-1">{{ errors.body }}</p>
+      {% endif %}
+      <div id="body-preview" class="hidden mt-3 p-5 bg-white border border-gray-200 rounded-xl prose max-w-none text-sm"></div>
+    </div>
+
+    <!-- Status -->
+    <div class="flex items-center gap-3">
+      <label class="relative inline-flex items-center cursor-pointer">
+        <input type="checkbox" name="is_published" value="1" id="publish-toggle"
+               {% if form_data.get('is_published') == '1' or (post and post.is_published and not form_data) %}checked{% endif %}
+               class="sr-only peer">
+        <div class="w-10 h-5 bg-gray-200 peer-focus:ring-2 peer-focus:ring-indigo-400 rounded-full peer
+                    peer-checked:after:translate-x-5 peer-checked:bg-indigo-600
+                    after:content-[''] after:absolute after:top-0.5 after:left-0.5
+                    after:bg-white after:rounded-full after:h-4 after:w-4 after:transition"></div>
+      </label>
+      <span class="text-sm font-medium text-gray-700" id="publish-label">
+        {% if form_data.get('is_published') == '1' or (post and post.is_published and not form_data) %}Published{% else %}Draft{% endif %}
+      </span>
+    </div>
+
+    <div class="flex gap-3 pt-2">
+      <button type="submit"
+              class="bg-indigo-600 hover:bg-indigo-700 text-white font-semibold px-6 py-2.5 rounded-xl transition text-sm">
+        {{ 'Save Changes' if post else 'Create Post' }}
+      </button>
+      <a href="{{ url_for('admin.blog') }}"
+         class="px-6 py-2.5 rounded-xl border border-gray-300 text-sm font-medium text-gray-700 hover:bg-gray-50 transition">
+        Cancel
+      </a>
+    </div>
+  </form>
+</div>
+
+<!-- Marked CDN for live preview -->
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script>
+(function () {
+  var editor = document.getElementById('body-editor');
+  var preview = document.getElementById('body-preview');
+  var toggleBtn = document.getElementById('preview-toggle');
+  var previewVisible = false;
+
+  toggleBtn.addEventListener('click', function () {
+    previewVisible = !previewVisible;
+    if (previewVisible) {
+      preview.innerHTML = marked.parse(editor.value || '');
+      preview.classList.remove('hidden');
+      toggleBtn.textContent = 'Hide Preview';
+    } else {
+      preview.classList.add('hidden');
+      toggleBtn.textContent = 'Show Preview';
+    }
+  });
+
+  editor.addEventListener('input', function () {
+    if (previewVisible) preview.innerHTML = marked.parse(editor.value || '');
+  });
+
+  var publishToggle = document.getElementById('publish-toggle');
+  var publishLabel  = document.getElementById('publish-label');
+  publishToggle.addEventListener('change', function () {
+    publishLabel.textContent = this.checked ? 'Published' : 'Draft';
+  });
+}());
+</script>
+
+<style>
+  #body-preview h1,#body-preview h2,#body-preview h3{font-weight:700;color:#111827;margin-top:1.25rem;margin-bottom:.4rem;}
+  #body-preview h1{font-size:1.5rem;} #body-preview h2{font-size:1.25rem;} #body-preview h3{font-size:1.1rem;}
+  #body-preview p{margin-bottom:.875rem;color:#374151;}
+  #body-preview ul,#body-preview ol{padding-left:1.5rem;margin-bottom:.875rem;color:#374151;}
+  #body-preview ul{list-style-type:disc;} #body-preview ol{list-style-type:decimal;}
+  #body-preview a{color:#4f46e5;text-decoration:underline;}
+  #body-preview blockquote{border-left:4px solid #e5e7eb;padding-left:1rem;color:#6b7280;font-style:italic;margin:1rem 0;}
+  #body-preview code{background:#f3f4f6;border-radius:.25rem;padding:.1rem .3rem;font-size:.8rem;font-family:monospace;}
+  #body-preview pre{background:#1e2160;color:#e2e8f0;padding:1rem;border-radius:.5rem;overflow-x:auto;}
+  #body-preview pre code{background:transparent;padding:0;}
+  #body-preview strong{font-weight:700;color:#111827;}
+  #body-preview hr{border-color:#e5e7eb;margin:1.5rem 0;}
+</style>
+
+{% endblock %}
