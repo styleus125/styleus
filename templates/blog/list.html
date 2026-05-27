@@ -1,0 +1,72 @@
+{% extends 'base.html' %}
+{% block head %}
+<meta name="description" content="Tips, guides, and stories from the Styleus team.">
+{% endblock %}
+{% block content %}
+<div class="max-w-5xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+
+  <div class="mb-10">
+    <h1 class="text-4xl font-bold text-gray-900">Blog</h1>
+    <p class="mt-2 text-gray-500 text-sm">Tips, guides, and stories from the Styleus team.</p>
+  </div>
+
+  {% if posts %}
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-8">
+    {% for post in posts %}
+    <a href="{{ url_for('shop.blog_post', slug=post.slug) }}"
+       class="group bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition flex flex-col">
+      {% if post.cover_image_url %}
+      <div class="aspect-video overflow-hidden bg-gray-100">
+        <img src="{{ post.cover_image_url }}" alt="{{ post.title }}"
+             class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+      </div>
+      {% else %}
+      <div class="aspect-video bg-gradient-to-br from-navy-900 to-indigo-800 flex items-center justify-center">
+        <svg class="w-12 h-12 text-white/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 12h6"/>
+        </svg>
+      </div>
+      {% endif %}
+      <div class="p-5 flex flex-col flex-1">
+        <p class="text-xs text-gray-400 mb-2">{{ post.created_at.strftime('%d %b %Y') }}</p>
+        <h2 class="text-base font-bold text-gray-900 leading-snug mb-2 group-hover:text-indigo-600 transition line-clamp-2">{{ post.title }}</h2>
+        {% if post.excerpt %}
+        <p class="text-sm text-gray-500 line-clamp-3 flex-1">{{ post.excerpt }}</p>
+        {% endif %}
+        <span class="mt-4 text-sm font-semibold text-indigo-600">Read more →</span>
+      </div>
+    </a>
+    {% endfor %}
+  </div>
+  {% else %}
+  <div class="text-center py-24 text-gray-400">
+    <svg class="w-16 h-16 mx-auto mb-4 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+            d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 12h6"/>
+    </svg>
+    <p class="text-lg font-medium text-gray-500">No posts yet.</p>
+    <p class="text-sm mt-1">Check back soon.</p>
+  </div>
+  {% endif %}
+
+  {% if pagination and (pagination.has_prev or pagination.has_next) %}
+  <div class="flex items-center justify-center gap-3 mt-12">
+    {% if pagination.has_prev %}
+    <a href="{{ url_for('shop.blog', page=pagination.prev_num) }}"
+       class="px-5 py-2 rounded-xl border border-gray-300 text-sm font-medium text-gray-700 hover:bg-white hover:border-indigo-400 transition">
+      ← Previous
+    </a>
+    {% endif %}
+    <span class="text-sm text-gray-400">Page {{ pagination.page }} of {{ pagination.pages }}</span>
+    {% if pagination.has_next %}
+    <a href="{{ url_for('shop.blog', page=pagination.next_num) }}"
+       class="px-5 py-2 rounded-xl border border-gray-300 text-sm font-medium text-gray-700 hover:bg-white hover:border-indigo-400 transition">
+      Next →
+    </a>
+    {% endif %}
+  </div>
+  {% endif %}
+
+</div>
+{% endblock %}

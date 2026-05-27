@@ -2,9 +2,9 @@ import os
 import uuid
 import click
 from datetime import datetime, timedelta
-from flask import Flask, session, request as flask_request
-from flask_login import LoginManager
-from flask_wtf.csrf import CSRFProtect
+from flask import Flask, session, request as flask_request, redirect, url_for
+from flask_login import LoginManager, current_user
+from flask_wtf.csrf import CSRFProtect, CSRFError
 
 from config import Config
 from models import db, User, Category, Product
@@ -37,6 +37,7 @@ def create_app(config_class=Config):
     from routes.orders import orders_bp
     from routes.admin import admin_bp
     from routes.sell import sell_bp
+    from routes.api import api_bp
 
     app.register_blueprint(auth_bp, url_prefix='/auth')
     app.register_blueprint(shop_bp, url_prefix='/')
@@ -45,6 +46,8 @@ def create_app(config_class=Config):
     app.register_blueprint(orders_bp, url_prefix='/orders')
     app.register_blueprint(admin_bp, url_prefix='/admin')
     app.register_blueprint(sell_bp, url_prefix='/')
+    app.register_blueprint(api_bp, url_prefix='/api')
+    csrf.exempt(api_bp)
 
     # Jinja filter: mask middle digits of a phone number (e.g. 98680###89)
     def _mask_phone(phone):
@@ -62,6 +65,19 @@ def create_app(config_class=Config):
     def inject_globals():
         from datetime import datetime
         return {'now': datetime.utcnow()}
+
+    @app.context_processor
+    def inject_random_blog_posts():
+        from models import BlogPost
+        from sqlalchemy import func
+        try:
+            posts = (BlogPost.query
+                     .filter_by(is_published=True)
+                     .order_by(func.random())
+                     .limit(4).all())
+        except Exception:
+            posts = []
+        return {'random_blog_posts': posts}
 
     @app.context_processor
     def inject_liked_ids():
@@ -236,6 +252,14 @@ def create_app(config_class=Config):
         db.session.commit()
         click.echo(f'Seeded {len(products_data)} products across 5 categories.')
         click.echo('Done!')
+
+    @app.errorhandler(CSRFError)
+    def handle_csrf_error(e):
+        if not current_user.is_authenticated:
+            return redirect(url_for('auth.login'))
+        from flask import flash
+        flash('Security token expired. Please try again.', 'warning')
+        return redirect(flask_request.referrer or url_for('shop.index'))
 
     @app.errorhandler(413)
     def request_too_large(e):

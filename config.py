@@ -35,3 +35,6 @@ class Config:
     # Pagination
     PRODUCTS_PER_PAGE = 20
     ADMIN_ITEMS_PER_PAGE = 25
+
+    # Blog draft API
+    BLOG_API_TOKEN = os.environ.get('BLOG_API_TOKEN', '')

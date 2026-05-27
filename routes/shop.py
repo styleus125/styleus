@@ -4,7 +4,7 @@ from datetime import date
 from flask import Blueprint, render_template, request, jsonify, flash, redirect, url_for, Response
 from flask_login import current_user, login_required
 from sqlalchemy import func
-from models import db, Product, Category, ProductLike, UserListing, Service, Review, Enquiry, Professional
+from models import db, Product, Category, ProductLike, UserListing, Service, Review, Enquiry, Professional, BlogPost
 from telegram import send_telegram
 
 shop_bp = Blueprint('shop', __name__)
@@ -195,18 +195,24 @@ def sitemap():
     static_urls = [
         ('/', 'daily', '1.0'),
         ('/products', 'daily', '0.9'),
+        ('/blog', 'daily', '0.9'),
         ('/services', 'weekly', '0.8'),
         ('/webhosting', 'weekly', '0.8'),
         ('/software-development', 'weekly', '0.8'),
+        ('/professionals', 'weekly', '0.7'),
         ('/sell/listings', 'daily', '0.7'),
         ('/sell', 'weekly', '0.6'),
+        ('/about', 'monthly', '0.6'),
+        ('/privacy', 'monthly', '0.5'),
         ('/enquiry', 'monthly', '0.6'),
+        ('/search', 'monthly', '0.5'),
         ('/auth/login', 'monthly', '0.3'),
         ('/auth/register', 'monthly', '0.3'),
     ]
 
-    products = Product.query.filter_by(is_active=True).all()
+    products   = Product.query.filter_by(is_active=True).all()
     categories = Category.query.all()
+    blog_posts = BlogPost.query.filter_by(is_published=True).order_by(BlogPost.created_at.desc()).all()
 
     urls = []
     for path, freq, priority in static_urls:
@@ -231,6 +237,15 @@ def sitemap():
     <lastmod>{today}</lastmod>
     <changefreq>daily</changefreq>
     <priority>0.7</priority>
+  </url>""")
+
+    for post in blog_posts:
+        post_date = post.created_at.date().isoformat() if post.created_at else today
+        urls.append(f"""  <url>
+    <loc>{base}/blog/{post.slug}</loc>
+    <lastmod>{post_date}</lastmod>
+    <changefreq>monthly</changefreq>
+    <priority>0.8</priority>
   </url>""")
 
     xml = '<?xml version="1.0" encoding="UTF-8"?>\n'
@@ -298,6 +313,24 @@ def enquiry():
             return redirect(url_for('shop.enquiry'))
 
     return render_template('enquiry.html', errors=errors, form_data=form_data, title='Tech Enquiries')
+
+
+@shop_bp.route('/blog')
+def blog():
+    page = request.args.get('page', 1, type=int)
+    pagination = (BlogPost.query
+                  .filter_by(is_published=True)
+                  .order_by(BlogPost.created_at.desc())
+                  .paginate(page=page, per_page=9, error_out=False))
+    return render_template('blog/list.html', posts=pagination.items, pagination=pagination, title='Blog')
+
+
+@shop_bp.route('/blog/<slug>')
+def blog_post(slug):
+    import mistune
+    post = BlogPost.query.filter_by(slug=slug, is_published=True).first_or_404()
+    body_html = mistune.html(post.body)
+    return render_template('blog/post.html', post=post, body_html=body_html, title=post.title)
 
 
 @shop_bp.route('/about')
