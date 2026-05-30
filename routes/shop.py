@@ -396,6 +396,16 @@ def professional_register():
     return render_template('professional_register.html', errors=errors, existing=existing, title='Register as Professional')
 
 
+def _multi_search(fields, q):
+    """Match full phrase OR every individual word across the given fields."""
+    phrase = db.or_(*[f.ilike(f'%{q}%') for f in fields])
+    words = [w for w in q.split() if len(w) >= 2]
+    if len(words) < 2:
+        return phrase
+    word_clauses = [db.or_(*[f.ilike(f'%{w}%') for f in fields]) for w in words]
+    return db.or_(phrase, db.and_(*word_clauses))
+
+
 @shop_bp.route('/search')
 def search():
     q = request.args.get('q', '').strip()
@@ -406,20 +416,20 @@ def search():
     if q:
         shop_results = Product.query.filter(
             Product.is_active.is_(True),
-            Product.name.ilike(f'%{q}%')
+            _multi_search([Product.name, Product.description], q)
         ).order_by(Product.created_at.desc()).limit(40).all()
         used_results = UserListing.query.filter(
             UserListing.status == 'approved',
             UserListing.is_active.is_(True),
-            UserListing.title.ilike(f'%{q}%')
+            _multi_search([UserListing.title, UserListing.description], q)
         ).order_by(UserListing.created_at.desc()).limit(40).all()
         service_results = Service.query.filter(
             Service.is_active.is_(True),
-            Service.name.ilike(f'%{q}%')
+            _multi_search([Service.name, Service.description], q)
         ).order_by(Service.sort_order, Service.name).all()
         professional_results = Professional.query.filter(
             Professional.status == 'approved',
-            Professional.name.ilike(f'%{q}%')
+            _multi_search([Professional.name, Professional.profession, Professional.address], q)
         ).order_by(Professional.created_at.desc()).limit(20).all()
     return render_template('shop/search_results.html',
                            q=q,
