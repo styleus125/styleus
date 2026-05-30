@@ -36,7 +36,7 @@
       </div>
     </div>
     <div class="flex items-center justify-between text-xs text-gray-400 mb-3">
-      <span>{{ user.phone | mask_phone }}</span>
+      <span>{{ user.phone }}</span>
       <span>Joined {{ user.created_at.strftime('%b %d, %Y') }}</span>
     </div>
     {% if user.id != current_user.id %}
@@ -47,10 +47,6 @@
         <button type="submit" class="w-full text-xs font-semibold py-2 rounded-lg bg-green-50 text-green-700 hover:bg-green-100 transition">Approve</button>
       </form>
       {% endif %}
-      <form action="{{ url_for('admin.user_toggle_admin', user_id=user.id) }}" method="post" class="flex-1">
-        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <button type="submit" class="w-full text-xs font-semibold py-2 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-100 transition">{{ 'Revoke Admin' if user.is_admin else 'Grant Admin' }}</button>
-      </form>
     </div>
     {% else %}
     <p class="text-xs text-gray-400 text-center">This is you</p>
@@ -86,7 +82,7 @@
             </div>
           </td>
           <td class="px-5 py-3 text-sm text-gray-600">{{ user.email }}</td>
-          <td class="px-5 py-3 text-sm text-gray-600">{{ user.phone | mask_phone }}</td>
+          <td class="px-5 py-3 text-sm text-gray-600">{{ user.phone }}</td>
           <td class="px-5 py-3"><span class="text-xs font-semibold px-2 py-1 rounded-full {% if user.is_admin %}bg-blue-100 text-blue-700{% else %}bg-gray-100 text-gray-600{% endif %}">{{ 'Admin' if user.is_admin else 'Customer' }}</span></td>
           <td class="px-5 py-3"><span class="text-xs font-semibold px-2 py-1 rounded-full {% if user.is_approved %}bg-green-100 text-green-700{% else %}bg-yellow-100 text-yellow-700{% endif %}">{{ 'Approved' if user.is_approved else 'Pending' }}</span></td>
           <td class="px-5 py-3 text-sm text-gray-500">{{ user.created_at.strftime('%b %d, %Y') }}</td>
@@ -99,10 +95,6 @@
                 <button type="submit" class="text-xs text-green-600 font-semibold hover:underline">Approve</button>
               </form>
               {% endif %}
-              <form action="{{ url_for('admin.user_toggle_admin', user_id=user.id) }}" method="post" class="inline">
-                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-                <button type="submit" class="text-xs text-blue-600 hover:underline">{{ 'Revoke Admin' if user.is_admin else 'Grant Admin' }}</button>
-              </form>
             </div>
             {% else %}<span class="text-xs text-gray-400">You</span>{% endif %}
           </td>

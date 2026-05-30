@@ -378,9 +378,18 @@ def professional_register():
                 existing.phone = phone
                 existing.profession = profession
                 existing.status = 'pending'
+                action = 'updated'
             else:
                 db.session.add(Professional(user_id=current_user.id, name=name, address=address, phone=phone, profession=profession))
+                action = 'registered'
             db.session.commit()
+            send_telegram(
+                f"👷 <b>Professional {action.title()}</b>\n"
+                f"Name: {name}\n"
+                f"Phone: +91{phone}\n"
+                f"Address: {address[:100]}\n"
+                f"Profession: {profession[:200]}"
+            )
             flash('Your professional details have been submitted for approval.', 'success')
             return redirect(url_for('shop.professionals'))
         return render_template('professional_register.html', errors=errors, existing=existing, title='Register as Professional')

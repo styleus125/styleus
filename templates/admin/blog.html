@@ -34,7 +34,10 @@
         <td class="px-5 py-3 text-gray-500 hidden sm:table-cell max-w-xs">
           <span class="line-clamp-2 text-xs">{{ post.excerpt or '—' }}</span>
         </td>
-        <td class="px-5 py-3 text-gray-400 hidden md:table-cell whitespace-nowrap">{{ post.created_at.strftime('%d %b %Y') }}</td>
+        <td class="px-5 py-3 text-gray-400 hidden md:table-cell whitespace-nowrap">
+          <div>{{ post.created_at.strftime('%d %b %Y') }}</div>
+          <div class="text-xs text-gray-300">{{ post.created_at.strftime('%H:%M') }}</div>
+        </td>
         <td class="px-5 py-3">
           <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-semibold
             {% if post.is_published %}bg-green-100 text-green-700{% else %}bg-yellow-100 text-yellow-700{% endif %}">
