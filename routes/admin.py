@@ -11,7 +11,7 @@ from wtforms.validators import DataRequired, Length, NumberRange, Optional
 from werkzeug.utils import secure_filename
 from slugify import slugify
 
-from models import db, User, Category, Product, Order, UserListing, Service, Review, SellCategory, Enquiry, ActiveVisitor, Professional, BlogPost
+from models import db, User, Category, Product, Order, UserListing, Service, Review, SellCategory, Enquiry, ActiveVisitor, Professional, BlogPost, PasswordResetRequest
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -350,6 +350,21 @@ def user_toggle_admin(user_id):
         user.is_admin = not user.is_admin
         db.session.commit()
         status = 'granted admin' if user.is_admin else 'revoked admin'
+        flash(f'User {user.email} {status}.', 'info')
+    return redirect(url_for('admin.users'))
+
+
+@admin_bp.route('/users/<int:user_id>/toggle-active', methods=['POST'])
+@login_required
+@admin_required
+def user_toggle_active(user_id):
+    user = User.query.get_or_404(user_id)
+    if user.id == current_user.id:
+        flash('You cannot deactivate your own account.', 'warning')
+    else:
+        user.is_active = not user.is_active
+        db.session.commit()
+        status = 'activated' if user.is_active else 'deactivated'
         flash(f'User {user.email} {status}.', 'info')
     return redirect(url_for('admin.users'))
 
@@ -818,4 +833,44 @@ def blog_delete(post_id):
     db.session.commit()
     flash(f'"{title}" deleted.', 'success')
     return redirect(url_for('admin.blog'))
+
+
+@admin_bp.route('/password-resets')
+@login_required
+@admin_required
+def password_resets():
+    requests = (PasswordResetRequest.query
+                .order_by(PasswordResetRequest.created_at.desc()).all())
+    return render_template('admin/password_resets.html', requests=requests, title='Password Resets')
+
+
+@admin_bp.route('/password-resets/<int:req_id>/approve', methods=['POST'])
+@login_required
+@admin_required
+def password_reset_approve(req_id):
+    pr = PasswordResetRequest.query.get_or_404(req_id)
+    if pr.status != 'pending':
+        flash('This request has already been reviewed.', 'warning')
+        return redirect(url_for('admin.password_resets'))
+    pr.user.password_hash = pr.new_password_hash
+    pr.status = 'approved'
+    pr.reviewed_at = datetime.utcnow()
+    db.session.commit()
+    flash(f'Password reset approved for {pr.user.email}.', 'success')
+    return redirect(url_for('admin.password_resets'))
+
+
+@admin_bp.route('/password-resets/<int:req_id>/deny', methods=['POST'])
+@login_required
+@admin_required
+def password_reset_deny(req_id):
+    pr = PasswordResetRequest.query.get_or_404(req_id)
+    if pr.status != 'pending':
+        flash('This request has already been reviewed.', 'warning')
+        return redirect(url_for('admin.password_resets'))
+    pr.status = 'denied'
+    pr.reviewed_at = datetime.utcnow()
+    db.session.commit()
+    flash(f'Password reset denied for {pr.user.email}.', 'info')
+    return redirect(url_for('admin.password_resets'))
 

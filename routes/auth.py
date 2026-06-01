@@ -4,10 +4,25 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, BooleanField, SubmitField
 from wtforms.validators import DataRequired, Email, Length, EqualTo, ValidationError, Regexp, Optional
 
-from models import db, User
+from models import db, User, PasswordResetRequest
 from telegram import send_telegram
 
 auth_bp = Blueprint('auth', __name__)
+
+
+def _normalize_phone(phone):
+    """Return phone in +91XXXXXXXXXX format (last 10 digits with +91 prefix)."""
+    import re
+    digits = re.sub(r'\D', '', phone)
+    ten = digits[-10:] if len(digits) >= 10 else digits
+    return f'+91{ten}' if len(ten) == 10 else ten
+
+
+def _phone_digits(phone):
+    """Extract just the last 10 digits for comparison."""
+    import re
+    digits = re.sub(r'\D', '', phone)
+    return digits[-10:] if len(digits) >= 10 else digits
 
 
 class LoginForm(FlaskForm):
@@ -43,6 +58,9 @@ def login():
     if form.validate_on_submit():
         user = User.query.filter_by(email=form.email.data.lower()).first()
         if user and user.check_password(form.password.data):
+            if not user.is_active:
+                flash('Your account has been deactivated. Please contact support.', 'danger')
+                return redirect(url_for('auth.login'))
             if not user.is_approved:
                 flash('Your account is pending admin approval. You will be able to log in once approved.', 'warning')
                 return redirect(url_for('auth.login'))
@@ -61,7 +79,7 @@ def register():
         return redirect(url_for('shop.index'))
     form = RegisterForm()
     if form.validate_on_submit():
-        user = User(name=form.name.data, email=form.email.data.lower(), phone=form.phone.data.strip(),
+        user = User(name=form.name.data, email=form.email.data.lower(), phone=_normalize_phone(form.phone.data),
                     social_handle=form.social_handle.data.strip() if form.social_handle.data else '',
                     is_approved=False)
         user.set_password(form.password.data)
@@ -77,6 +95,63 @@ def register():
         flash('Account created! Your account is pending admin approval. You will be notified once approved.', 'success')
         return redirect(url_for('auth.login'))
     return render_template('auth/register.html', form=form, title='Create Account')
+
+
+@auth_bp.route('/forgot-password', methods=['GET', 'POST'])
+def forgot_password():
+    if current_user.is_authenticated:
+        return redirect(url_for('shop.index'))
+    errors = {}
+    form_data = {}
+    if request.method == 'POST':
+        email = request.form.get('email', '').strip().lower()
+        raw_phone = request.form.get('phone', '').strip()
+        phone = _normalize_phone(raw_phone)
+        new_password = request.form.get('new_password', '')
+        confirm_password = request.form.get('confirm_password', '')
+        form_data = {'email': email, 'phone': raw_phone}
+
+        user = User.query.filter_by(email=email).first()
+        if not email:
+            errors['email'] = 'Email is required.'
+        elif not user:
+            errors['email'] = 'No account found with this email.'
+
+        if not phone:
+            errors['phone'] = 'Phone number is required.'
+        elif user and _phone_digits(user.phone) != _phone_digits(request.form.get('phone', '')):
+            errors['phone'] = 'Phone number does not match our records.'
+
+        if not new_password:
+            errors['new_password'] = 'New password is required.'
+        elif len(new_password) < 6:
+            errors['new_password'] = 'Password must be at least 6 characters.'
+
+        if not confirm_password:
+            errors['confirm_password'] = 'Please confirm your new password.'
+        elif new_password and new_password != confirm_password:
+            errors['confirm_password'] = 'Passwords do not match.'
+
+        if not errors:
+            from werkzeug.security import generate_password_hash
+            req = PasswordResetRequest(
+                user_id=user.id,
+                new_password_hash=generate_password_hash(new_password),
+                status='pending'
+            )
+            db.session.add(req)
+            db.session.commit()
+            send_telegram(
+                f"🔑 <b>Password Reset Request</b>\n"
+                f"Name: {user.name}\n"
+                f"Email: {user.email}\n"
+                f"Phone: {user.phone}\n"
+                f"⏳ Awaiting admin approval at /admin/password-resets"
+            )
+            flash('Your password reset request has been submitted. Your current password remains active until an admin approves the change.', 'success')
+            return redirect(url_for('auth.login'))
+
+    return render_template('auth/forgot_password.html', errors=errors, form_data=form_data, title='Forgot Password')
 
 
 @auth_bp.route('/logout')

@@ -47,6 +47,15 @@
         <button type="submit" class="w-full text-xs font-semibold py-2 rounded-lg bg-green-50 text-green-700 hover:bg-green-100 transition">Approve</button>
       </form>
       {% endif %}
+      {% if user.id != current_user.id %}
+      <form action="{{ url_for('admin.user_toggle_active', user_id=user.id) }}" method="post" class="flex-1">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <button type="submit" class="w-full text-xs font-semibold py-2 rounded-lg transition
+          {% if user.is_active %}bg-red-50 text-red-600 hover:bg-red-100{% else %}bg-green-50 text-green-700 hover:bg-green-100{% endif %}">
+          {{ 'Deactivate' if user.is_active else 'Activate' }}
+        </button>
+      </form>
+      {% endif %}
     </div>
     {% else %}
     <p class="text-xs text-gray-400 text-center">This is you</p>
@@ -84,7 +93,10 @@
           <td class="px-5 py-3 text-sm text-gray-600">{{ user.email }}</td>
           <td class="px-5 py-3 text-sm text-gray-600">{{ user.phone }}</td>
           <td class="px-5 py-3"><span class="text-xs font-semibold px-2 py-1 rounded-full {% if user.is_admin %}bg-blue-100 text-blue-700{% else %}bg-gray-100 text-gray-600{% endif %}">{{ 'Admin' if user.is_admin else 'Customer' }}</span></td>
-          <td class="px-5 py-3"><span class="text-xs font-semibold px-2 py-1 rounded-full {% if user.is_approved %}bg-green-100 text-green-700{% else %}bg-yellow-100 text-yellow-700{% endif %}">{{ 'Approved' if user.is_approved else 'Pending' }}</span></td>
+          <td class="px-5 py-3 space-y-1">
+            <span class="inline-flex text-xs font-semibold px-2 py-0.5 rounded-full {% if user.is_approved %}bg-green-100 text-green-700{% else %}bg-yellow-100 text-yellow-700{% endif %}">{{ 'Approved' if user.is_approved else 'Pending' }}</span>
+            {% if not user.is_active %}<span class="inline-flex text-xs font-semibold px-2 py-0.5 rounded-full bg-red-100 text-red-600">Deactivated</span>{% endif %}
+          </td>
           <td class="px-5 py-3 text-sm text-gray-500">{{ user.created_at.strftime('%b %d, %Y') }}</td>
           <td class="px-5 py-3">
             {% if user.id != current_user.id %}
@@ -95,6 +107,12 @@
                 <button type="submit" class="text-xs text-green-600 font-semibold hover:underline">Approve</button>
               </form>
               {% endif %}
+              <form action="{{ url_for('admin.user_toggle_active', user_id=user.id) }}" method="post" class="inline">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="text-xs font-semibold hover:underline {% if user.is_active %}text-red-500{% else %}text-green-600{% endif %}">
+                  {{ 'Deactivate' if user.is_active else 'Activate' }}
+                </button>
+              </form>
             </div>
             {% else %}<span class="text-xs text-gray-400">You</span>{% endif %}
           </td>

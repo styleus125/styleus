@@ -16,6 +16,7 @@ class User(UserMixin, db.Model):
     password_hash = db.Column(db.String(256), nullable=False)
     is_admin = db.Column(db.Boolean, default=False, nullable=False)
     is_approved = db.Column(db.Boolean, default=False, nullable=False, server_default='false')
+    is_active = db.Column(db.Boolean, default=True, nullable=False, server_default='true')
     social_handle = db.Column(db.String(200), nullable=False, default='', server_default='')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
@@ -299,6 +300,22 @@ class BlogPost(db.Model):
 
     def __repr__(self):
         return f'<BlogPost {self.slug}>'
+
+
+class PasswordResetRequest(db.Model):
+    __tablename__ = 'password_reset_requests'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    new_password_hash = db.Column(db.String(256), nullable=False)
+    status = db.Column(db.String(20), default='pending', nullable=False)  # pending / approved / denied
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    reviewed_at = db.Column(db.DateTime, nullable=True)
+
+    user = db.relationship('User', backref=db.backref('password_reset_requests', lazy='dynamic'))
+
+    def __repr__(self):
+        return f'<PasswordResetRequest user_id={self.user_id} status={self.status}>'
 
 
 class ActiveVisitor(db.Model):
