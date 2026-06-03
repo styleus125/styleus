@@ -1,10 +1,11 @@
 import re
+import random
 from datetime import date
 
-from flask import Blueprint, render_template, request, jsonify, flash, redirect, url_for, Response
+from flask import Blueprint, render_template, request, jsonify, flash, redirect, url_for, Response, session
 from flask_login import current_user, login_required
 from sqlalchemy import func
-from models import db, Product, Category, ProductLike, UserListing, Service, Review, Enquiry, Professional, BlogPost
+from models import db, Product, Category, ProductLike, UserListing, Service, Review, Enquiry, Professional, BlogPost, CustomerReview
 from telegram import send_telegram
 
 shop_bp = Blueprint('shop', __name__)
@@ -185,6 +186,69 @@ def webhosting():
 @shop_bp.route('/software-development')
 def software_development():
     return render_template('software_development.html', title='Software Development')
+
+
+@shop_bp.route('/review', methods=['GET', 'POST'])
+def review_form():
+    errors = {}
+    form_data = {}
+    submitted = False
+
+    if request.method == 'GET':
+        a, b = random.randint(1, 9), random.randint(1, 9)
+        session['captcha_answer'] = a + b
+        session['captcha_q'] = f'{a} + {b}'
+
+    if request.method == 'POST':
+        name = request.form.get('name', '').strip()
+        email = request.form.get('email', '').strip()
+        phone = request.form.get('phone', '').strip()
+        stars = request.form.get('stars', type=int)
+        comment = request.form.get('comment', '').strip()
+        captcha_input = request.form.get('captcha', '').strip()
+
+        form_data = {'name': name, 'email': email, 'phone': phone, 'stars': stars, 'comment': comment}
+
+        if not name:
+            errors['name'] = 'Name is required.'
+        if not email:
+            errors['email'] = 'Email is required.'
+        elif not _EMAIL_RE.match(email):
+            errors['email'] = 'Enter a valid email address.'
+        if not stars or not (1 <= stars <= 5):
+            errors['stars'] = 'Please select a star rating.'
+        if not comment or len(comment) < 10:
+            errors['comment'] = f'Comment must be at least 10 characters (currently {len(comment)}).'
+
+        try:
+            captcha_val = int(captcha_input)
+        except (ValueError, TypeError):
+            captcha_val = None
+        if captcha_val != session.get('captcha_answer'):
+            errors['captcha'] = 'Incorrect answer — please try again.'
+
+        if not errors:
+            db.session.add(CustomerReview(
+                name=name, email=email,
+                phone=phone if phone else None,
+                stars=stars, comment=comment
+            ))
+            db.session.commit()
+            session.pop('captcha_answer', None)
+            session.pop('captcha_q', None)
+            submitted = True
+        else:
+            a, b = random.randint(1, 9), random.randint(1, 9)
+            session['captcha_answer'] = a + b
+            session['captcha_q'] = f'{a} + {b}'
+
+    captcha_q = session.get('captcha_q', '? + ?')
+    return render_template('review_form.html',
+                           errors=errors,
+                           form_data=form_data,
+                           submitted=submitted,
+                           captcha_q=captcha_q,
+                           title='Leave a Review')
 
 
 @shop_bp.route('/sitemap.xml')

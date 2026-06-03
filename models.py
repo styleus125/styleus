@@ -253,6 +253,21 @@ class Review(db.Model):
         return f'<Review product={self.product_id} user={self.user_id} rating={self.rating}>'
 
 
+class CustomerReview(db.Model):
+    __tablename__ = 'customer_reviews'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(120), nullable=False)
+    email = db.Column(db.String(200), nullable=False)
+    phone = db.Column(db.String(20), nullable=True)
+    stars = db.Column(db.Integer, nullable=False)  # 1-5
+    comment = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def __repr__(self):
+        return f'<CustomerReview {self.name} {self.stars}★>'
+
+
 class ProductLike(db.Model):
     __tablename__ = 'product_likes'
 

@@ -11,7 +11,7 @@ from wtforms.validators import DataRequired, Length, NumberRange, Optional
 from werkzeug.utils import secure_filename
 from slugify import slugify
 
-from models import db, User, Category, Product, Order, UserListing, Service, Review, SellCategory, Enquiry, ActiveVisitor, Professional, BlogPost, PasswordResetRequest
+from models import db, User, Category, Product, Order, UserListing, Service, Review, SellCategory, Enquiry, ActiveVisitor, Professional, BlogPost, PasswordResetRequest, CustomerReview
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -833,6 +833,32 @@ def blog_delete(post_id):
     db.session.commit()
     flash(f'"{title}" deleted.', 'success')
     return redirect(url_for('admin.blog'))
+
+
+@admin_bp.route('/customer-reviews')
+@login_required
+@admin_required
+def customer_reviews():
+    page = request.args.get('page', 1, type=int)
+    pagination = CustomerReview.query.order_by(CustomerReview.created_at.desc()).paginate(
+        page=page, per_page=current_app.config['ADMIN_ITEMS_PER_PAGE'], error_out=False)
+    review_url = url_for('shop.review_form', _external=True)
+    return render_template('admin/customer_reviews.html',
+                           reviews=pagination.items,
+                           pagination=pagination,
+                           review_url=review_url,
+                           title='Customer Reviews')
+
+
+@admin_bp.route('/customer-reviews/<int:review_id>/delete', methods=['POST'])
+@login_required
+@admin_required
+def customer_review_delete(review_id):
+    review = CustomerReview.query.get_or_404(review_id)
+    db.session.delete(review)
+    db.session.commit()
+    flash('Review deleted.', 'success')
+    return redirect(url_for('admin.customer_reviews'))
 
 
 @admin_bp.route('/password-resets')
