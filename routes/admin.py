@@ -11,7 +11,7 @@ from wtforms.validators import DataRequired, Length, NumberRange, Optional
 from werkzeug.utils import secure_filename
 from slugify import slugify
 
-from models import db, User, Category, Product, Order, UserListing, Service, Review, SellCategory, Enquiry, ActiveVisitor, Professional, BlogPost, PasswordResetRequest, CustomerReview
+from models import db, User, Category, Product, Order, UserListing, Service, Review, SellCategory, Enquiry, ActiveVisitor, Professional, BlogPost, PasswordResetRequest, CustomerReview, AppListing
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -899,4 +899,143 @@ def password_reset_deny(req_id):
     db.session.commit()
     flash(f'Password reset denied for {pr.user.email}.', 'info')
     return redirect(url_for('admin.password_resets'))
+
+
+# ── App Marketplace ───────────────────────────────────────────────────────────
+
+@admin_bp.route('/apps')
+@login_required
+@admin_required
+def apps():
+    items = AppListing.query.order_by(AppListing.sort_order, AppListing.created_at).all()
+    return render_template('admin/apps.html', apps=items, title='App Marketplace')
+
+
+@admin_bp.route('/apps/new', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def app_new():
+    errors = {}
+    form_data = {}
+    if request.method == 'POST':
+        form_data = request.form
+        name         = request.form.get('name', '').strip()
+        description  = request.form.get('description', '').strip()
+        category     = request.form.get('category', '').strip()
+        pricing_type = request.form.get('pricing_type', '').strip()
+        price_display= request.form.get('price_display', '').strip()
+        color        = request.form.get('color', 'blue').strip()
+        icon_name    = request.form.get('icon_name', 'default').strip()
+        is_featured  = bool(request.form.get('is_featured'))
+        is_active    = bool(request.form.get('is_active'))
+        whatsapp_msg = request.form.get('whatsapp_message', '').strip()
+        sort_order   = int(request.form.get('sort_order', 0) or 0)
+
+        if not name:        errors['name'] = 'Name is required.'
+        if not description: errors['description'] = 'Description is required.'
+        if not category:    errors['category'] = 'Category is required.'
+        if pricing_type not in ('free', 'one-time', 'subscription'):
+            errors['pricing_type'] = 'Select a valid pricing type.'
+        if not price_display: errors['price_display'] = 'Price display is required.'
+
+        if not errors:
+            if is_featured:
+                AppListing.query.filter_by(is_featured=True).update({'is_featured': False})
+            db.session.add(AppListing(
+                name=name, description=description, category=category,
+                pricing_type=pricing_type, price_display=price_display,
+                color=color, icon_name=icon_name, is_featured=is_featured,
+                is_active=is_active, whatsapp_message=whatsapp_msg, sort_order=sort_order
+            ))
+            db.session.commit()
+            flash(f'App "{name}" created.', 'success')
+            return redirect(url_for('admin.apps'))
+
+    return render_template('admin/app_form.html', app=None, errors=errors,
+                           form_data=form_data, title='New App Listing')
+
+
+@admin_bp.route('/apps/<int:app_id>/edit', methods=['GET', 'POST'])
+@login_required
+@admin_required
+def app_edit(app_id):
+    app_obj = AppListing.query.get_or_404(app_id)
+    errors = {}
+    form_data = {}
+    if request.method == 'POST':
+        form_data = request.form
+        name         = request.form.get('name', '').strip()
+        description  = request.form.get('description', '').strip()
+        category     = request.form.get('category', '').strip()
+        pricing_type = request.form.get('pricing_type', '').strip()
+        price_display= request.form.get('price_display', '').strip()
+        color        = request.form.get('color', 'blue').strip()
+        icon_name    = request.form.get('icon_name', 'default').strip()
+        is_featured  = bool(request.form.get('is_featured'))
+        is_active    = bool(request.form.get('is_active'))
+        whatsapp_msg = request.form.get('whatsapp_message', '').strip()
+        sort_order   = int(request.form.get('sort_order', 0) or 0)
+
+        if not name:        errors['name'] = 'Name is required.'
+        if not description: errors['description'] = 'Description is required.'
+        if not category:    errors['category'] = 'Category is required.'
+        if pricing_type not in ('free', 'one-time', 'subscription'):
+            errors['pricing_type'] = 'Select a valid pricing type.'
+        if not price_display: errors['price_display'] = 'Price display is required.'
+
+        if not errors:
+            if is_featured and not app_obj.is_featured:
+                AppListing.query.filter_by(is_featured=True).update({'is_featured': False})
+            app_obj.name          = name
+            app_obj.description   = description
+            app_obj.category      = category
+            app_obj.pricing_type  = pricing_type
+            app_obj.price_display = price_display
+            app_obj.color         = color
+            app_obj.icon_name     = icon_name
+            app_obj.is_featured   = is_featured
+            app_obj.is_active     = is_active
+            app_obj.whatsapp_message = whatsapp_msg
+            app_obj.sort_order    = sort_order
+            db.session.commit()
+            flash(f'App "{name}" updated.', 'success')
+            return redirect(url_for('admin.apps'))
+
+    return render_template('admin/app_form.html', app=app_obj, errors=errors,
+                           form_data=form_data, title=f'Edit — {app_obj.name}')
+
+
+@admin_bp.route('/apps/<int:app_id>/delete', methods=['POST'])
+@login_required
+@admin_required
+def app_delete(app_id):
+    app_obj = AppListing.query.get_or_404(app_id)
+    name = app_obj.name
+    db.session.delete(app_obj)
+    db.session.commit()
+    flash(f'App "{name}" deleted.', 'success')
+    return redirect(url_for('admin.apps'))
+
+
+@admin_bp.route('/apps/<int:app_id>/toggle', methods=['POST'])
+@login_required
+@admin_required
+def app_toggle(app_id):
+    app_obj = AppListing.query.get_or_404(app_id)
+    app_obj.is_active = not app_obj.is_active
+    db.session.commit()
+    flash(f'"{app_obj.name}" {"activated" if app_obj.is_active else "deactivated"}.', 'info')
+    return redirect(url_for('admin.apps'))
+
+
+@admin_bp.route('/apps/<int:app_id>/feature', methods=['POST'])
+@login_required
+@admin_required
+def app_feature(app_id):
+    app_obj = AppListing.query.get_or_404(app_id)
+    AppListing.query.filter_by(is_featured=True).update({'is_featured': False})
+    app_obj.is_featured = True
+    db.session.commit()
+    flash(f'"{app_obj.name}" set as featured.', 'success')
+    return redirect(url_for('admin.apps'))
 

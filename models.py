@@ -333,6 +333,44 @@ class PasswordResetRequest(db.Model):
         return f'<PasswordResetRequest user_id={self.user_id} status={self.status}>'
 
 
+class AppListing(db.Model):
+    __tablename__ = 'app_listings'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(200), nullable=False)
+    description = db.Column(db.Text, nullable=False)
+    category = db.Column(db.String(100), nullable=False)
+    pricing_type = db.Column(db.String(20), nullable=False)  # free / one-time / subscription
+    price_display = db.Column(db.String(50), nullable=False, default='Free')
+    color = db.Column(db.String(20), nullable=False, default='blue')
+    icon_name = db.Column(db.String(50), nullable=False, default='default')
+    is_featured = db.Column(db.Boolean, default=False, nullable=False, server_default='false')
+    is_active = db.Column(db.Boolean, default=True, nullable=False, server_default='true')
+    whatsapp_message = db.Column(db.String(300), default='', server_default='')
+    sort_order = db.Column(db.Integer, default=0, server_default='0')
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    PRICING_TYPES = [('free', 'Free'), ('one-time', 'One-Time'), ('subscription', 'Subscription')]
+    COLORS = ['orange', 'blue', 'green', 'purple', 'teal', 'red', 'indigo', 'yellow']
+    ICONS = [
+        ('invoice',    'Invoice / Billing'),
+        ('inventory',  'Inventory / Stock'),
+        ('booking',    'Booking / Calendar'),
+        ('hr',         'HR / Payroll'),
+        ('analytics',  'Analytics / Charts'),
+        ('automation', 'Automation'),
+        ('school',     'School / Education'),
+        ('crm',        'CRM / Leads'),
+        ('pos',        'POS / Restaurant'),
+        ('ecommerce',  'E-Commerce'),
+        ('code',       'Software / Code'),
+        ('default',    'Default / Grid'),
+    ]
+
+    def __repr__(self):
+        return f'<AppListing {self.name}>'
+
+
 class ActiveVisitor(db.Model):
     __tablename__ = 'active_visitors'
 

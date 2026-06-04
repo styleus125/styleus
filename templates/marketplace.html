@@ -1,0 +1,210 @@
+{% extends 'base.html' %}
+{% block content %}
+
+{# ── Icon SVG paths keyed by icon_name ───────────────────────────────────── #}
+{% set icon_paths = {
+  'invoice':    'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
+  'inventory':  'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4',
+  'booking':    'M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z',
+  'hr':         'M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0z',
+  'analytics':  'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z',
+  'automation': 'M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15',
+  'school':     'M12 14l9-5-9-5-9 5 9 5zm0 0l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z',
+  'crm':        'M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z',
+  'pos':        'M3 3h2l.4 2M7 13h10l4-8H5.4M7 13l-1.5 6h13M7 13L5.4 5M9 21a1 1 0 100-2 1 1 0 000 2zm10 0a1 1 0 100-2 1 1 0 000 2z',
+  'ecommerce':  'M3 3h2l.4 2M7 13h10l4-8H5.4M7 13l-1.5 6h13M7 13L5.4 5M9 21a1 1 0 100-2 1 1 0 000 2zm10 0a1 1 0 100-2 1 1 0 000 2z',
+  'code':       'M10 20l4-16m4 4l4 4-4 4M6 16l-4-4 4-4',
+  'default':    'M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z',
+} %}
+
+{# ── Colour maps ─────────────────────────────────────────────────────────── #}
+{% set gradient_map = {
+  'orange':'from-orange-50 to-orange-100','blue':'from-blue-50 to-blue-100',
+  'green':'from-green-50 to-green-100','purple':'from-purple-50 to-purple-100',
+  'teal':'from-teal-50 to-teal-100','red':'from-red-50 to-red-100',
+  'indigo':'from-indigo-50 to-indigo-100','yellow':'from-yellow-50 to-yellow-100',
+} %}
+{% set icon_bg_map = {
+  'orange':'bg-orange-500','blue':'bg-blue-500','green':'bg-green-500',
+  'purple':'bg-purple-500','teal':'bg-teal-500','red':'bg-red-500',
+  'indigo':'bg-indigo-500','yellow':'bg-yellow-500',
+} %}
+{% set badge_cls_map = {
+  'orange':'text-orange-600 bg-orange-100','blue':'text-blue-600 bg-blue-100',
+  'green':'text-green-600 bg-green-100','purple':'text-purple-600 bg-purple-100',
+  'teal':'text-teal-600 bg-teal-100','red':'text-red-600 bg-red-100',
+  'indigo':'text-indigo-600 bg-indigo-100','yellow':'text-yellow-700 bg-yellow-100',
+} %}
+{% set price_badge_map = {
+  'free':'text-green-700 bg-green-100',
+  'one-time':'text-blue-700 bg-blue-100',
+  'subscription':'text-purple-700 bg-purple-100',
+} %}
+{% set price_label_map = {'free':'Free','one-time':'One-Time','subscription':'Monthly'} %}
+
+<!-- Hero -->
+<section class="bg-gradient-to-br from-navy-900 via-navy-800 to-blue-900 text-white py-16">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
+    <div class="inline-flex items-center gap-2 bg-blue-500/20 border border-blue-400/30 rounded-full px-4 py-1.5 text-blue-300 text-sm font-medium mb-5">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+      </svg>
+      Free · One-Time · Subscription
+    </div>
+    <h1 class="text-4xl md:text-5xl font-black tracking-tight mb-4">
+      App <span class="text-blue-400">Marketplace</span>
+    </h1>
+    <p class="text-gray-300 text-lg max-w-2xl mx-auto mb-8">
+      Pre-built, fully functional applications ready to deploy. Pick a plan that suits your business.
+    </p>
+    <div class="flex flex-wrap justify-center gap-2" id="filter-tabs">
+      <button data-filter="all" class="filter-btn active bg-blue-500 text-white text-sm font-semibold px-5 py-2 rounded-full transition">All Apps</button>
+      <button data-filter="free" class="filter-btn bg-white/10 hover:bg-white/20 text-white text-sm font-medium px-5 py-2 rounded-full transition">Free</button>
+      <button data-filter="one-time" class="filter-btn bg-white/10 hover:bg-white/20 text-white text-sm font-medium px-5 py-2 rounded-full transition">One-Time</button>
+      <button data-filter="subscription" class="filter-btn bg-white/10 hover:bg-white/20 text-white text-sm font-medium px-5 py-2 rounded-full transition">Subscription</button>
+    </div>
+  </div>
+</section>
+
+{% if featured %}
+<!-- Featured App -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-12 pb-4 featured-section" data-filter="{{ featured.pricing_type }}">
+  <div class="flex items-center gap-2 mb-4">
+    <span class="text-yellow-500">★</span>
+    <span class="text-xs font-bold text-gray-500 uppercase tracking-widest">Featured App</span>
+  </div>
+  <div class="bg-gradient-to-r from-navy-900 to-blue-900 rounded-2xl overflow-hidden shadow-xl flex flex-col md:flex-row">
+    <div class="md:w-2/5 bg-white/5 flex items-center justify-center p-10 min-h-48">
+      <div class="text-center">
+        <div class="w-20 h-20 {{ icon_bg_map.get(featured.color, 'bg-blue-500') }}/30 rounded-2xl flex items-center justify-center mx-auto mb-3 bg-blue-500/30">
+          <svg class="w-10 h-10 text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5" d="{{ icon_paths.get(featured.icon_name, icon_paths['default']) }}"/>
+          </svg>
+        </div>
+        <span class="text-blue-300 text-sm">{{ featured.category }}</span>
+      </div>
+    </div>
+    <div class="md:w-3/5 p-8 text-white flex flex-col justify-center">
+      <div class="flex flex-wrap items-center gap-2 mb-3">
+        <span class="bg-blue-500 text-white text-xs font-bold px-3 py-1 rounded-full">Featured</span>
+        <span class="bg-white/10 text-white text-xs px-3 py-1 rounded-full">{{ featured.category }}</span>
+        <span class="bg-green-500/20 text-green-300 border border-green-500/30 text-xs font-bold px-3 py-1 rounded-full">
+          {{ price_label_map.get(featured.pricing_type, featured.pricing_type) }}
+        </span>
+      </div>
+      <h2 class="text-2xl font-black mb-2">{{ featured.name }}</h2>
+      <p class="text-gray-300 text-sm mb-6 leading-relaxed">{{ featured.description }}</p>
+      <div class="flex flex-wrap items-center gap-4">
+        <span class="text-3xl font-black">{{ featured.price_display }}</span>
+        {% if featured.pricing_type == 'subscription' %}<span class="text-gray-400 text-sm">per month</span>{% endif %}
+        <a href="https://wa.me/919958808898?text={{ featured.whatsapp_message | urlencode }}"
+           target="_blank" rel="noopener noreferrer"
+           class="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-6 py-3 rounded-xl transition text-sm">
+          Get This App →
+        </a>
+      </div>
+    </div>
+  </div>
+</section>
+{% endif %}
+
+<!-- App Grid -->
+<section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+  {% if grid_apps %}
+  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5" id="app-grid">
+    {% for app in grid_apps %}
+    {% set gradient = gradient_map.get(app.color, 'from-blue-50 to-blue-100') %}
+    {% set icon_bg  = icon_bg_map.get(app.color, 'bg-blue-500') %}
+    {% set badge_cls = badge_cls_map.get(app.color, 'text-blue-600 bg-blue-100') %}
+    <div class="app-card bg-white border border-gray-100 rounded-2xl shadow-sm hover:shadow-md transition overflow-hidden flex flex-col"
+         data-filter="{{ app.pricing_type }}">
+      <div class="bg-gradient-to-br {{ gradient }} p-5 flex items-center justify-between">
+        <div class="flex items-center gap-3">
+          <div class="w-11 h-11 {{ icon_bg }} rounded-xl flex items-center justify-center shrink-0">
+            <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ icon_paths.get(app.icon_name, icon_paths['default']) }}"/>
+            </svg>
+          </div>
+          <span class="text-xs font-semibold {{ badge_cls }} px-2 py-0.5 rounded-full">{{ app.category }}</span>
+        </div>
+        <span class="text-xs font-bold {{ price_badge_map.get(app.pricing_type, 'text-gray-600 bg-gray-100') }} px-2.5 py-1 rounded-full">
+          {{ price_label_map.get(app.pricing_type, app.pricing_type) }}
+        </span>
+      </div>
+      <div class="p-5 flex-1 flex flex-col">
+        <h3 class="font-bold text-gray-900 mb-1.5">{{ app.name }}</h3>
+        <p class="text-sm text-gray-500 mb-4 flex-1 leading-relaxed">{{ app.description }}</p>
+        <div class="flex items-center justify-between">
+          <span class="text-xl font-black {% if app.pricing_type == 'free' %}text-green-600{% else %}text-gray-900{% endif %}">
+            {{ app.price_display }}
+          </span>
+          <a href="https://wa.me/919958808898?text={{ app.whatsapp_message | urlencode }}"
+             target="_blank" rel="noopener noreferrer"
+             class="bg-gray-900 hover:bg-gray-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition">
+            {% if app.pricing_type == 'free' %}Get Free{% else %}Get App{% endif %}
+          </a>
+        </div>
+      </div>
+    </div>
+    {% endfor %}
+  </div>
+  <div id="no-results" class="hidden text-center py-16 text-gray-400">
+    <p class="text-lg font-medium">No apps in this category yet.</p>
+  </div>
+  {% else %}
+  <div class="text-center py-16 text-gray-400">
+    <p class="text-lg font-medium">No apps available yet — check back soon.</p>
+  </div>
+  {% endif %}
+</section>
+
+<!-- CTA -->
+<section class="bg-navy-900 py-14">
+  <div class="max-w-3xl mx-auto px-4 text-center">
+    <h2 class="text-2xl font-bold text-white mb-3">Don't see what you need?</h2>
+    <p class="text-gray-400 mb-7">We build custom applications tailored to your exact requirements — any platform, any scale.</p>
+    <a href="{{ url_for('shop.software_development') }}"
+       class="inline-flex items-center gap-2 bg-blue-500 hover:bg-blue-600 text-white font-semibold px-8 py-3 rounded-xl transition text-sm">
+      Request a Custom App →
+    </a>
+  </div>
+</section>
+
+<script>
+(function () {
+  var tabs    = document.querySelectorAll('.filter-btn');
+  var cards   = document.querySelectorAll('.app-card');
+  var featured = document.querySelector('.featured-section');
+  var none    = document.getElementById('no-results');
+
+  tabs.forEach(function (tab) {
+    tab.addEventListener('click', function () {
+      var filter = tab.getAttribute('data-filter');
+      tabs.forEach(function (t) {
+        t.classList.remove('bg-blue-500');
+        t.classList.add('bg-white/10');
+      });
+      tab.classList.add('bg-blue-500');
+      tab.classList.remove('bg-white/10');
+
+      // featured section
+      if (featured) {
+        var ft = featured.getAttribute('data-filter');
+        featured.style.display = (filter === 'all' || ft === filter) ? '' : 'none';
+      }
+
+      var visible = 0;
+      cards.forEach(function (c) {
+        if (filter === 'all' || c.getAttribute('data-filter') === filter) {
+          c.style.display = '';
+          visible++;
+        } else {
+          c.style.display = 'none';
+        }
+      });
+      if (none) none.classList.toggle('hidden', visible > 0);
+    });
+  });
+}());
+</script>
+{% endblock %}

@@ -5,7 +5,7 @@ from datetime import date
 from flask import Blueprint, render_template, request, jsonify, flash, redirect, url_for, Response, session
 from flask_login import current_user, login_required
 from sqlalchemy import func
-from models import db, Product, Category, ProductLike, UserListing, Service, Review, Enquiry, Professional, BlogPost, CustomerReview
+from models import db, Product, Category, ProductLike, UserListing, Service, Review, Enquiry, Professional, BlogPost, CustomerReview, AppListing
 from telegram import send_telegram
 
 shop_bp = Blueprint('shop', __name__)
@@ -186,6 +186,14 @@ def webhosting():
 @shop_bp.route('/software-development')
 def software_development():
     return render_template('software_development.html', title='Software Development')
+
+
+@shop_bp.route('/marketplace')
+def marketplace():
+    apps = AppListing.query.filter_by(is_active=True).order_by(AppListing.sort_order, AppListing.created_at).all()
+    featured = next((a for a in apps if a.is_featured), None)
+    grid_apps = [a for a in apps if not a.is_featured]
+    return render_template('marketplace.html', featured=featured, grid_apps=grid_apps, title='App Marketplace')
 
 
 @shop_bp.route('/review', methods=['GET', 'POST'])
