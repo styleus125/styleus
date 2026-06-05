@@ -342,40 +342,76 @@
   {% block content %}{% endblock %}
 </main>
 
-<!-- Random Blog Cards -->
-{% if random_blog_posts and request.endpoint not in ('shop.blog', 'shop.blog_post') %}
+<!-- Blog Section -->
+{% if latest_blog_post and request.endpoint not in ('shop.blog', 'shop.blog_post') %}
 <section class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
   <div class="flex items-center justify-between mb-6">
     <h2 class="text-xl font-bold text-gray-900">Worth a Read</h2>
     <a href="{{ url_for('shop.blog') }}" class="text-sm font-semibold text-indigo-600 hover:underline">View all →</a>
   </div>
-  <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-    {% for post in random_blog_posts %}
-    <a href="{{ url_for('shop.blog_post', slug=post.slug) }}"
-       class="group bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition flex flex-col">
-      {% if post.cover_image_url %}
-      <div class="aspect-video overflow-hidden bg-gray-100">
-        <img src="{{ post.cover_image_url }}" alt="{{ post.title }}"
-             class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
-      </div>
-      {% else %}
-      <div class="aspect-video bg-gradient-to-br from-navy-900 to-indigo-800 flex items-center justify-center">
-        <svg class="w-10 h-10 text-white/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
-                d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 12h6"/>
-        </svg>
-      </div>
-      {% endif %}
-      <div class="p-4 flex flex-col flex-1">
-        <p class="text-xs text-gray-400 mb-1">{{ post.created_at.strftime('%d %b %Y') }}</p>
-        <h3 class="text-sm font-bold text-gray-900 leading-snug mb-2 group-hover:text-indigo-600 transition line-clamp-2">{{ post.title }}</h3>
-        {% if post.excerpt %}
-        <p class="text-xs text-gray-500 line-clamp-2 flex-1">{{ post.excerpt }}</p>
+  <div class="flex flex-col lg:flex-row gap-6">
+
+    <!-- Latest post (fixed, left) -->
+    <a href="{{ url_for('shop.blog_post', slug=latest_blog_post.slug) }}"
+       class="group bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition flex flex-col lg:w-80 shrink-0">
+      <div class="relative">
+        {% if latest_blog_post.cover_image_url %}
+        <div class="h-52 overflow-hidden bg-gray-100">
+          <img src="{{ latest_blog_post.cover_image_url }}" alt="{{ latest_blog_post.title }}"
+               class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+        </div>
+        {% else %}
+        <div class="h-52 bg-gradient-to-br from-navy-900 to-indigo-800 flex items-center justify-center">
+          <svg class="w-12 h-12 text-white/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                  d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 12h6"/>
+          </svg>
+        </div>
         {% endif %}
-        <span class="mt-3 text-xs font-semibold text-indigo-600">Read more →</span>
+        <span class="absolute top-3 left-3 bg-indigo-600 text-white text-xs font-bold px-2.5 py-1 rounded-full">Latest</span>
+      </div>
+      <div class="p-5 flex flex-col flex-1">
+        <p class="text-xs text-gray-400 mb-1.5">{{ latest_blog_post.created_at.strftime('%d %b %Y') }}</p>
+        <h3 class="text-base font-bold text-gray-900 leading-snug mb-2 group-hover:text-indigo-600 transition line-clamp-3">{{ latest_blog_post.title }}</h3>
+        {% if latest_blog_post.excerpt %}
+        <p class="text-sm text-gray-500 line-clamp-3 flex-1">{{ latest_blog_post.excerpt }}</p>
+        {% endif %}
+        <span class="mt-4 text-sm font-semibold text-indigo-600">Read more →</span>
       </div>
     </a>
-    {% endfor %}
+
+    <!-- 3 random posts (right, change on each refresh) -->
+    {% if random_blog_posts %}
+    <div class="flex-1 grid grid-cols-1 sm:grid-cols-3 gap-6">
+      {% for post in random_blog_posts %}
+      <a href="{{ url_for('shop.blog_post', slug=post.slug) }}"
+         class="group bg-white rounded-2xl border border-gray-200 shadow-sm overflow-hidden hover:shadow-md transition flex flex-col">
+        {% if post.cover_image_url %}
+        <div class="aspect-video overflow-hidden bg-gray-100">
+          <img src="{{ post.cover_image_url }}" alt="{{ post.title }}"
+               class="w-full h-full object-cover group-hover:scale-105 transition duration-300">
+        </div>
+        {% else %}
+        <div class="aspect-video bg-gradient-to-br from-navy-900 to-indigo-800 flex items-center justify-center">
+          <svg class="w-8 h-8 text-white/30" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="1.5"
+                  d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 12h6"/>
+          </svg>
+        </div>
+        {% endif %}
+        <div class="p-4 flex flex-col flex-1">
+          <p class="text-xs text-gray-400 mb-1">{{ post.created_at.strftime('%d %b %Y') }}</p>
+          <h3 class="text-sm font-bold text-gray-900 leading-snug mb-2 group-hover:text-indigo-600 transition line-clamp-2">{{ post.title }}</h3>
+          {% if post.excerpt %}
+          <p class="text-xs text-gray-500 line-clamp-2 flex-1">{{ post.excerpt }}</p>
+          {% endif %}
+          <span class="mt-3 text-xs font-semibold text-indigo-600">Read more →</span>
+        </div>
+      </a>
+      {% endfor %}
+    </div>
+    {% endif %}
+
   </div>
 </section>
 {% endif %}

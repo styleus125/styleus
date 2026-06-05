@@ -71,13 +71,17 @@ def create_app(config_class=Config):
         from models import BlogPost
         from sqlalchemy import func
         try:
-            posts = (BlogPost.query
-                     .filter_by(is_published=True)
-                     .order_by(func.random())
-                     .limit(4).all())
+            latest = (BlogPost.query
+                      .filter_by(is_published=True)
+                      .order_by(BlogPost.created_at.desc())
+                      .first())
+            query = BlogPost.query.filter_by(is_published=True)
+            if latest:
+                query = query.filter(BlogPost.id != latest.id)
+            randoms = query.order_by(func.random()).limit(3).all()
         except Exception:
-            posts = []
-        return {'random_blog_posts': posts}
+            latest, randoms = None, []
+        return {'latest_blog_post': latest, 'random_blog_posts': randoms}
 
     @app.context_processor
     def inject_liked_ids():
