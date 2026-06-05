@@ -1,0 +1,111 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <h2 class="text-xl font-bold text-gray-900">App Marketplace</h2>
+    <p class="text-sm text-gray-500 mt-0.5">{{ apps|length }} app{{ 's' if apps|length != 1 else '' }}</p>
+  </div>
+  <a href="{{ url_for('admin.app_new') }}"
+     class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+    </svg>
+    Add App
+  </a>
+</div>
+
+{% set color_bg = {
+  'orange': 'bg-orange-100', 'blue': 'bg-blue-100', 'green': 'bg-green-100',
+  'purple': 'bg-purple-100', 'teal': 'bg-teal-100', 'red': 'bg-red-100',
+  'indigo': 'bg-indigo-100', 'yellow': 'bg-yellow-100'
+} %}
+{% set price_badge = {'free': 'text-green-700 bg-green-100', 'one-time': 'text-blue-700 bg-blue-100', 'subscription': 'text-purple-700 bg-purple-100'} %}
+
+{% if apps %}
+<div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+  <table class="w-full text-sm">
+    <thead class="bg-gray-50 border-b border-gray-100">
+      <tr>
+        <th class="text-left px-5 py-3 font-semibold text-gray-600">App</th>
+        <th class="text-left px-5 py-3 font-semibold text-gray-600 whitespace-nowrap">Category</th>
+        <th class="text-left px-5 py-3 font-semibold text-gray-600 whitespace-nowrap">Pricing</th>
+        <th class="text-left px-5 py-3 font-semibold text-gray-600 whitespace-nowrap">Price</th>
+        <th class="text-left px-5 py-3 font-semibold text-gray-600 whitespace-nowrap">Status</th>
+        <th class="px-5 py-3 font-semibold text-gray-600 whitespace-nowrap text-right">Actions</th>
+      </tr>
+    </thead>
+    <tbody class="divide-y divide-gray-50">
+      {% for app in apps %}
+      <tr class="hover:bg-gray-50 transition">
+        <td class="px-5 py-4">
+          <div class="flex items-center gap-3">
+            <div class="w-8 h-8 rounded-lg {{ color_bg.get(app.color, 'bg-blue-100') }} flex items-center justify-center shrink-0">
+              <svg class="w-4 h-4 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"/>
+              </svg>
+            </div>
+            <div>
+              <p class="font-semibold text-gray-900 flex items-center gap-1.5">
+                {{ app.name }}
+                {% if app.is_featured %}
+                <span class="text-yellow-500 text-xs" title="Featured">★</span>
+                {% endif %}
+              </p>
+              <p class="text-xs text-gray-400 line-clamp-1 max-w-xs">{{ app.description }}</p>
+            </div>
+          </div>
+        </td>
+        <td class="px-5 py-4 text-gray-600 whitespace-nowrap">{{ app.category }}</td>
+        <td class="px-5 py-4 whitespace-nowrap">
+          <span class="text-xs font-semibold px-2 py-0.5 rounded-full {{ price_badge.get(app.pricing_type, 'text-gray-600 bg-gray-100') }}">
+            {{ app.pricing_type | title }}
+          </span>
+        </td>
+        <td class="px-5 py-4 font-semibold text-gray-900 whitespace-nowrap">{{ app.price_display }}</td>
+        <td class="px-5 py-4 whitespace-nowrap">
+          {% if app.is_active %}
+          <span class="inline-flex items-center gap-1 text-xs font-medium text-green-700 bg-green-100 px-2 py-0.5 rounded-full">Active</span>
+          {% else %}
+          <span class="inline-flex items-center gap-1 text-xs font-medium text-gray-500 bg-gray-100 px-2 py-0.5 rounded-full">Inactive</span>
+          {% endif %}
+        </td>
+        <td class="px-5 py-4 whitespace-nowrap">
+          <div class="flex items-center justify-end gap-2">
+            {% if not app.is_featured %}
+            <form method="POST" action="{{ url_for('admin.app_feature', app_id=app.id) }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="text-xs text-yellow-600 hover:text-yellow-800 font-medium transition" title="Set as Featured">★ Feature</button>
+            </form>
+            {% endif %}
+            <form method="POST" action="{{ url_for('admin.app_toggle', app_id=app.id) }}">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="text-xs text-blue-600 hover:text-blue-800 font-medium transition">
+                {{ 'Deactivate' if app.is_active else 'Activate' }}
+              </button>
+            </form>
+            <a href="{{ url_for('admin.app_edit', app_id=app.id) }}"
+               class="text-xs text-gray-600 hover:text-gray-900 font-medium transition">Edit</a>
+            <form method="POST" action="{{ url_for('admin.app_delete', app_id=app.id) }}"
+                  data-confirm="Delete '{{ app.name }}'? This cannot be undone.">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="text-xs text-red-500 hover:text-red-700 font-medium transition">Delete</button>
+            </form>
+          </div>
+        </td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% else %}
+<div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-16 text-center">
+  <p class="text-gray-500 font-medium mb-4">No apps yet</p>
+  <a href="{{ url_for('admin.app_new') }}"
+     class="inline-flex items-center gap-2 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-5 py-2.5 rounded-xl transition">
+    Add First App
+  </a>
+</div>
+{% endif %}
+
+{% endblock %}

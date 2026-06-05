@@ -1,10 +1,11 @@
 import re
+import random
 from datetime import date
 
-from flask import Blueprint, render_template, request, jsonify, flash, redirect, url_for, Response
+from flask import Blueprint, render_template, request, jsonify, flash, redirect, url_for, Response, session
 from flask_login import current_user, login_required
 from sqlalchemy import func
-from models import db, Product, Category, ProductLike, UserListing, Service, Review, Enquiry, Professional, BlogPost
+from models import db, Product, Category, ProductLike, UserListing, Service, Review, Enquiry, Professional, BlogPost, CustomerReview, AppListing
 from telegram import send_telegram
 
 shop_bp = Blueprint('shop', __name__)
@@ -185,6 +186,77 @@ def webhosting():
 @shop_bp.route('/software-development')
 def software_development():
     return render_template('software_development.html', title='Software Development')
+
+
+@shop_bp.route('/marketplace')
+def marketplace():
+    apps = AppListing.query.filter_by(is_active=True).order_by(AppListing.sort_order, AppListing.created_at).all()
+    featured = next((a for a in apps if a.is_featured), None)
+    grid_apps = [a for a in apps if not a.is_featured]
+    return render_template('marketplace.html', featured=featured, grid_apps=grid_apps, title='App Marketplace')
+
+
+@shop_bp.route('/review', methods=['GET', 'POST'])
+def review_form():
+    errors = {}
+    form_data = {}
+    submitted = False
+
+    if request.method == 'GET':
+        a, b = random.randint(1, 9), random.randint(1, 9)
+        session['captcha_answer'] = a + b
+        session['captcha_q'] = f'{a} + {b}'
+
+    if request.method == 'POST':
+        name = request.form.get('name', '').strip()
+        email = request.form.get('email', '').strip()
+        phone = request.form.get('phone', '').strip()
+        stars = request.form.get('stars', type=int)
+        comment = request.form.get('comment', '').strip()
+        captcha_input = request.form.get('captcha', '').strip()
+
+        form_data = {'name': name, 'email': email, 'phone': phone, 'stars': stars, 'comment': comment}
+
+        if not name:
+            errors['name'] = 'Name is required.'
+        if not email:
+            errors['email'] = 'Email is required.'
+        elif not _EMAIL_RE.match(email):
+            errors['email'] = 'Enter a valid email address.'
+        if not stars or not (1 <= stars <= 5):
+            errors['stars'] = 'Please select a star rating.'
+        if not comment or len(comment) < 10:
+            errors['comment'] = f'Comment must be at least 10 characters (currently {len(comment)}).'
+
+        try:
+            captcha_val = int(captcha_input)
+        except (ValueError, TypeError):
+            captcha_val = None
+        if captcha_val != session.get('captcha_answer'):
+            errors['captcha'] = 'Incorrect answer — please try again.'
+
+        if not errors:
+            db.session.add(CustomerReview(
+                name=name, email=email,
+                phone=phone if phone else None,
+                stars=stars, comment=comment
+            ))
+            db.session.commit()
+            session.pop('captcha_answer', None)
+            session.pop('captcha_q', None)
+            submitted = True
+        else:
+            a, b = random.randint(1, 9), random.randint(1, 9)
+            session['captcha_answer'] = a + b
+            session['captcha_q'] = f'{a} + {b}'
+
+    captcha_q = session.get('captcha_q', '? + ?')
+    return render_template('review_form.html',
+                           errors=errors,
+                           form_data=form_data,
+                           submitted=submitted,
+                           captcha_q=captcha_q,
+                           title='Leave a Review')
 
 
 @shop_bp.route('/sitemap.xml')
@@ -396,6 +468,16 @@ def professional_register():
     return render_template('professional_register.html', errors=errors, existing=existing, title='Register as Professional')
 
 
+def _multi_search(fields, q):
+    """Match full phrase OR every individual word across the given fields."""
+    phrase = db.or_(*[f.ilike(f'%{q}%') for f in fields])
+    words = [w for w in q.split() if len(w) >= 2]
+    if len(words) < 2:
+        return phrase
+    word_clauses = [db.or_(*[f.ilike(f'%{w}%') for f in fields]) for w in words]
+    return db.or_(phrase, db.and_(*word_clauses))
+
+
 @shop_bp.route('/search')
 def search():
     q = request.args.get('q', '').strip()
@@ -406,20 +488,20 @@ def search():
     if q:
         shop_results = Product.query.filter(
             Product.is_active.is_(True),
-            Product.name.ilike(f'%{q}%')
+            _multi_search([Product.name, Product.description], q)
         ).order_by(Product.created_at.desc()).limit(40).all()
         used_results = UserListing.query.filter(
             UserListing.status == 'approved',
             UserListing.is_active.is_(True),
-            UserListing.title.ilike(f'%{q}%')
+            _multi_search([UserListing.title, UserListing.description], q)
         ).order_by(UserListing.created_at.desc()).limit(40).all()
         service_results = Service.query.filter(
             Service.is_active.is_(True),
-            Service.name.ilike(f'%{q}%')
+            _multi_search([Service.name, Service.description], q)
         ).order_by(Service.sort_order, Service.name).all()
         professional_results = Professional.query.filter(
             Professional.status == 'approved',
-            Professional.name.ilike(f'%{q}%')
+            _multi_search([Professional.name, Professional.profession, Professional.address], q)
         ).order_by(Professional.created_at.desc()).limit(20).all()
     return render_template('shop/search_results.html',
                            q=q,

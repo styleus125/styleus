@@ -251,6 +251,67 @@ def create_app(config_class=Config):
 
         db.session.commit()
         click.echo(f'Seeded {len(products_data)} products across 5 categories.')
+
+        # Seed app listings
+        from models import AppListing
+        if AppListing.query.count() == 0:
+            sample_apps = [
+                dict(name='Multi-Vendor E-Commerce Platform',
+                     description='A complete marketplace solution with vendor onboarding, product listings, order management, payment gateway integration, and a full admin dashboard — ready to deploy in hours.',
+                     category='E-Commerce', pricing_type='one-time', price_display='₹12,999',
+                     color='blue', icon_name='ecommerce', is_featured=True, sort_order=0,
+                     whatsapp_message="Hi, I'm interested in the Multi-Vendor E-Commerce Platform"),
+                dict(name='Invoice & Billing Manager',
+                     description='GST-compliant invoices, PDF export, payment tracking and client records in one place.',
+                     category='Business', pricing_type='one-time', price_display='₹4,999',
+                     color='orange', icon_name='invoice', sort_order=1,
+                     whatsapp_message="Hi, I'm interested in the Invoice & Billing Manager"),
+                dict(name='Inventory & Stock Tracker',
+                     description='Track SKUs, set low-stock alerts, manage suppliers and barcode-scan stock updates easily.',
+                     category='Inventory', pricing_type='one-time', price_display='₹6,999',
+                     color='blue', icon_name='inventory', sort_order=2,
+                     whatsapp_message="Hi, I'm interested in the Inventory & Stock Tracker"),
+                dict(name='Appointment Booking System',
+                     description='Online slot booking, reminders, staff scheduling and calendar sync for service businesses.',
+                     category='Booking', pricing_type='subscription', price_display='₹499/mo',
+                     color='green', icon_name='booking', sort_order=3,
+                     whatsapp_message="Hi, I'm interested in the Appointment Booking System"),
+                dict(name='HR & Payroll Portal',
+                     description='Employee records, attendance, leave management and automated payslip generation for teams.',
+                     category='HR', pricing_type='subscription', price_display='₹799/mo',
+                     color='purple', icon_name='hr', sort_order=4,
+                     whatsapp_message="Hi, I'm interested in the HR & Payroll Portal"),
+                dict(name='Business Analytics Dashboard',
+                     description='Real-time sales charts, customer insights, revenue reports and KPI tracking for any business.',
+                     category='Analytics', pricing_type='free', price_display='Free',
+                     color='teal', icon_name='analytics', sort_order=5,
+                     whatsapp_message="Hi, I'm interested in the Business Analytics Dashboard"),
+                dict(name='Workflow Automation Toolkit',
+                     description='Automate data entry, email triggers, report generation and task scheduling with ease.',
+                     category='Automation', pricing_type='one-time', price_display='₹7,499',
+                     color='red', icon_name='automation', sort_order=6,
+                     whatsapp_message="Hi, I'm interested in the Workflow Automation Toolkit"),
+                dict(name='School Management System',
+                     description='Student records, timetables, fee collection, attendance and report cards — all in one portal.',
+                     category='Education', pricing_type='subscription', price_display='₹999/mo',
+                     color='indigo', icon_name='school', sort_order=7,
+                     whatsapp_message="Hi, I'm interested in the School Management System"),
+                dict(name='CRM & Lead Tracker',
+                     description='Track leads, manage follow-ups, log calls and close deals faster with a lightweight CRM.',
+                     category='Business', pricing_type='free', price_display='Free',
+                     color='yellow', icon_name='crm', sort_order=8,
+                     whatsapp_message="Hi, I'm interested in the CRM & Lead Tracker"),
+                dict(name='Restaurant POS System',
+                     description='Table orders, KOT printing, billing, daily reports and menu management for restaurants.',
+                     category='Restaurant', pricing_type='one-time', price_display='₹9,999',
+                     color='orange', icon_name='pos', sort_order=9,
+                     whatsapp_message="Hi, I'm interested in the Restaurant POS System"),
+            ]
+            for data in sample_apps:
+                db.session.add(AppListing(**data))
+            db.session.commit()
+            click.echo(f'Seeded {len(sample_apps)} app listings.')
+
         click.echo('Done!')
 
     @app.errorhandler(CSRFError)

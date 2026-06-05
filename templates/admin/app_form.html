@@ -1,0 +1,182 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+
+<div class="flex items-center gap-3 mb-6">
+  <a href="{{ url_for('admin.apps') }}" class="text-gray-400 hover:text-gray-600 transition">
+    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+    </svg>
+  </a>
+  <h2 class="text-xl font-bold text-gray-900">{{ title }}</h2>
+</div>
+
+<div class="max-w-2xl">
+  <form method="POST" class="bg-white rounded-2xl border border-gray-100 shadow-sm p-8 space-y-5">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+    <!-- Name -->
+    <div>
+      <label class="block text-sm font-semibold text-gray-700 mb-1.5">App Name <span class="text-red-500">*</span></label>
+      <input type="text" name="name" value="{{ form_data.get('name', app.name if app else '') }}"
+             placeholder="e.g. Invoice & Billing Manager"
+             class="w-full px-4 py-2.5 rounded-xl border {% if errors.get('name') %}border-red-400{% else %}border-gray-200{% endif %} text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+      {% if errors.get('name') %}<p class="text-red-500 text-xs mt-1">{{ errors.name }}</p>{% endif %}
+    </div>
+
+    <!-- Description -->
+    <div>
+      <label class="block text-sm font-semibold text-gray-700 mb-1.5">Description <span class="text-red-500">*</span></label>
+      <textarea name="description" rows="3" placeholder="Short description shown on the app card…"
+                class="w-full px-4 py-2.5 rounded-xl border {% if errors.get('description') %}border-red-400{% else %}border-gray-200{% endif %} text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 resize-none">{{ form_data.get('description', app.description if app else '') }}</textarea>
+      {% if errors.get('description') %}<p class="text-red-500 text-xs mt-1">{{ errors.description }}</p>{% endif %}
+    </div>
+
+    <!-- Category -->
+    <div>
+      <label class="block text-sm font-semibold text-gray-700 mb-1.5">Category <span class="text-red-500">*</span></label>
+      <input type="text" name="category" value="{{ form_data.get('category', app.category if app else '') }}"
+             placeholder="e.g. Business, E-Commerce, HR, Analytics"
+             class="w-full px-4 py-2.5 rounded-xl border {% if errors.get('category') %}border-red-400{% else %}border-gray-200{% endif %} text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+      {% if errors.get('category') %}<p class="text-red-500 text-xs mt-1">{{ errors.category }}</p>{% endif %}
+    </div>
+
+    <!-- Pricing Type + Price Display -->
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1.5">Pricing Type <span class="text-red-500">*</span></label>
+        <select name="pricing_type" id="pricing_type"
+                class="w-full px-4 py-2.5 rounded-xl border {% if errors.get('pricing_type') %}border-red-400{% else %}border-gray-200{% endif %} text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+          {% set current_type = form_data.get('pricing_type', app.pricing_type if app else '') %}
+          <option value="">Select…</option>
+          <option value="free"         {% if current_type == 'free'         %}selected{% endif %}>Free</option>
+          <option value="one-time"     {% if current_type == 'one-time'     %}selected{% endif %}>One-Time</option>
+          <option value="subscription" {% if current_type == 'subscription' %}selected{% endif %}>Subscription</option>
+        </select>
+        {% if errors.get('pricing_type') %}<p class="text-red-500 text-xs mt-1">{{ errors.pricing_type }}</p>{% endif %}
+      </div>
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1.5">Price Display <span class="text-red-500">*</span></label>
+        <input type="text" name="price_display" id="price_display"
+               value="{{ form_data.get('price_display', app.price_display if app else '') }}"
+               placeholder="e.g. ₹4,999 / ₹499/mo / Free"
+               class="w-full px-4 py-2.5 rounded-xl border {% if errors.get('price_display') %}border-red-400{% else %}border-gray-200{% endif %} text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+        {% if errors.get('price_display') %}<p class="text-red-500 text-xs mt-1">{{ errors.price_display }}</p>{% endif %}
+      </div>
+    </div>
+
+    <!-- Icon + Color -->
+    <div class="grid grid-cols-2 gap-4">
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-1.5">Icon</label>
+        <select name="icon_name"
+                class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500 bg-white">
+          {% set current_icon = form_data.get('icon_name', app.icon_name if app else 'default') %}
+          {% for key, label in [
+            ('invoice','Invoice / Billing'), ('inventory','Inventory / Stock'),
+            ('booking','Booking / Calendar'), ('hr','HR / Payroll'),
+            ('analytics','Analytics / Charts'), ('automation','Automation'),
+            ('school','School / Education'), ('crm','CRM / Leads'),
+            ('pos','POS / Restaurant'), ('ecommerce','E-Commerce'),
+            ('code','Software / Code'), ('default','Default / Grid')
+          ] %}
+          <option value="{{ key }}" {% if current_icon == key %}selected{% endif %}>{{ label }}</option>
+          {% endfor %}
+        </select>
+      </div>
+      <div>
+        <label class="block text-sm font-semibold text-gray-700 mb-2">Card Colour</label>
+        <div class="flex flex-wrap gap-2" id="color-picker">
+          {% set current_color = form_data.get('color', app.color if app else 'blue') %}
+          {% set color_hex = {
+            'orange':'#f97316','blue':'#3b82f6','green':'#22c55e',
+            'purple':'#a855f7','teal':'#14b8a6','red':'#ef4444',
+            'indigo':'#6366f1','yellow':'#eab308'
+          } %}
+          {% for c, hex in color_hex.items() %}
+          <label class="cursor-pointer">
+            <input type="radio" name="color" value="{{ c }}" class="sr-only color-radio"
+                   {% if current_color == c %}checked{% endif %}>
+            <span class="block w-7 h-7 rounded-full border-2 transition color-swatch
+                         {% if current_color == c %}border-gray-900 scale-110{% else %}border-transparent{% endif %}"
+                  style="background-color:{{ hex }};" data-color="{{ c }}"></span>
+          </label>
+          {% endfor %}
+        </div>
+      </div>
+    </div>
+
+    <!-- WhatsApp Message -->
+    <div>
+      <label class="block text-sm font-semibold text-gray-700 mb-1.5">WhatsApp Pre-fill Message</label>
+      <input type="text" name="whatsapp_message"
+             value="{{ form_data.get('whatsapp_message', app.whatsapp_message if app else '') }}"
+             placeholder="Hi, I'm interested in …"
+             class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+    </div>
+
+    <!-- Sort Order -->
+    <div class="w-32">
+      <label class="block text-sm font-semibold text-gray-700 mb-1.5">Sort Order</label>
+      <input type="number" name="sort_order" min="0"
+             value="{{ form_data.get('sort_order', app.sort_order if app else 0) }}"
+             class="w-full px-4 py-2.5 rounded-xl border border-gray-200 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+    </div>
+
+    <!-- Toggles -->
+    <div class="flex flex-wrap gap-6 pt-1">
+      <label class="flex items-center gap-2 cursor-pointer select-none">
+        <input type="checkbox" name="is_active" value="1"
+               {% if form_data.get('is_active') or (app and app.is_active and not form_data) %}checked{% endif %}
+               class="w-4 h-4 rounded text-blue-600">
+        <span class="text-sm font-medium text-gray-700">Active (visible on marketplace)</span>
+      </label>
+      <label class="flex items-center gap-2 cursor-pointer select-none">
+        <input type="checkbox" name="is_featured" value="1"
+               {% if form_data.get('is_featured') or (app and app.is_featured and not form_data) %}checked{% endif %}
+               class="w-4 h-4 rounded text-yellow-500">
+        <span class="text-sm font-medium text-gray-700">★ Featured (shown at top — replaces current)</span>
+      </label>
+    </div>
+
+    <!-- Submit -->
+    <div class="flex gap-3 pt-2">
+      <button type="submit"
+              class="bg-blue-600 hover:bg-blue-700 text-white font-semibold px-6 py-2.5 rounded-xl transition text-sm">
+        {{ 'Save Changes' if app else 'Create App' }}
+      </button>
+      <a href="{{ url_for('admin.apps') }}"
+         class="px-6 py-2.5 rounded-xl border border-gray-200 text-sm font-medium text-gray-600 hover:bg-gray-50 transition">
+        Cancel
+      </a>
+    </div>
+  </form>
+</div>
+
+<script>
+(function () {
+  // Colour swatch selection
+  document.querySelectorAll('.color-radio').forEach(function (radio) {
+    radio.addEventListener('change', function () {
+      document.querySelectorAll('.color-swatch').forEach(function (s) {
+        s.classList.remove('border-gray-900', 'scale-110');
+        s.classList.add('border-transparent');
+      });
+      var swatch = radio.nextElementSibling;
+      swatch.classList.add('border-gray-900', 'scale-110');
+      swatch.classList.remove('border-transparent');
+    });
+  });
+
+  // Auto-fill price display when type is free
+  var typeSelect = document.getElementById('pricing_type');
+  var priceInput = document.getElementById('price_display');
+  if (typeSelect && priceInput) {
+    typeSelect.addEventListener('change', function () {
+      if (typeSelect.value === 'free' && !priceInput.value) {
+        priceInput.value = 'Free';
+      }
+    });
+  }
+}());
+</script>
+{% endblock %}
