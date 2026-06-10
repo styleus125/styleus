@@ -93,6 +93,15 @@ def create_app(config_class=Config):
         return {'liked_ids': liked_ids}
 
     @app.context_processor
+    def inject_chat_config():
+        from models import ChatConfig
+        try:
+            config = ChatConfig.query.first()
+        except Exception:
+            config = None
+        return {'chat_config': config}
+
+    @app.context_processor
     def inject_cart_count():
         from flask_login import current_user
         from models import Cart
@@ -315,6 +324,13 @@ def create_app(config_class=Config):
                 db.session.add(AppListing(**data))
             db.session.commit()
             click.echo(f'Seeded {len(sample_apps)} app listings.')
+
+        # Seed default ChatConfig if not present
+        from models import ChatConfig
+        if not ChatConfig.query.first():
+            db.session.add(ChatConfig())
+            db.session.commit()
+            click.echo('Created default ChatConfig.')
 
         click.echo('Done!')
 

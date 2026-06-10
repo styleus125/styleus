@@ -380,3 +380,65 @@ class ActiveVisitor(db.Model):
 
     def __repr__(self):
         return f'<ActiveVisitor {self.session_id[:8]} last_seen={self.last_seen}>'
+
+
+class ChatConfig(db.Model):
+    __tablename__ = 'chat_config'
+
+    id = db.Column(db.Integer, primary_key=True)
+    enabled = db.Column(db.Boolean, default=True, nullable=False, server_default='true')
+    assistant_name = db.Column(db.String(100), nullable=False, default='Styleus Assistant')
+    greeting_message = db.Column(db.Text, nullable=False, default='Hi! How can I help you today?')
+    fallback_message = db.Column(db.Text, nullable=False, default="I'm not sure about that. Please contact us on WhatsApp for more help!")
+    theme_color = db.Column(db.String(20), nullable=False, default='#3b82f6')
+    bubble_position = db.Column(db.String(10), nullable=False, default='right')
+    avatar_emoji = db.Column(db.String(10), nullable=False, default='💬')
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
+    def __repr__(self):
+        return f'<ChatConfig enabled={self.enabled}>'
+
+
+class ChatFAQ(db.Model):
+    __tablename__ = 'chat_faqs'
+
+    id = db.Column(db.Integer, primary_key=True)
+    question = db.Column(db.String(300), nullable=False)
+    answer = db.Column(db.Text, nullable=False)
+    keywords = db.Column(db.String(500), default='')
+    sort_order = db.Column(db.Integer, default=0)
+    enabled = db.Column(db.Boolean, default=True, nullable=False, server_default='true')
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def __repr__(self):
+        return f'<ChatFAQ {self.question[:40]}>'
+
+
+class ChatSession(db.Model):
+    __tablename__ = 'chat_sessions'
+
+    id = db.Column(db.Integer, primary_key=True)
+    session_id = db.Column(db.String(64), unique=True, nullable=False, index=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    last_message_at = db.Column(db.DateTime, default=datetime.utcnow)
+    message_count = db.Column(db.Integer, default=0)
+
+    messages = db.relationship('ChatMessage', backref='session', lazy='dynamic',
+                               cascade='all, delete-orphan',
+                               order_by='ChatMessage.created_at')
+
+    def __repr__(self):
+        return f'<ChatSession {self.session_id[:8]}>'
+
+
+class ChatMessage(db.Model):
+    __tablename__ = 'chat_messages'
+
+    id = db.Column(db.Integer, primary_key=True)
+    session_id = db.Column(db.Integer, db.ForeignKey('chat_sessions.id'), nullable=False, index=True)
+    role = db.Column(db.String(10), nullable=False)  # 'user' or 'assistant'
+    content = db.Column(db.Text, nullable=False)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def __repr__(self):
+        return f'<ChatMessage role={self.role}>'

@@ -569,6 +569,150 @@
     <button onclick="closeQrModal()" class="w-full py-2 rounded-lg bg-gray-100 hover:bg-gray-200 text-sm font-medium text-gray-700 transition">Close</button>
   </div>
 </div>
+{% if chat_config and chat_config.enabled %}
+<!-- Chat Widget -->
+<div id="chat-widget"
+     class="fixed z-[90] {{ 'left-5' if chat_config.bubble_position == 'left' else 'right-5' }} bottom-5 flex flex-col items-{{ 'start' if chat_config.bubble_position == 'left' else 'end' }}">
+
+  <!-- Chat panel -->
+  <div id="chat-panel"
+       class="mb-3 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-gray-200 flex flex-col overflow-hidden"
+       style="max-height:480px; transform:scale(0); opacity:0; pointer-events:none; transform-origin:bottom {{ 'left' if chat_config.bubble_position == 'left' else 'right' }}; transition:transform 0.25s ease,opacity 0.25s ease;">
+    <!-- Header -->
+    <div class="flex items-center gap-3 px-4 py-3 text-white shrink-0"
+         style="background-color:{{ chat_config.theme_color }};">
+      <span class="text-2xl leading-none">{{ chat_config.avatar_emoji }}</span>
+      <div class="flex-1 min-w-0">
+        <p class="font-semibold text-sm leading-tight">{{ chat_config.assistant_name }}</p>
+        <p class="text-xs opacity-75">Online · Replies instantly</p>
+      </div>
+      <button onclick="chatToggle()" class="p-1 opacity-80 hover:opacity-100 transition" aria-label="Close chat">
+        <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+        </svg>
+      </button>
+    </div>
+    <!-- Messages -->
+    <div id="chat-messages" class="flex-1 overflow-y-auto p-4 space-y-3 bg-gray-50" style="min-height:200px;"></div>
+    <!-- Typing indicator -->
+    <div id="chat-typing" class="px-4 pb-2 hidden bg-gray-50">
+      <div class="inline-flex items-center gap-1 bg-white border border-gray-200 rounded-xl px-3 py-2 shadow-sm">
+        <span class="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style="animation-delay:0s"></span>
+        <span class="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style="animation-delay:.15s"></span>
+        <span class="w-2 h-2 rounded-full bg-gray-400 animate-bounce" style="animation-delay:.3s"></span>
+      </div>
+    </div>
+    <!-- Input -->
+    <div class="flex items-center gap-2 px-3 py-3 border-t border-gray-200 bg-white shrink-0">
+      <input id="chat-input" type="text" placeholder="Type a message…"
+             class="flex-1 px-3 py-2 text-sm border border-gray-200 rounded-xl focus:outline-none focus:border-blue-400"
+             onkeydown="if(event.key==='Enter' && !event.shiftKey){event.preventDefault();chatSend();}">
+      <button onclick="chatSend()"
+              class="w-9 h-9 rounded-xl flex items-center justify-center text-white shrink-0 transition hover:opacity-90 active:scale-95"
+              style="background-color:{{ chat_config.theme_color }};">
+        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+        </svg>
+      </button>
+    </div>
+  </div>
+
+  <!-- Toggle button -->
+  <button id="chat-toggle-btn" onclick="chatToggle()"
+          class="w-14 h-14 rounded-full shadow-xl flex items-center justify-center text-white text-2xl transition-transform hover:scale-110 active:scale-95"
+          style="background-color:{{ chat_config.theme_color }};"
+          aria-label="Open chat">
+    <span id="chat-btn-icon">{{ chat_config.avatar_emoji }}</span>
+  </button>
+</div>
+
+<script>
+(function () {
+  var GREETING   = {{ chat_config.greeting_message | tojson }};
+  var EMOJI      = {{ chat_config.avatar_emoji | tojson }};
+  var COLOR      = {{ chat_config.theme_color | tojson }};
+  var SID_KEY    = 'styleus_chat_sid';
+  var isOpen     = false;
+  var greeted    = false;
+  var sessionId  = sessionStorage.getItem(SID_KEY) || '';
+
+  var panel      = document.getElementById('chat-panel');
+  var messagesEl = document.getElementById('chat-messages');
+  var typingEl   = document.getElementById('chat-typing');
+  var inputEl    = document.getElementById('chat-input');
+  var btnIcon    = document.getElementById('chat-btn-icon');
+
+  function chatToggle() {
+    isOpen = !isOpen;
+    if (isOpen) {
+      panel.style.transform  = 'scale(1)';
+      panel.style.opacity    = '1';
+      panel.style.pointerEvents = 'auto';
+      btnIcon.textContent    = '✕';
+      if (!greeted) {
+        greeted = true;
+        setTimeout(function () { addMsg('assistant', GREETING); }, 200);
+      }
+      setTimeout(function () { inputEl.focus(); }, 280);
+    } else {
+      panel.style.transform  = 'scale(0)';
+      panel.style.opacity    = '0';
+      panel.style.pointerEvents = 'none';
+      btnIcon.textContent    = EMOJI;
+    }
+  }
+  window.chatToggle = chatToggle;
+
+  function addMsg(role, text) {
+    var wrap   = document.createElement('div');
+    wrap.className = role === 'user' ? 'flex justify-end' : 'flex justify-start items-end gap-2';
+    if (role === 'assistant') {
+      var av = document.createElement('div');
+      av.className = 'w-6 h-6 rounded-full flex items-center justify-center text-white text-xs shrink-0 mb-0.5';
+      av.style.backgroundColor = COLOR;
+      av.textContent = EMOJI;
+      wrap.appendChild(av);
+    }
+    var bubble = document.createElement('div');
+    bubble.className = role === 'user'
+      ? 'max-w-[75%] px-3 py-2 rounded-2xl rounded-tr-sm text-sm text-white shadow-sm'
+      : 'max-w-[75%] px-3 py-2 rounded-2xl rounded-tl-sm text-sm text-gray-800 bg-white border border-gray-200 shadow-sm';
+    if (role === 'user') bubble.style.backgroundColor = COLOR;
+    bubble.textContent = text;
+    wrap.appendChild(bubble);
+    messagesEl.appendChild(wrap);
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+  }
+
+  function chatSend() {
+    var msg = (inputEl.value || '').trim();
+    if (!msg) return;
+    inputEl.value = '';
+    addMsg('user', msg);
+    typingEl.classList.remove('hidden');
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+
+    fetch('/api/chat/message', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ message: msg, session_id: sessionId })
+    })
+    .then(function (r) { return r.json(); })
+    .then(function (data) {
+      typingEl.classList.add('hidden');
+      if (data.session_id) { sessionId = data.session_id; sessionStorage.setItem(SID_KEY, sessionId); }
+      if (data.reply) addMsg('assistant', data.reply);
+    })
+    .catch(function () {
+      typingEl.classList.add('hidden');
+      addMsg('assistant', 'Something went wrong. Please try again.');
+    });
+  }
+  window.chatSend = chatSend;
+}());
+</script>
+{% endif %}
+
 <script>
   function openQrModal(src, title) {
     document.getElementById('qr-modal-img').src = src;

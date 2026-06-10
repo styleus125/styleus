@@ -1,0 +1,85 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <h2 class="text-xl font-bold text-gray-900">Chat Conversations</h2>
+    <p class="text-sm text-gray-500 mt-0.5">{{ pagination.total }} conversation{{ 's' if pagination.total != 1 else '' }} recorded</p>
+  </div>
+  <a href="{{ url_for('admin.chat_settings') }}"
+     class="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 transition">
+    ← Back to Chat Settings
+  </a>
+</div>
+
+{% if sessions %}
+<div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead class="bg-gray-50 border-b border-gray-100">
+        <tr>
+          <th class="text-left px-5 py-3 font-semibold text-gray-600">Session ID</th>
+          <th class="text-left px-5 py-3 font-semibold text-gray-600 hidden sm:table-cell">Started</th>
+          <th class="text-left px-5 py-3 font-semibold text-gray-600 hidden md:table-cell">Last Activity</th>
+          <th class="text-left px-5 py-3 font-semibold text-gray-600 w-24">Messages</th>
+          <th class="px-5 py-3 w-28"></th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-50">
+        {% for s in sessions %}
+        <tr class="hover:bg-gray-50 transition">
+          <td class="px-5 py-4 font-mono text-xs text-gray-600">{{ s.session_id[:12] }}…</td>
+          <td class="px-5 py-4 text-gray-500 text-xs hidden sm:table-cell whitespace-nowrap">{{ s.created_at.strftime('%d %b %Y %H:%M') }}</td>
+          <td class="px-5 py-4 text-gray-500 text-xs hidden md:table-cell whitespace-nowrap">{{ s.last_message_at.strftime('%d %b %Y %H:%M') }}</td>
+          <td class="px-5 py-4">
+            <span class="inline-flex items-center justify-center w-8 h-8 bg-indigo-50 text-indigo-700 text-xs font-bold rounded-lg">{{ s.message_count }}</span>
+          </td>
+          <td class="px-5 py-4 whitespace-nowrap">
+            <div class="flex items-center gap-3 justify-end">
+              <a href="{{ url_for('admin.chat_conversation_detail', session_id=s.session_id) }}"
+                 class="text-xs text-blue-500 hover:text-blue-700 font-medium transition">View</a>
+              <form method="POST"
+                    action="{{ url_for('admin.chat_conversation_delete', session_id=s.session_id) }}"
+                    data-confirm="Delete conversation {{ s.session_id[:12] }}…? This cannot be undone.">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="text-xs text-red-500 hover:text-red-700 font-medium transition">Delete</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+</div>
+
+{% if pagination.pages > 1 %}
+<div class="flex items-center justify-between mt-6">
+  <p class="text-sm text-gray-500">
+    Showing {{ ((pagination.page - 1) * pagination.per_page) + 1 }}–{{ [pagination.page * pagination.per_page, pagination.total] | min }} of {{ pagination.total }}
+  </p>
+  <div class="flex gap-2">
+    {% if pagination.has_prev %}
+    <a href="{{ url_for('admin.chat_conversations', page=pagination.prev_num) }}"
+       class="px-3 py-1.5 text-sm border border-gray-200 rounded-lg hover:bg-gray-50 transition">← Prev</a>
+    {% endif %}
+    {% if pagination.has_next %}
+    <a href="{{ url_for('admin.chat_conversations', page=pagination.next_num) }}"
+       class="px-3 py-1.5 text-sm border border-gray-200 rounded-lg hover:bg-gray-50 transition">Next →</a>
+    {% endif %}
+  </div>
+</div>
+{% endif %}
+
+{% else %}
+<div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-16 text-center">
+  <div class="w-14 h-14 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-4">
+    <svg class="w-7 h-7 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+    </svg>
+  </div>
+  <p class="text-gray-500 font-medium">No conversations yet</p>
+  <p class="text-sm text-gray-400 mt-1">Conversations will appear here once visitors use the chat widget.</p>
+</div>
+{% endif %}
+{% endblock %}
