@@ -36,40 +36,52 @@
     </p>
   </div>
 
-  <!-- Scrolling Category Cards -->
-  <div class="relative pb-10 overflow-hidden">
-    <div class="absolute inset-y-0 left-0 w-24 bg-gradient-to-r from-navy-900 to-transparent z-10 pointer-events-none"></div>
-    <div class="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-blue-900 to-transparent z-10 pointer-events-none"></div>
+  <!-- Scrolling + Fixed Category Cards -->
+  <div class="relative pb-10 flex items-stretch gap-0">
 
-    <div class="hero-scroll-track">
+    <!-- Fixed cards (left) -->
+    <div class="flex gap-5 shrink-0 px-5 items-center">
+      <a href="{{ url_for('shop.software_development') }}" class="category-card shrink-0">
+        <img src="https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=220&h=300&fit=crop"
+             alt="Software Development" class="w-full h-full object-cover">
+        <div class="category-card-overlay"></div>
+        <div class="category-card-label"><p>Software Development</p></div>
+      </a>
+      <div class="category-card shrink-0">
+        <img src="https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=220&h=300&fit=crop"
+             alt="Refurbished Laptops" class="w-full h-full object-cover">
+        <div class="category-card-overlay"></div>
+        <div class="category-card-label"><p>Refurbished Laptops</p></div>
+      </div>
+      <div class="absolute inset-y-0 left-[390px] w-16 bg-gradient-to-r from-blue-900/60 to-transparent z-10 pointer-events-none"></div>
+    </div>
+
+    <!-- Scrolling cards (right) -->
+    <div class="flex-1 relative overflow-hidden">
+      <div class="absolute inset-y-0 right-0 w-24 bg-gradient-to-l from-navy-900 to-transparent z-10 pointer-events-none"></div>
       {% set categories_scroll = [
-        ('Software Development', 'https://images.unsplash.com/photo-1461749280684-dccba630e2f6?w=220&h=300&fit=crop', url_for('shop.software_development')),
         ('Web Hosting & Maintenance', 'https://images.unsplash.com/photo-1544197150-b99a580bb7a8?w=220&h=300&fit=crop', url_for('shop.webhosting')),
-        ('Refurbished Laptops', 'https://images.unsplash.com/photo-1496181133206-80ce9b88a853?w=220&h=300&fit=crop', ''),
         ('Assembled Computers', 'https://images.unsplash.com/photo-1547082299-de196ea013d6?w=220&h=300&fit=crop', ''),
         ('Used Items', 'https://images.unsplash.com/photo-1558769132-cb1aea458c5e?w=220&h=300&fit=crop', ''),
         ('Online Support', 'https://images.unsplash.com/photo-1553775282-20af80779df7?w=220&h=300&fit=crop', ''),
         ('Advertise with Us', 'https://images.unsplash.com/photo-1533750349088-cd871a92f312?w=220&h=300&fit=crop', ''),
         ('Buy Direct from Sellers', 'https://images.unsplash.com/photo-1556742049-0cfed4f6a45d?w=220&h=300&fit=crop', '')
       ] %}
-      {% for set_i in range(4) %}
-      <div class="hero-scroll-set" {% if set_i > 0 %}aria-hidden="true"{% endif %}>
-        {% for label, src, url in categories_scroll %}
-        {% if url %}
-        <a href="{{ url }}" class="category-card">
-        {% else %}
-        <div class="category-card">
-        {% endif %}
-          <img src="{{ src }}" alt="{{ label if set_i == 0 else '' }}" class="w-full h-full object-cover" loading="lazy">
-          <div class="category-card-overlay"></div>
-          <div class="category-card-label">
-            <p>{{ label }}</p>
-          </div>
-        {% if url %}</a>{% else %}</div>{% endif %}
+      <div class="hero-scroll-track">
+        {% for set_i in range(4) %}
+        <div class="hero-scroll-set" {% if set_i > 0 %}aria-hidden="true"{% endif %}>
+          {% for label, src, url in categories_scroll %}
+          {% if url %}<a href="{{ url }}" class="category-card">{% else %}<div class="category-card">{% endif %}
+            <img src="{{ src }}" alt="{{ label if set_i == 0 else '' }}" class="w-full h-full object-cover" loading="lazy">
+            <div class="category-card-overlay"></div>
+            <div class="category-card-label"><p>{{ label }}</p></div>
+          {% if url %}</a>{% else %}</div>{% endif %}
+          {% endfor %}
+        </div>
         {% endfor %}
       </div>
-      {% endfor %}
     </div>
+
   </div>
 </section>
 

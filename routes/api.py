@@ -1,4 +1,5 @@
 import os
+import re
 import uuid
 from datetime import datetime
 
@@ -6,7 +7,7 @@ from flask import Blueprint, request, jsonify, current_app
 from slugify import slugify
 from werkzeug.utils import secure_filename
 
-from models import db, BlogPost
+from models import db, BlogPost, ChatConfig, ChatFAQ, ChatSession, ChatMessage
 
 api_bp = Blueprint('api', __name__)
 
@@ -82,3 +83,55 @@ def upload_image():
 
     url = f'/static/uploads/{filename}'
     return jsonify({'success': True, 'url': url}), 201
+
+
+@api_bp.route('/chat/message', methods=['POST'])
+def chat_message():
+    data = request.get_json() or {}
+    user_text = (data.get('message') or '').strip()
+    session_id = (data.get('session_id') or '').strip()
+
+    if not user_text:
+        return jsonify({'error': 'No message provided'}), 400
+
+    config = ChatConfig.query.first()
+    if not config or not config.enabled:
+        return jsonify({'error': 'Chat is disabled'}), 403
+
+    chat_session = None
+    if session_id:
+        chat_session = ChatSession.query.filter_by(session_id=session_id).first()
+    if not chat_session:
+        session_id = uuid.uuid4().hex
+        chat_session = ChatSession(session_id=session_id)
+        db.session.add(chat_session)
+        db.session.flush()
+
+    db.session.add(ChatMessage(session_id=chat_session.id, role='user', content=user_text))
+
+    reply = _faq_match(user_text) or config.fallback_message
+
+    db.session.add(ChatMessage(session_id=chat_session.id, role='assistant', content=reply))
+    chat_session.last_message_at = datetime.utcnow()
+    chat_session.message_count = (chat_session.message_count or 0) + 2
+    db.session.commit()
+
+    return jsonify({'reply': reply, 'session_id': session_id})
+
+
+def _faq_match(text):
+    faqs = ChatFAQ.query.filter_by(enabled=True).order_by(ChatFAQ.sort_order).all()
+    lower = text.lower()
+    best, top = None, 0
+    for faq in faqs:
+        score = 0
+        if faq.keywords:
+            for kw in [k.strip().lower() for k in faq.keywords.split(',') if k.strip()]:
+                if kw and kw in lower:
+                    score += 2
+        for word in re.findall(r'\w+', faq.question.lower()):
+            if len(word) > 2 and word in lower:
+                score += 1
+        if score > top:
+            top, best = score, faq
+    return best.answer if best and top > 0 else None

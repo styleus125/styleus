@@ -11,7 +11,7 @@ from wtforms.validators import DataRequired, Length, NumberRange, Optional
 from werkzeug.utils import secure_filename
 from slugify import slugify
 
-from models import db, User, Category, Product, Order, UserListing, Service, Review, SellCategory, Enquiry, ActiveVisitor, Professional, BlogPost, PasswordResetRequest, CustomerReview, AppListing
+from models import db, User, Category, Product, Order, UserListing, Service, Review, SellCategory, Enquiry, ActiveVisitor, Professional, BlogPost, PasswordResetRequest, CustomerReview, AppListing, ChatConfig, ChatFAQ, ChatSession, ChatMessage
 
 admin_bp = Blueprint('admin', __name__)
 
@@ -1038,4 +1038,127 @@ def app_feature(app_id):
     db.session.commit()
     flash(f'"{app_obj.name}" set as featured.', 'success')
     return redirect(url_for('admin.apps'))
+
+
+# ── Chat Assistant ────────────────────────────────────────────────────────────
+
+@admin_bp.route('/chat')
+@login_required
+@admin_required
+def chat_settings():
+    config = ChatConfig.query.first()
+    if not config:
+        config = ChatConfig()
+        db.session.add(config)
+        db.session.commit()
+    faqs = ChatFAQ.query.order_by(ChatFAQ.sort_order, ChatFAQ.id).all()
+    return render_template('admin/chat.html', config=config, faqs=faqs, title='Chat Assistant')
+
+
+@admin_bp.route('/chat/config', methods=['POST'])
+@login_required
+@admin_required
+def chat_config_update():
+    config = ChatConfig.query.first()
+    if not config:
+        config = ChatConfig()
+        db.session.add(config)
+    config.enabled = request.form.get('enabled') == 'on'
+    config.assistant_name = request.form.get('assistant_name', '').strip() or 'Styleus Assistant'
+    config.greeting_message = request.form.get('greeting_message', '').strip() or 'Hi! How can I help you today?'
+    config.fallback_message = request.form.get('fallback_message', '').strip() or "I'm not sure about that. Contact us on WhatsApp for help!"
+    config.theme_color = request.form.get('theme_color', '#3b82f6').strip() or '#3b82f6'
+    config.bubble_position = request.form.get('bubble_position', 'right')
+    config.avatar_emoji = request.form.get('avatar_emoji', '💬').strip() or '💬'
+    db.session.commit()
+    flash('Chat settings saved.', 'success')
+    return redirect(url_for('admin.chat_settings'))
+
+
+@admin_bp.route('/chat/faq/add', methods=['POST'])
+@login_required
+@admin_required
+def chat_faq_add():
+    question = request.form.get('question', '').strip()
+    answer = request.form.get('answer', '').strip()
+    keywords = request.form.get('keywords', '').strip()
+    sort_order = int(request.form.get('sort_order', 0) or 0)
+    if not question or not answer:
+        flash('Question and answer are required.', 'danger')
+        return redirect(url_for('admin.chat_settings'))
+    db.session.add(ChatFAQ(question=question, answer=answer, keywords=keywords, sort_order=sort_order))
+    db.session.commit()
+    flash('FAQ added.', 'success')
+    return redirect(url_for('admin.chat_settings'))
+
+
+@admin_bp.route('/chat/faq/<int:faq_id>/edit', methods=['POST'])
+@login_required
+@admin_required
+def chat_faq_edit(faq_id):
+    faq = ChatFAQ.query.get_or_404(faq_id)
+    faq.question = request.form.get('question', '').strip() or faq.question
+    faq.answer = request.form.get('answer', '').strip() or faq.answer
+    faq.keywords = request.form.get('keywords', '').strip()
+    faq.sort_order = int(request.form.get('sort_order', faq.sort_order) or 0)
+    db.session.commit()
+    flash('FAQ updated.', 'success')
+    return redirect(url_for('admin.chat_settings'))
+
+
+@admin_bp.route('/chat/faq/<int:faq_id>/delete', methods=['POST'])
+@login_required
+@admin_required
+def chat_faq_delete(faq_id):
+    faq = ChatFAQ.query.get_or_404(faq_id)
+    db.session.delete(faq)
+    db.session.commit()
+    flash('FAQ deleted.', 'success')
+    return redirect(url_for('admin.chat_settings'))
+
+
+@admin_bp.route('/chat/faq/<int:faq_id>/toggle', methods=['POST'])
+@login_required
+@admin_required
+def chat_faq_toggle(faq_id):
+    faq = ChatFAQ.query.get_or_404(faq_id)
+    faq.enabled = not faq.enabled
+    db.session.commit()
+    return ('', 204)
+
+
+@admin_bp.route('/chat/conversations')
+@login_required
+@admin_required
+def chat_conversations():
+    page = request.args.get('page', 1, type=int)
+    pagination = ChatSession.query.order_by(ChatSession.last_message_at.desc()).paginate(
+        page=page, per_page=current_app.config['ADMIN_ITEMS_PER_PAGE'], error_out=False)
+    return render_template('admin/chat_conversations.html',
+                           sessions=pagination.items,
+                           pagination=pagination,
+                           title='Chat Conversations')
+
+
+@admin_bp.route('/chat/conversations/<session_id>')
+@login_required
+@admin_required
+def chat_conversation_detail(session_id):
+    chat_session = ChatSession.query.filter_by(session_id=session_id).first_or_404()
+    messages = chat_session.messages.order_by('created_at').all()
+    return render_template('admin/chat_conversation_detail.html',
+                           chat_session=chat_session,
+                           messages=messages,
+                           title=f'Conversation #{chat_session.id}')
+
+
+@admin_bp.route('/chat/conversations/<session_id>/delete', methods=['POST'])
+@login_required
+@admin_required
+def chat_conversation_delete(session_id):
+    chat_session = ChatSession.query.filter_by(session_id=session_id).first_or_404()
+    db.session.delete(chat_session)
+    db.session.commit()
+    flash('Conversation deleted.', 'success')
+    return redirect(url_for('admin.chat_conversations'))
 

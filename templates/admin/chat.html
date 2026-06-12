@@ -1,0 +1,355 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <h2 class="text-xl font-bold text-gray-900">Chat Assistant</h2>
+    <p class="text-sm text-gray-500 mt-0.5">Configure the live chat widget shown on the public site</p>
+  </div>
+  <a href="{{ url_for('admin.chat_conversations') }}"
+     class="inline-flex items-center gap-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition">
+    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"/>
+    </svg>
+    View Conversations
+  </a>
+</div>
+
+<div class="grid grid-cols-1 xl:grid-cols-2 gap-6">
+
+  <!-- Settings card -->
+  <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6">
+    <h3 class="text-base font-bold text-gray-800 mb-5">Widget Settings</h3>
+    <form method="POST" action="{{ url_for('admin.chat_config_update') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+
+      <!-- Enable toggle -->
+      <div class="flex items-center justify-between py-3 border-b border-gray-100">
+        <div>
+          <p class="text-sm font-semibold text-gray-700">Enable Chat Widget</p>
+          <p class="text-xs text-gray-400">Show/hide the chat bubble on the public site</p>
+        </div>
+        <label class="relative inline-flex items-center cursor-pointer">
+          <input type="checkbox" name="enabled" class="sr-only peer" {% if config.enabled %}checked{% endif %}>
+          <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:bg-blue-600 peer-focus:ring-2 peer-focus:ring-blue-300 after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:after:translate-x-5"></div>
+        </label>
+      </div>
+
+      <div class="space-y-4 pt-4">
+        <!-- Assistant name -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Assistant Name</label>
+          <input type="text" name="assistant_name" value="{{ config.assistant_name }}" required
+                 class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-blue-400">
+        </div>
+
+        <!-- Greeting -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Greeting Message</label>
+          <textarea name="greeting_message" rows="2" required
+                    class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-blue-400 resize-none">{{ config.greeting_message }}</textarea>
+        </div>
+
+        <!-- Fallback -->
+        <div>
+          <label class="block text-sm font-medium text-gray-700 mb-1">Fallback Message
+            <span class="text-gray-400 font-normal">(shown when no FAQ matches)</span>
+          </label>
+          <textarea name="fallback_message" rows="2" required
+                    class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-blue-400 resize-none">{{ config.fallback_message }}</textarea>
+        </div>
+
+        <div class="grid grid-cols-3 gap-3">
+          <!-- Avatar emoji -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Avatar Emoji</label>
+            <input type="text" name="avatar_emoji" value="{{ config.avatar_emoji }}" maxlength="4"
+                   class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-blue-400 text-center text-xl">
+          </div>
+          <!-- Theme color -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Theme Color</label>
+            <div class="flex items-center gap-2">
+              <input type="color" name="theme_color" value="{{ config.theme_color }}"
+                     class="w-10 h-10 rounded-lg border border-gray-200 cursor-pointer p-0.5">
+              <input type="text" id="color-hex" value="{{ config.theme_color }}"
+                     class="flex-1 px-2 py-2 text-xs border border-gray-200 rounded-lg focus:outline-none focus:border-blue-400 font-mono"
+                     readonly>
+            </div>
+          </div>
+          <!-- Position -->
+          <div>
+            <label class="block text-sm font-medium text-gray-700 mb-1">Position</label>
+            <select name="bubble_position" class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-blue-400">
+              <option value="right" {% if config.bubble_position == 'right' %}selected{% endif %}>Bottom Right</option>
+              <option value="left" {% if config.bubble_position == 'left' %}selected{% endif %}>Bottom Left</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <button type="submit"
+              class="mt-5 w-full bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold py-2.5 rounded-lg transition">
+        Save Settings
+      </button>
+    </form>
+  </div>
+
+  <!-- Live preview -->
+  <div class="bg-white rounded-2xl border border-gray-100 shadow-sm p-6 flex flex-col">
+    <h3 class="text-base font-bold text-gray-800 mb-4">Live Preview</h3>
+    <div class="flex-1 flex items-end justify-end relative bg-gray-50 rounded-xl border border-gray-200 min-h-[320px] p-4 overflow-hidden" id="preview-container">
+      <!-- Preview panel -->
+      <div class="absolute bottom-20 right-4 w-64 bg-white rounded-2xl shadow-xl border border-gray-200 flex flex-col overflow-hidden" id="preview-panel">
+        <div class="flex items-center gap-2 px-3 py-2.5 text-white shrink-0" id="preview-header" style="background-color:{{ config.theme_color }}">
+          <span class="text-xl" id="preview-emoji">{{ config.avatar_emoji }}</span>
+          <div class="flex-1 min-w-0">
+            <p class="text-xs font-semibold leading-tight" id="preview-name">{{ config.assistant_name }}</p>
+            <p class="text-[10px] opacity-75">Online • Replies instantly</p>
+          </div>
+        </div>
+        <div class="p-3 bg-gray-50 space-y-2">
+          <div class="flex justify-start">
+            <div class="max-w-[85%] bg-white border border-gray-200 rounded-2xl rounded-tl-sm px-3 py-1.5 text-xs text-gray-700 shadow-sm" id="preview-greeting">{{ config.greeting_message }}</div>
+          </div>
+          <div class="flex justify-end">
+            <div class="max-w-[85%] rounded-2xl rounded-tr-sm px-3 py-1.5 text-xs text-white" id="preview-user-bubble" style="background-color:{{ config.theme_color }}">Can I see the products?</div>
+          </div>
+        </div>
+        <div class="flex items-center gap-2 px-2 py-2 border-t border-gray-100 bg-white">
+          <input class="flex-1 px-2 py-1.5 text-xs border border-gray-200 rounded-lg" placeholder="Type a message…" disabled>
+          <div class="w-7 h-7 rounded-lg flex items-center justify-center" id="preview-send-btn" style="background-color:{{ config.theme_color }}">
+            <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"/>
+            </svg>
+          </div>
+        </div>
+      </div>
+      <!-- Bubble button -->
+      <button class="w-12 h-12 rounded-full shadow-xl flex items-center justify-center text-white text-xl" id="preview-bubble" style="background-color:{{ config.theme_color }}">
+        <span id="preview-bubble-emoji">{{ config.avatar_emoji }}</span>
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<!-- FAQ Management -->
+<div class="mt-6 bg-white rounded-2xl border border-gray-100 shadow-sm">
+  <div class="flex items-center justify-between px-6 py-4 border-b border-gray-100">
+    <div>
+      <h3 class="text-base font-bold text-gray-800">FAQ Responses</h3>
+      <p class="text-xs text-gray-400 mt-0.5">The chat widget matches user messages against these Q&amp;A pairs using keywords</p>
+    </div>
+    <button onclick="document.getElementById('faq-add-form').classList.toggle('hidden')"
+            class="inline-flex items-center gap-1.5 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold px-3 py-2 rounded-lg transition">
+      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4v16m8-8H4"/>
+      </svg>
+      Add FAQ
+    </button>
+  </div>
+
+  <!-- Add FAQ inline form -->
+  <div id="faq-add-form" class="hidden border-b border-gray-100 bg-green-50 px-6 py-4">
+    <p class="text-sm font-semibold text-green-800 mb-3">New FAQ</p>
+    <form method="POST" action="{{ url_for('admin.chat_faq_add') }}">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="grid grid-cols-1 md:grid-cols-2 gap-3 mb-3">
+        <div>
+          <label class="block text-xs font-medium text-gray-600 mb-1">Question <span class="text-red-500">*</span></label>
+          <input type="text" name="question" required placeholder="e.g. What are your delivery times?"
+                 class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-green-400">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-gray-600 mb-1">Keywords <span class="text-gray-400">(comma-separated, for matching)</span></label>
+          <input type="text" name="keywords" placeholder="e.g. delivery, shipping, time"
+                 class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-green-400">
+        </div>
+      </div>
+      <div class="mb-3">
+        <label class="block text-xs font-medium text-gray-600 mb-1">Answer <span class="text-red-500">*</span></label>
+        <textarea name="answer" rows="2" required placeholder="The response the chat will show…"
+                  class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-green-400 resize-none"></textarea>
+      </div>
+      <div class="flex items-center gap-3">
+        <input type="number" name="sort_order" value="0" min="0" placeholder="Order"
+               class="w-20 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-green-400">
+        <span class="text-xs text-gray-400">Sort order (lower = matched first)</span>
+        <div class="flex-1"></div>
+        <button type="button" onclick="document.getElementById('faq-add-form').classList.add('hidden')"
+                class="px-4 py-2 text-sm border border-gray-200 rounded-lg hover:bg-gray-50 transition">Cancel</button>
+        <button type="submit" class="px-4 py-2 bg-green-600 hover:bg-green-700 text-white text-sm font-semibold rounded-lg transition">Add FAQ</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- FAQ table -->
+  {% if faqs %}
+  <div class="overflow-x-auto">
+    <table class="w-full text-sm">
+      <thead class="bg-gray-50 border-b border-gray-100">
+        <tr>
+          <th class="text-left px-5 py-3 font-semibold text-gray-600 w-8">#</th>
+          <th class="text-left px-5 py-3 font-semibold text-gray-600">Question</th>
+          <th class="text-left px-5 py-3 font-semibold text-gray-600 hidden md:table-cell">Keywords</th>
+          <th class="text-left px-5 py-3 font-semibold text-gray-600 hidden lg:table-cell">Answer</th>
+          <th class="text-center px-5 py-3 font-semibold text-gray-600 w-20">Active</th>
+          <th class="px-5 py-3 w-24"></th>
+        </tr>
+      </thead>
+      <tbody class="divide-y divide-gray-50">
+        {% for faq in faqs %}
+        <tr class="hover:bg-gray-50 transition">
+          <td class="px-5 py-3 text-gray-400 text-xs">{{ faq.sort_order }}</td>
+          <td class="px-5 py-3 font-medium text-gray-800 max-w-[200px]">
+            <p class="line-clamp-2">{{ faq.question }}</p>
+          </td>
+          <td class="px-5 py-3 text-gray-500 hidden md:table-cell max-w-[160px]">
+            {% if faq.keywords %}
+              <div class="flex flex-wrap gap-1">
+                {% for kw in faq.keywords.split(',') %}
+                  {% if kw.strip() %}
+                  <span class="text-xs bg-blue-50 text-blue-700 px-1.5 py-0.5 rounded-full">{{ kw.strip() }}</span>
+                  {% endif %}
+                {% endfor %}
+              </div>
+            {% else %}
+              <span class="text-gray-300">—</span>
+            {% endif %}
+          </td>
+          <td class="px-5 py-3 text-gray-500 hidden lg:table-cell max-w-xs">
+            <p class="line-clamp-2 text-xs">{{ faq.answer }}</p>
+          </td>
+          <td class="px-5 py-3 text-center">
+            <form method="POST" action="{{ url_for('admin.chat_faq_toggle', faq_id=faq.id) }}"
+                  onsubmit="fetch(this.action,{method:'POST',headers:{'X-CSRFToken':'{{ csrf_token() }}','Content-Type':'application/x-www-form-urlencoded'},body:'csrf_token={{ csrf_token() }}'}).then(()=>this.closest('tr').querySelector('.toggle-dot').classList.toggle('translate-x-5'));return false;">
+              <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+              <button type="submit" class="relative inline-flex items-center cursor-pointer" title="Toggle">
+                <div class="w-9 h-5 rounded-full transition-colors {{ 'bg-green-500' if faq.enabled else 'bg-gray-300' }}">
+                  <div class="toggle-dot absolute top-[2px] left-[2px] w-4 h-4 bg-white rounded-full shadow transition-transform {{ 'translate-x-4' if faq.enabled else '' }}"></div>
+                </div>
+              </button>
+            </form>
+          </td>
+          <td class="px-5 py-3 whitespace-nowrap">
+            <div class="flex items-center gap-2 justify-end">
+              <button onclick="openEditModal({{ faq.id }}, {{ faq.question | tojson }}, {{ faq.answer | tojson }}, {{ faq.keywords | tojson }}, {{ faq.sort_order }})"
+                      class="text-xs text-blue-500 hover:text-blue-700 font-medium transition">Edit</button>
+              <form method="POST" action="{{ url_for('admin.chat_faq_delete', faq_id=faq.id) }}"
+                    data-confirm="Delete FAQ: {{ faq.question[:60] }}? Cannot be undone.">
+                <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+                <button type="submit" class="text-xs text-red-500 hover:text-red-700 font-medium transition">Delete</button>
+              </form>
+            </div>
+          </td>
+        </tr>
+        {% endfor %}
+      </tbody>
+    </table>
+  </div>
+  {% else %}
+  <div class="py-16 text-center">
+    <div class="w-12 h-12 bg-gray-100 rounded-2xl flex items-center justify-center mx-auto mb-3">
+      <svg class="w-6 h-6 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+      </svg>
+    </div>
+    <p class="text-gray-500 font-medium text-sm">No FAQs yet</p>
+    <p class="text-xs text-gray-400 mt-1">Add Q&amp;A pairs above. The chat widget will match user messages against them.</p>
+  </div>
+  {% endif %}
+</div>
+
+<!-- Edit FAQ Modal -->
+<div id="edit-faq-modal" class="fixed inset-0 z-[200] hidden items-center justify-center bg-black/50 backdrop-blur-sm">
+  <div class="bg-white rounded-2xl p-6 mx-4 max-w-lg w-full shadow-2xl">
+    <h3 class="text-base font-bold text-gray-800 mb-4">Edit FAQ</h3>
+    <form id="edit-faq-form" method="POST" action="">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <div class="space-y-3">
+        <div>
+          <label class="block text-xs font-medium text-gray-600 mb-1">Question</label>
+          <input type="text" id="edit-question" name="question" required
+                 class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-blue-400">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-gray-600 mb-1">Keywords <span class="text-gray-400">(comma-separated)</span></label>
+          <input type="text" id="edit-keywords" name="keywords"
+                 class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-blue-400">
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-gray-600 mb-1">Answer</label>
+          <textarea id="edit-answer" name="answer" rows="3" required
+                    class="w-full px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-blue-400 resize-none"></textarea>
+        </div>
+        <div>
+          <label class="block text-xs font-medium text-gray-600 mb-1">Sort Order</label>
+          <input type="number" id="edit-sort-order" name="sort_order" min="0"
+                 class="w-24 px-3 py-2 text-sm border border-gray-200 rounded-lg focus:outline-none focus:border-blue-400">
+        </div>
+      </div>
+      <div class="flex gap-3 justify-end mt-5">
+        <button type="button" onclick="closeEditModal()"
+                class="px-4 py-2 rounded-lg border border-gray-300 text-sm font-medium text-gray-700 hover:bg-gray-50 transition">Cancel</button>
+        <button type="submit"
+                class="px-4 py-2 rounded-lg bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold transition">Save Changes</button>
+      </div>
+    </form>
+  </div>
+</div>
+
+<script>
+// Live preview sync
+(function () {
+  var nameInput    = document.querySelector('[name="assistant_name"]');
+  var greetInput   = document.querySelector('[name="greeting_message"]');
+  var colorInput   = document.querySelector('[name="theme_color"]');
+  var emojiInput   = document.querySelector('[name="avatar_emoji"]');
+  var hexDisplay   = document.getElementById('color-hex');
+
+  function sync() {
+    var name    = nameInput.value || 'Styleus Assistant';
+    var greet   = greetInput.value || 'Hi! How can I help you today?';
+    var color   = colorInput.value;
+    var emoji   = emojiInput.value || '💬';
+
+    document.getElementById('preview-name').textContent = name;
+    document.getElementById('preview-greeting').textContent = greet;
+    document.getElementById('preview-emoji').textContent = emoji;
+    document.getElementById('preview-bubble-emoji').textContent = emoji;
+    if (hexDisplay) hexDisplay.value = color;
+
+    var els = ['preview-header', 'preview-user-bubble', 'preview-send-btn', 'preview-bubble'];
+    els.forEach(function(id) {
+      var el = document.getElementById(id);
+      if (el) el.style.backgroundColor = color;
+    });
+  }
+
+  [nameInput, greetInput, emojiInput].forEach(function(el) { el.addEventListener('input', sync); });
+  colorInput.addEventListener('input', sync);
+}());
+
+// Edit FAQ modal
+function openEditModal(id, question, answer, keywords, sortOrder) {
+  document.getElementById('edit-question').value   = question;
+  document.getElementById('edit-answer').value     = answer;
+  document.getElementById('edit-keywords').value   = keywords;
+  document.getElementById('edit-sort-order').value = sortOrder;
+  document.getElementById('edit-faq-form').action  = '/admin/chat/faq/' + id + '/edit';
+  var modal = document.getElementById('edit-faq-modal');
+  modal.classList.remove('hidden');
+  modal.classList.add('flex');
+}
+function closeEditModal() {
+  var modal = document.getElementById('edit-faq-modal');
+  modal.classList.add('hidden');
+  modal.classList.remove('flex');
+}
+document.getElementById('edit-faq-modal').addEventListener('click', function(e) {
+  if (e.target === this) closeEditModal();
+});
+document.addEventListener('keydown', function(e) { if (e.key === 'Escape') closeEditModal(); });
+</script>
+{% endblock %}

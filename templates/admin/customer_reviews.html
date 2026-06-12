@@ -1,22 +1,11 @@
 {% extends 'admin/base.html' %}
 {% block content %}
 
-<!-- Header + Copy Link -->
+<!-- Header -->
 <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-6">
   <div>
     <h2 class="text-xl font-bold text-gray-900">Customer Reviews</h2>
     <p class="text-sm text-gray-500 mt-0.5">{{ pagination.total }} review{{ 's' if pagination.total != 1 else '' }} submitted</p>
-  </div>
-  <div class="flex items-center gap-2">
-    <span class="text-xs text-gray-400 font-mono truncate max-w-[220px]" id="review-link-text">{{ review_url }}</span>
-    <button id="copy-link-btn"
-            onclick="copyLink()"
-            class="inline-flex items-center gap-1.5 bg-blue-600 hover:bg-blue-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition shrink-0">
-      <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/>
-      </svg>
-      Copy Form Link
-    </button>
   </div>
 </div>
 
@@ -99,20 +88,4 @@
 </div>
 {% endif %}
 
-<script>
-function copyLink() {
-  var url = {{ review_url | tojson }};
-  navigator.clipboard.writeText(url).then(function () {
-    var btn = document.getElementById('copy-link-btn');
-    btn.textContent = 'Copied!';
-    btn.classList.replace('bg-blue-600', 'bg-green-600');
-    btn.classList.replace('hover:bg-blue-700', 'hover:bg-green-700');
-    setTimeout(function () {
-      btn.innerHTML = '<svg class="w-4 h-4 inline-block mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"/></svg>Copy Form Link';
-      btn.classList.replace('bg-green-600', 'bg-blue-600');
-      btn.classList.replace('hover:bg-green-700', 'hover:bg-blue-700');
-    }, 2000);
-  });
-}
-</script>
 {% endblock %}

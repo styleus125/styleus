@@ -71,13 +71,17 @@ def create_app(config_class=Config):
         from models import BlogPost
         from sqlalchemy import func
         try:
-            posts = (BlogPost.query
-                     .filter_by(is_published=True)
-                     .order_by(func.random())
-                     .limit(4).all())
+            latest = (BlogPost.query
+                      .filter_by(is_published=True)
+                      .order_by(BlogPost.created_at.desc())
+                      .first())
+            query = BlogPost.query.filter_by(is_published=True)
+            if latest:
+                query = query.filter(BlogPost.id != latest.id)
+            randoms = query.order_by(func.random()).limit(3).all()
         except Exception:
-            posts = []
-        return {'random_blog_posts': posts}
+            latest, randoms = None, []
+        return {'latest_blog_post': latest, 'random_blog_posts': randoms}
 
     @app.context_processor
     def inject_liked_ids():
@@ -87,6 +91,15 @@ def create_app(config_class=Config):
         if current_user.is_authenticated:
             liked_ids = {lk.product_id for lk in ProductLike.query.filter_by(user_id=current_user.id).all()}
         return {'liked_ids': liked_ids}
+
+    @app.context_processor
+    def inject_chat_config():
+        from models import ChatConfig
+        try:
+            config = ChatConfig.query.first()
+        except Exception:
+            config = None
+        return {'chat_config': config}
 
     @app.context_processor
     def inject_cart_count():
@@ -311,6 +324,13 @@ def create_app(config_class=Config):
                 db.session.add(AppListing(**data))
             db.session.commit()
             click.echo(f'Seeded {len(sample_apps)} app listings.')
+
+        # Seed default ChatConfig if not present
+        from models import ChatConfig
+        if not ChatConfig.query.first():
+            db.session.add(ChatConfig())
+            db.session.commit()
+            click.echo('Created default ChatConfig.')
 
         click.echo('Done!')
 

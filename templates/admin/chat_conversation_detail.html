@@ -1,0 +1,62 @@
+{% extends 'admin/base.html' %}
+{% block content %}
+
+<div class="flex items-center justify-between mb-6">
+  <div>
+    <h2 class="text-xl font-bold text-gray-900">Conversation #{{ chat_session.id }}</h2>
+    <p class="text-sm text-gray-500 mt-0.5">
+      Session <span class="font-mono">{{ chat_session.session_id[:16] }}…</span>
+      · Started {{ chat_session.created_at.strftime('%d %b %Y %H:%M') }}
+      · {{ messages | length }} message{{ 's' if messages | length != 1 else '' }}
+    </p>
+  </div>
+  <div class="flex items-center gap-3">
+    <form method="POST" action="{{ url_for('admin.chat_conversation_delete', session_id=chat_session.session_id) }}"
+          data-confirm="Delete this entire conversation? Cannot be undone.">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button type="submit"
+              class="inline-flex items-center gap-1.5 bg-red-50 hover:bg-red-100 text-red-600 text-sm font-semibold px-3 py-2 rounded-lg transition">
+        Delete
+      </button>
+    </form>
+    <a href="{{ url_for('admin.chat_conversations') }}"
+       class="inline-flex items-center gap-1.5 text-sm text-gray-500 hover:text-gray-800 transition">
+      ← All Conversations
+    </a>
+  </div>
+</div>
+
+<div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden">
+  <!-- Chat header bar -->
+  <div class="px-5 py-3 border-b border-gray-100 bg-navy-900 text-white flex items-center gap-3" style="background-color:#1e2160;">
+    <div class="w-8 h-8 bg-blue-500 rounded-full flex items-center justify-center text-sm">💬</div>
+    <div>
+      <p class="text-sm font-semibold">Chat Transcript</p>
+      <p class="text-xs text-gray-400">{{ chat_session.created_at.strftime('%d %b %Y') }}</p>
+    </div>
+  </div>
+
+  <!-- Messages -->
+  <div class="p-6 space-y-4 bg-gray-50 max-h-[600px] overflow-y-auto">
+    {% for msg in messages %}
+    <div class="flex {% if msg.role == 'user' %}justify-end{% else %}justify-start{% endif %}">
+      {% if msg.role == 'assistant' %}
+      <div class="w-7 h-7 bg-blue-500 rounded-full flex items-center justify-center text-white text-xs shrink-0 mt-1 mr-2">💬</div>
+      {% endif %}
+      <div class="max-w-[70%]">
+        <div class="{% if msg.role == 'user' %}bg-blue-600 text-white rounded-2xl rounded-tr-sm{% else %}bg-white text-gray-800 rounded-2xl rounded-tl-sm border border-gray-200{% endif %} px-4 py-2.5 text-sm shadow-sm">
+          {{ msg.content }}
+        </div>
+        <p class="text-[10px] text-gray-400 mt-1 {% if msg.role == 'user' %}text-right{% endif %}">
+          {{ msg.created_at.strftime('%H:%M') }}
+          · {{ 'User' if msg.role == 'user' else 'Assistant' }}
+        </p>
+      </div>
+      {% if msg.role == 'user' %}
+      <div class="w-7 h-7 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 text-xs shrink-0 mt-1 ml-2">👤</div>
+      {% endif %}
+    </div>
+    {% endfor %}
+  </div>
+</div>
+{% endblock %}
