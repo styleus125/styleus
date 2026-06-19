@@ -93,6 +93,19 @@
     /* Hide scrollbar for category/ticker strips */
     .scrollbar-hide::-webkit-scrollbar { display: none; }
     .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+    /* Chat widget waving hand */
+    @keyframes chatWave {
+      0%, 60%, 100% { transform: rotate(0deg); }
+      10%            { transform: rotate(18deg); }
+      20%            { transform: rotate(-8deg); }
+      30%            { transform: rotate(16deg); }
+      40%            { transform: rotate(-4deg); }
+    }
+    .chat-wave-hand {
+      display: inline-block;
+      transform-origin: 70% 80%;
+      animation: chatWave 2.4s ease-in-out infinite;
+    }
   </style>
 </head>
 <body class="bg-gray-50 text-gray-800 font-sans antialiased">
@@ -416,6 +429,26 @@
 </section>
 {% endif %}
 
+<!-- Review CTA Strip -->
+<section class="bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 py-5">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex flex-col sm:flex-row items-center justify-between gap-4">
+    <div class="flex items-center gap-4">
+      <div class="flex gap-0.5 text-2xl shrink-0">⭐⭐⭐⭐⭐</div>
+      <div>
+        <p class="text-navy-900 font-extrabold text-base sm:text-lg leading-tight">Loved your experience at Styleus?</p>
+        <p class="text-amber-900 text-sm font-medium">It takes just 1 minute — your review helps us serve everyone better.</p>
+      </div>
+    </div>
+    <a href="{{ url_for('shop.review_form') }}"
+       class="shrink-0 flex items-center gap-2 bg-navy-900 hover:bg-navy-800 text-white font-bold px-7 py-3 rounded-xl shadow-lg transition text-sm whitespace-nowrap group">
+      <svg class="w-4 h-4 text-yellow-400 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
+        <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+      </svg>
+      Write a Review
+    </a>
+  </div>
+</section>
+
 <!-- Footer -->
 <footer class="bg-navy-900 text-gray-400 mt-0">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -481,10 +514,8 @@
       <div class="flex flex-wrap items-center gap-3">
         <!-- Facebook -->
         <a href="https://www.facebook.com/profile.php?id=61590151628628" target="_blank" rel="noopener noreferrer"
-           class="flex items-center gap-1.5 px-3 py-1.5 rounded-full transition"
+           class="flex items-center gap-1.5 px-3 py-1.5 rounded-full transition hover:brightness-90 active:brightness-75"
            style="background-color:#1877F2; color:#fff;"
-           onmouseover="this.style.backgroundColor='#0e5fcc';"
-           onmouseout="this.style.backgroundColor='#1877F2';"
            aria-label="Facebook">
           <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
             <path d="M22 12c0-5.522-4.478-10-10-10S2 6.478 2 12c0 4.991 3.657 9.128 8.438 9.878v-6.987H7.898V12h2.54V9.797c0-2.506 1.492-3.89 3.777-3.89 1.094 0 2.238.195 2.238.195v2.46h-1.26c-1.243 0-1.63.771-1.63 1.562V12h2.773l-.443 2.89h-2.33v6.988C18.343 21.128 22 16.991 22 12z"/>
@@ -493,10 +524,8 @@
         </a>
         <!-- Instagram -->
         <a href="https://www.instagram.com/styleus125/" target="_blank" rel="noopener noreferrer"
-           class="flex items-center gap-1.5 px-3 py-1.5 rounded-full transition"
+           class="flex items-center gap-1.5 px-3 py-1.5 rounded-full transition hover:brightness-90 active:brightness-75"
            style="background:linear-gradient(45deg,#f09433,#e6683c,#dc2743,#cc2366,#bc1888); color:#fff;"
-           onmouseover="this.style.opacity='0.85';"
-           onmouseout="this.style.opacity='1';"
            aria-label="Instagram">
           <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
             <path d="M12 2.163c3.204 0 3.584.012 4.85.07 1.366.062 2.633.334 3.608 1.308.975.975 1.246 2.242 1.308 3.608.058 1.266.07 1.646.07 4.85s-.012 3.584-.07 4.85c-.062 1.366-.334 2.633-1.308 3.608-.975.975-2.242 1.246-3.608 1.308-1.266.058-1.646.07-4.85.07s-3.584-.012-4.85-.07c-1.366-.062-2.633-.334-3.608-1.308-.975-.975-1.246-2.242-1.308-3.608C2.175 15.584 2.163 15.204 2.163 12s.012-3.584.07-4.85c.062-1.366.334-2.633 1.308-3.608.975-.975 2.242-1.246 3.608-1.308C8.416 2.175 8.796 2.163 12 2.163zm0-2.163C8.741 0 8.333.014 7.053.072 5.197.157 3.355.673 2.014 2.014.673 3.355.157 5.197.072 7.053.014 8.333 0 8.741 0 12c0 3.259.014 3.667.072 4.947.085 1.856.601 3.698 1.942 5.039 1.341 1.341 3.183 1.857 5.039 1.942C8.333 23.986 8.741 24 12 24s3.667-.014 4.947-.072c1.856-.085 3.698-.601 5.039-1.942 1.341-1.341 1.857-3.183 1.942-5.039.058-1.28.072-1.688.072-4.947 0-3.259-.014-3.667-.072-4.947-.085-1.856-.601-3.698-1.942-5.039C20.645.673 18.803.157 16.947.072 15.667.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 100 12.324 6.162 6.162 0 000-12.324zm0 10.162a4 4 0 110-8 4 4 0 010 8zm6.406-11.845a1.44 1.44 0 100 2.881 1.44 1.44 0 000-2.881z"/>
@@ -505,10 +534,8 @@
         </a>
         <!-- YouTube -->
         <a href="https://www.youtube.com/channel/UCt7VbM9bAwZqZ3UMXjuY7xw" target="_blank" rel="noopener noreferrer"
-           class="flex items-center gap-1.5 px-3 py-1.5 rounded-full transition"
+           class="flex items-center gap-1.5 px-3 py-1.5 rounded-full transition hover:brightness-90 active:brightness-75"
            style="background-color:#FF0000; color:#fff;"
-           onmouseover="this.style.backgroundColor='#cc0000';"
-           onmouseout="this.style.backgroundColor='#FF0000';"
            aria-label="YouTube">
           <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
             <path d="M23.498 6.186a3.016 3.016 0 00-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 00.502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 002.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 002.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z"/>
@@ -517,10 +544,8 @@
         </a>
         <!-- Telegram -->
         <a href="https://t.me/LaptopSoft" target="_blank" rel="noopener noreferrer"
-           class="flex items-center gap-1.5 px-3 py-1.5 rounded-full transition"
+           class="flex items-center gap-1.5 px-3 py-1.5 rounded-full transition hover:brightness-90 active:brightness-75"
            style="background-color:#2AABEE; color:#fff;"
-           onmouseover="this.style.backgroundColor='#1a8fc5';"
-           onmouseout="this.style.backgroundColor='#2AABEE';"
            aria-label="Telegram">
           <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 24 24">
             <path d="M11.944 0A12 12 0 100 12a12 12 0 0011.944-12zm3.023 8.507l-2.04 9.608c-.15.667-.543.832-1.1.517l-3.037-2.238-1.465 1.41c-.162.162-.298.298-.61.298l.218-3.088 5.623-5.08c.245-.218-.054-.338-.378-.12L7.08 15.014l-2.97-.926c-.645-.2-.658-.645.135-.955l11.59-4.47c.538-.196 1.01.12.832.844z"/>
@@ -529,6 +554,8 @@
         </a>
       </div>
     </div>
+    <!-- Spacer so fixed chat bubble never covers social links -->
+    <div class="h-20 sm:h-0"></div>
   </div>
 </footer>
 
@@ -572,11 +599,11 @@
 {% if chat_config and chat_config.enabled %}
 <!-- Chat Widget -->
 <div id="chat-widget"
-     class="fixed z-[90] {{ 'left-5' if chat_config.bubble_position == 'left' else 'right-5' }} bottom-5 flex flex-col items-{{ 'start' if chat_config.bubble_position == 'left' else 'end' }}">
+     class="fixed z-[90] {{ 'left-5' if chat_config.bubble_position == 'left' else 'right-5' }} bottom-5 flex flex-col items-{{ 'start' if chat_config.bubble_position == 'left' else 'end' }} pointer-events-none">
 
   <!-- Chat panel -->
   <div id="chat-panel"
-       class="mb-3 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-gray-200 flex flex-col overflow-hidden"
+       class="mb-3 w-80 sm:w-96 bg-white rounded-2xl shadow-2xl border border-gray-200 flex flex-col overflow-hidden pointer-events-auto"
        style="max-height:480px; transform:scale(0); opacity:0; pointer-events:none; transform-origin:bottom {{ 'left' if chat_config.bubble_position == 'left' else 'right' }}; transition:transform 0.25s ease,opacity 0.25s ease;">
     <!-- Header -->
     <div class="flex items-center gap-3 px-4 py-3 text-white shrink-0"
@@ -619,10 +646,38 @@
 
   <!-- Toggle button -->
   <button id="chat-toggle-btn" onclick="chatToggle()"
-          class="w-14 h-14 rounded-full shadow-xl flex items-center justify-center text-white text-2xl transition-transform hover:scale-110 active:scale-95"
-          style="background-color:{{ chat_config.theme_color }};"
+          class="flex flex-col items-center gap-1 transition-transform hover:scale-105 active:scale-95 pointer-events-auto"
           aria-label="Open chat">
-    <span id="chat-btn-icon">{{ chat_config.avatar_emoji }}</span>
+    <div class="relative w-16 h-16 rounded-full shadow-2xl overflow-visible bg-white" style="border: 3px solid {{ chat_config.theme_color }};">
+    <div class="w-full h-full rounded-full overflow-hidden">
+    <span id="chat-btn-icon" class="w-full h-full flex items-center justify-center">
+      <svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%">
+        <circle cx="40" cy="40" r="40" fill="#EFF6FF"/>
+        <ellipse cx="40" cy="31" rx="19" ry="21" fill="#7C3AED"/>
+        <circle cx="40" cy="33" r="17" fill="#FBBF9A"/>
+        <path d="M21 31 Q21 13 40 11 Q59 13 59 31 Q57 20 40 18 Q23 20 21 31Z" fill="#7C3AED"/>
+        <path d="M21 31 Q19 42 20 50 Q23 42 24 35" fill="#7C3AED"/>
+        <path d="M59 31 Q61 42 60 50 Q57 42 56 35" fill="#7C3AED"/>
+        <ellipse cx="33" cy="33" rx="2.8" ry="3.2" fill="#1A0800"/>
+        <ellipse cx="47" cy="33" rx="2.8" ry="3.2" fill="#1A0800"/>
+        <circle cx="34.5" cy="31.2" r="1" fill="white"/>
+        <circle cx="48.5" cy="31.2" r="1" fill="white"/>
+        <path d="M27 27 Q33 24.5 37 27" stroke="#5B21B6" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+        <path d="M43 27 Q47 24.5 53 27" stroke="#5B21B6" stroke-width="1.6" fill="none" stroke-linecap="round"/>
+        <path d="M32 43 Q40 49 48 43" stroke="#C05050" stroke-width="2" fill="none" stroke-linecap="round"/>
+        <ellipse cx="27" cy="39" rx="4.5" ry="2.8" fill="#F08080" opacity="0.38"/>
+        <ellipse cx="53" cy="39" rx="4.5" ry="2.8" fill="#F08080" opacity="0.38"/>
+        <rect x="34" y="49" width="12" height="9" rx="4" fill="#FBBF9A"/>
+        <path d="M14 80 Q15 64 27 59 Q40 56 53 59 Q65 64 66 80" fill="#7C3AED"/>
+        <path d="M40 59 L36 64 L40 61 L44 64 Z" fill="#6D28D9"/>
+      </svg>
+    </span>
+    </div>
+    <span id="chat-wave-hand" class="chat-wave-hand absolute -top-2 -right-2 text-xl leading-none select-none pointer-events-none">👋</span>
+    </div>
+    <span id="chat-btn-label"
+          class="text-xs font-bold text-white px-2.5 py-0.5 rounded-full shadow"
+          style="background-color:{{ chat_config.theme_color }};">Ask me!</span>
   </button>
 </div>
 
@@ -631,6 +686,8 @@
   var GREETING   = {{ chat_config.greeting_message | tojson }};
   var EMOJI      = {{ chat_config.avatar_emoji | tojson }};
   var COLOR      = {{ chat_config.theme_color | tojson }};
+  var CHAT_API    = {{ config.get('CHAT_API_URL', '') | tojson }};
+  var CHAT_SECRET = {{ config.get('CHAT_SECRET', '') | tojson }};
   var SID_KEY    = 'styleus_chat_sid';
   var isOpen     = false;
   var greeted    = false;
@@ -642,13 +699,20 @@
   var inputEl    = document.getElementById('chat-input');
   var btnIcon    = document.getElementById('chat-btn-icon');
 
+  var AVATAR_HTML = btnIcon.innerHTML;
+  var CLOSE_HTML  = '<svg viewBox="0 0 24 24" style="width:1.5rem;height:1.5rem;" fill="none" stroke="' + COLOR + '" stroke-width="2.5" stroke-linecap="round"><line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/></svg>';
+  var btnLabel    = document.getElementById('chat-btn-label');
+  var waveHand    = document.getElementById('chat-wave-hand');
+
   function chatToggle() {
     isOpen = !isOpen;
     if (isOpen) {
       panel.style.transform  = 'scale(1)';
       panel.style.opacity    = '1';
       panel.style.pointerEvents = 'auto';
-      btnIcon.textContent    = '✕';
+      btnIcon.innerHTML      = CLOSE_HTML;
+      if (btnLabel) btnLabel.style.display = 'none';
+      if (waveHand) waveHand.style.display = 'none';
       if (!greeted) {
         greeted = true;
         setTimeout(function () { addMsg('assistant', GREETING); }, 200);
@@ -658,7 +722,9 @@
       panel.style.transform  = 'scale(0)';
       panel.style.opacity    = '0';
       panel.style.pointerEvents = 'none';
-      btnIcon.textContent    = EMOJI;
+      btnIcon.innerHTML      = AVATAR_HTML;
+      if (btnLabel) btnLabel.style.display = '';
+      if (waveHand) waveHand.style.display = '';
     }
   }
   window.chatToggle = chatToggle;
@@ -668,9 +734,9 @@
     wrap.className = role === 'user' ? 'flex justify-end' : 'flex justify-start items-end gap-2';
     if (role === 'assistant') {
       var av = document.createElement('div');
-      av.className = 'w-6 h-6 rounded-full flex items-center justify-center text-white text-xs shrink-0 mb-0.5';
-      av.style.backgroundColor = COLOR;
-      av.textContent = EMOJI;
+      av.className = 'w-7 h-7 rounded-full shrink-0 mb-0.5 overflow-hidden bg-blue-50';
+      av.style.border = '2px solid ' + COLOR;
+      av.innerHTML = '<svg viewBox="0 0 80 80" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%"><circle cx="40" cy="40" r="40" fill="#EFF6FF"/><ellipse cx="40" cy="31" rx="19" ry="21" fill="#7C3AED"/><circle cx="40" cy="33" r="17" fill="#FBBF9A"/><path d="M21 31 Q21 13 40 11 Q59 13 59 31 Q57 20 40 18 Q23 20 21 31Z" fill="#7C3AED"/><path d="M21 31 Q19 42 20 50 Q23 42 24 35" fill="#7C3AED"/><path d="M59 31 Q61 42 60 50 Q57 42 56 35" fill="#7C3AED"/><ellipse cx="33" cy="33" rx="2.8" ry="3.2" fill="#1A0800"/><ellipse cx="47" cy="33" rx="2.8" ry="3.2" fill="#1A0800"/><circle cx="34.5" cy="31.2" r="1" fill="white"/><circle cx="48.5" cy="31.2" r="1" fill="white"/><path d="M32 43 Q40 49 48 43" stroke="#C05050" stroke-width="2" fill="none" stroke-linecap="round"/><rect x="34" y="49" width="12" height="9" rx="4" fill="#FBBF9A"/><path d="M14 80 Q15 64 27 59 Q40 56 53 59 Q65 64 66 80" fill="#7C3AED"/></svg>';
       wrap.appendChild(av);
     }
     var bubble = document.createElement('div');
@@ -682,16 +748,10 @@
     wrap.appendChild(bubble);
     messagesEl.appendChild(wrap);
     messagesEl.scrollTop = messagesEl.scrollHeight;
+    return bubble;
   }
 
-  function chatSend() {
-    var msg = (inputEl.value || '').trim();
-    if (!msg) return;
-    inputEl.value = '';
-    addMsg('user', msg);
-    typingEl.classList.remove('hidden');
-    messagesEl.scrollTop = messagesEl.scrollHeight;
-
+  function sendLegacy(msg) {
     fetch('/api/chat/message', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
@@ -707,6 +767,68 @@
       typingEl.classList.add('hidden');
       addMsg('assistant', 'Something went wrong. Please try again.');
     });
+  }
+
+  function sendStream(msg) {
+    var hdrs = { 'Content-Type': 'application/json' };
+    if (CHAT_SECRET) hdrs['X-Chat-Secret'] = CHAT_SECRET;
+    fetch(CHAT_API + '/api/chat', {
+      method: 'POST',
+      headers: hdrs,
+      body: JSON.stringify({ message: msg, session_id: sessionId })
+    })
+    .then(function (r) {
+      if (!r.ok || !r.body) throw new Error('chat api unavailable');
+      var reader  = r.body.getReader();
+      var decoder = new TextDecoder();
+      var buf     = '';
+      var bubble  = null;
+
+      function handleEvent(block) {
+        var line = block.split('\n').find(function (l) { return l.indexOf('data: ') === 0; });
+        if (!line) return;
+        var data;
+        try { data = JSON.parse(line.slice(6)); } catch (e) { return; }
+        if (data.session_id) { sessionId = data.session_id; sessionStorage.setItem(SID_KEY, sessionId); }
+        if (data.token) {
+          typingEl.classList.add('hidden');
+          if (!bubble) bubble = addMsg('assistant', '');
+          bubble.textContent += data.token;
+          messagesEl.scrollTop = messagesEl.scrollHeight;
+        }
+        if (data.error) {
+          typingEl.classList.add('hidden');
+          addMsg('assistant', data.error);
+        }
+      }
+
+      function pump() {
+        return reader.read().then(function (res) {
+          if (res.done) { typingEl.classList.add('hidden'); return; }
+          buf += decoder.decode(res.value, { stream: true });
+          var blocks = buf.split('\n\n');
+          buf = blocks.pop();
+          blocks.forEach(handleEvent);
+          return pump();
+        });
+      }
+      return pump();
+    })
+    .catch(function () {
+      // AI service down — fall back to the built-in FAQ matcher
+      sendLegacy(msg);
+    });
+  }
+
+  function chatSend() {
+    var msg = (inputEl.value || '').trim();
+    if (!msg) return;
+    inputEl.value = '';
+    addMsg('user', msg);
+    typingEl.classList.remove('hidden');
+    messagesEl.scrollTop = messagesEl.scrollHeight;
+
+    if (CHAT_API) { sendStream(msg); } else { sendLegacy(msg); }
   }
   window.chatSend = chatSend;
 }());

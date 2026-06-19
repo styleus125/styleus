@@ -119,6 +119,16 @@ def chat_message():
     return jsonify({'reply': reply, 'session_id': session_id})
 
 
+@api_bp.route('/chat/faqs')
+def chat_faqs_export():
+    """Export enabled FAQs for the styleus-ai ingest pipeline."""
+    faqs = ChatFAQ.query.filter_by(enabled=True).order_by(ChatFAQ.sort_order).all()
+    return jsonify({'faqs': [
+        {'id': f.id, 'question': f.question, 'answer': f.answer}
+        for f in faqs
+    ]})
+
+
 def _faq_match(text):
     faqs = ChatFAQ.query.filter_by(enabled=True).order_by(ChatFAQ.sort_order).all()
     lower = text.lower()

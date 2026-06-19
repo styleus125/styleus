@@ -1,0 +1,449 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e4]: Welcome to Styleus!
+    - link "WhatsApp" [ref=e5] [cursor=pointer]:
+      - /url: https://wa.me/919958808898
+      - img "WhatsApp" [ref=e6]
+  - navigation [ref=e7]:
+    - generic [ref=e9]:
+      - link "Styleus" [ref=e10] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e11]: Styleus
+      - generic [ref=e12]:
+        - link [ref=e13] [cursor=pointer]:
+          - /url: /cart/
+          - img [ref=e14]
+        - button "Open menu" [ref=e16] [cursor=pointer]:
+          - img [ref=e17]
+  - main [ref=e19]:
+    - generic [ref=e20]:
+      - generic [ref=e21]:
+        - heading "Shop Smarter" [level=1] [ref=e22]
+        - paragraph [ref=e23]: Discover thousands of physical and digital products at unbeatable prices.
+        - generic [ref=e24]:
+          - link "Browse Products" [ref=e25] [cursor=pointer]:
+            - /url: /products
+          - link "Services" [ref=e26] [cursor=pointer]:
+            - /url: /services
+          - link "+ Sell Items" [ref=e27] [cursor=pointer]:
+            - /url: /sell
+          - link "Professionals" [ref=e28] [cursor=pointer]:
+            - /url: /professionals
+        - paragraph [ref=e29]:
+          - text: Looking for ready-to-deploy software?
+          - link "Browse the App Marketplace →" [ref=e30] [cursor=pointer]:
+            - /url: /marketplace
+      - generic [ref=e31]:
+        - generic [ref=e32]:
+          - link "Software Development Software Development" [ref=e33] [cursor=pointer]:
+            - /url: /software-development
+            - img "Software Development" [ref=e34]
+            - paragraph [ref=e37]: Software Development
+          - generic [ref=e38]:
+            - img "Refurbished Laptops" [ref=e39]
+            - paragraph [ref=e42]: Refurbished Laptops
+        - generic [ref=e43]:
+          - generic [ref=e44]:
+            - link "Web Hosting & Maintenance Web Hosting & Maintenance" [ref=e45] [cursor=pointer]:
+              - /url: /webhosting
+              - img "Web Hosting & Maintenance" [ref=e46]
+              - paragraph [ref=e49]: Web Hosting & Maintenance
+            - generic [ref=e50]:
+              - img "Assembled Computers" [ref=e51]
+              - paragraph [ref=e54]: Assembled Computers
+            - generic [ref=e55]:
+              - img "Used Items" [ref=e56]
+              - paragraph [ref=e59]: Used Items
+            - generic [ref=e60]:
+              - img "Online Support" [ref=e61]
+              - paragraph [ref=e64]: Online Support
+            - generic [ref=e65]:
+              - img "Advertise with Us" [ref=e66]
+              - paragraph [ref=e69]: Advertise with Us
+            - generic [ref=e70]:
+              - img "Buy Direct from Sellers" [ref=e71]
+              - paragraph [ref=e74]: Buy Direct from Sellers
+          - generic [ref=e75]:
+            - link [ref=e76] [cursor=pointer]:
+              - /url: /webhosting
+              - paragraph [ref=e79]: Web Hosting & Maintenance
+            - paragraph [ref=e83]: Assembled Computers
+            - paragraph [ref=e87]: Used Items
+            - paragraph [ref=e91]: Online Support
+            - paragraph [ref=e95]: Advertise with Us
+            - paragraph [ref=e99]: Buy Direct from Sellers
+          - generic [ref=e100]:
+            - link [ref=e101] [cursor=pointer]:
+              - /url: /webhosting
+              - paragraph [ref=e104]: Web Hosting & Maintenance
+            - paragraph [ref=e108]: Assembled Computers
+            - paragraph [ref=e112]: Used Items
+            - paragraph [ref=e116]: Online Support
+            - paragraph [ref=e120]: Advertise with Us
+            - paragraph [ref=e124]: Buy Direct from Sellers
+          - generic [ref=e125]:
+            - link [ref=e126] [cursor=pointer]:
+              - /url: /webhosting
+              - paragraph [ref=e129]: Web Hosting & Maintenance
+            - paragraph [ref=e133]: Assembled Computers
+            - paragraph [ref=e137]: Used Items
+            - paragraph [ref=e141]: Online Support
+            - paragraph [ref=e145]: Advertise with Us
+            - paragraph [ref=e149]: Buy Direct from Sellers
+    - generic [ref=e152]:
+      - link "All" [ref=e153] [cursor=pointer]:
+        - /url: /products
+      - link "Antivirus" [ref=e154] [cursor=pointer]:
+        - /url: /products?category=antivirus
+      - link "RAM" [ref=e155] [cursor=pointer]:
+        - /url: /products?category=ram
+      - link "SSD" [ref=e156] [cursor=pointer]:
+        - /url: /products?category=ssd
+      - link "Motherboard" [ref=e157] [cursor=pointer]:
+        - /url: /products?category=motherboard
+      - link "CCTV" [ref=e158] [cursor=pointer]:
+        - /url: /products?category=cctv
+      - link "Securities" [ref=e159] [cursor=pointer]:
+        - /url: /products?category=securities
+      - link "Accessories" [ref=e160] [cursor=pointer]:
+        - /url: /products?category=accessories
+      - link "Refurbished Laptops" [ref=e161] [cursor=pointer]:
+        - /url: /products?category=refurbished
+      - link "Softwares" [ref=e162] [cursor=pointer]:
+        - /url: /products?category=softwares
+      - link "Electronics" [ref=e163] [cursor=pointer]:
+        - /url: /products?category=electronics
+      - link "Clothing" [ref=e164] [cursor=pointer]:
+        - /url: /products?category=clothing
+      - link "Books" [ref=e165] [cursor=pointer]:
+        - /url: /products?category=books
+      - link "Software" [ref=e166] [cursor=pointer]:
+        - /url: /products?category=software
+      - link "Music" [ref=e167] [cursor=pointer]:
+        - /url: /products?category=music
+    - generic [ref=e168]:
+      - generic [ref=e169]:
+        - heading "Featured Products" [level=2] [ref=e170]
+        - link "View all →" [ref=e171] [cursor=pointer]:
+          - /url: /products
+      - generic [ref=e172]:
+        - generic [ref=e173]:
+          - 'link "NVME SSD SSD NVME SSD #00013 ₹3000" [ref=e174] [cursor=pointer]':
+            - /url: /products/nvme-ssd
+            - img "NVME SSD" [ref=e176]
+            - generic [ref=e177]:
+              - paragraph [ref=e178]: SSD
+              - heading "NVME SSD" [level=3] [ref=e179]
+              - paragraph [ref=e180]: "#00013"
+              - generic [ref=e182]: ₹3000
+          - generic [ref=e184]:
+            - link "Buy Now" [ref=e185] [cursor=pointer]:
+              - /url: https://wa.me/919958808898?text=Hi%2C+I%27d+like+to+buy%3A+NVME%20SSD
+            - button "Like" [ref=e186] [cursor=pointer]:
+              - img [ref=e187]
+        - generic [ref=e189]:
+          - 'link "CP PLUS 3M Wi-Fi CCTV CCTV CP PLUS 3M Wi-Fi CCTV #00053 ₹2500" [ref=e190] [cursor=pointer]':
+            - /url: /products/cp-plus-3m-wi-fi-cctv
+            - img "CP PLUS 3M Wi-Fi CCTV" [ref=e192]
+            - generic [ref=e193]:
+              - paragraph [ref=e194]: CCTV
+              - heading "CP PLUS 3M Wi-Fi CCTV" [level=3] [ref=e195]
+              - paragraph [ref=e196]: "#00053"
+              - generic [ref=e198]: ₹2500
+          - generic [ref=e200]:
+            - link "Buy Now" [ref=e201] [cursor=pointer]:
+              - /url: https://wa.me/919958808898?text=Hi%2C+I%27d+like+to+buy%3A+CP%20PLUS%203M%20Wi-Fi%20CCTV
+            - button "Like" [ref=e202] [cursor=pointer]:
+              - img [ref=e203]
+        - generic [ref=e205]:
+          - 'link "Quick heal total security Antivirus Quick heal total security #00023 ₹1800" [ref=e206] [cursor=pointer]':
+            - /url: /products/quick-heal-total-security
+            - img "Quick heal total security" [ref=e208]
+            - generic [ref=e209]:
+              - paragraph [ref=e210]: Antivirus
+              - heading "Quick heal total security" [level=3] [ref=e211]
+              - paragraph [ref=e212]: "#00023"
+              - generic [ref=e214]: ₹1800
+          - generic [ref=e216]:
+            - link "Buy Now" [ref=e217] [cursor=pointer]:
+              - /url: https://wa.me/919958808898?text=Hi%2C+I%27d+like+to+buy%3A+Quick%20heal%20total%20security%20
+            - button "Like" [ref=e218] [cursor=pointer]:
+              - img [ref=e219]
+        - generic [ref=e221]:
+          - 'link "Electronics Smart Watch Fitness Tracker #00151 ₹130" [ref=e222] [cursor=pointer]':
+            - /url: /products/smart-watch-fitness-tracker
+            - img [ref=e225]
+            - generic [ref=e227]:
+              - paragraph [ref=e228]: Electronics
+              - heading "Smart Watch Fitness Tracker" [level=3] [ref=e229]
+              - paragraph [ref=e230]: "#00151"
+              - generic [ref=e232]: ₹130
+          - generic [ref=e234]:
+            - link "Buy Now" [ref=e235] [cursor=pointer]:
+              - /url: https://wa.me/919958808898?text=Hi%2C+I%27d+like+to+buy%3A+Smart%20Watch%20Fitness%20Tracker
+            - button "Like" [ref=e236] [cursor=pointer]:
+              - img [ref=e237]
+        - generic [ref=e239]:
+          - 'link "Laptop Keyboard Uncategorized Laptop Keyboard #00060 ₹1200" [ref=e240] [cursor=pointer]':
+            - /url: /products/laptop-keyboard
+            - img "Laptop Keyboard" [ref=e242]
+            - generic [ref=e243]:
+              - paragraph [ref=e244]: Uncategorized
+              - heading "Laptop Keyboard" [level=3] [ref=e245]
+              - paragraph [ref=e246]: "#00060"
+              - generic [ref=e248]: ₹1200
+          - generic [ref=e250]:
+            - link "Buy Now" [ref=e251] [cursor=pointer]:
+              - /url: https://wa.me/919958808898?text=Hi%2C+I%27d+like+to+buy%3A+Laptop%20Keyboard
+            - button "Like" [ref=e252] [cursor=pointer]:
+              - img [ref=e253]
+        - generic [ref=e255]:
+          - 'link "SIMMTRONICS SO-DIMM RAM DDR4 4GB 3200Mhz RAM SIMMTRONICS SO-DIMM RAM DDR4 4GB 3200Mhz #00106 ₹2900" [ref=e256] [cursor=pointer]':
+            - /url: /products/simmtronics-so-dimm-ram-ddr4-4gb-3200mhz
+            - img "SIMMTRONICS SO-DIMM RAM DDR4 4GB 3200Mhz" [ref=e258]
+            - generic [ref=e259]:
+              - paragraph [ref=e260]: RAM
+              - heading "SIMMTRONICS SO-DIMM RAM DDR4 4GB 3200Mhz" [level=3] [ref=e261]
+              - paragraph [ref=e262]: "#00106"
+              - generic [ref=e264]: ₹2900
+          - generic [ref=e266]:
+            - link "Buy Now" [ref=e267] [cursor=pointer]:
+              - /url: https://wa.me/919958808898?text=Hi%2C+I%27d+like+to+buy%3A+SIMMTRONICS%20SO-DIMM%20RAM%20DDR4%204GB%203200Mhz
+            - button "Like" [ref=e268] [cursor=pointer]:
+              - img [ref=e269]
+        - generic [ref=e271]:
+          - 'link "Dell Laptop Charger Accessories Dell Laptop Charger #00036 ₹1200" [ref=e272] [cursor=pointer]':
+            - /url: /products/dell-laptop-charger
+            - img "Dell Laptop Charger" [ref=e274]
+            - generic [ref=e275]:
+              - paragraph [ref=e276]: Accessories
+              - heading "Dell Laptop Charger" [level=3] [ref=e277]
+              - paragraph [ref=e278]: "#00036"
+              - generic [ref=e280]: ₹1200
+          - generic [ref=e282]:
+            - link "Buy Now" [ref=e283] [cursor=pointer]:
+              - /url: https://wa.me/919958808898?text=Hi%2C+I%27d+like+to+buy%3A+Dell%20Laptop%20Charger
+            - button "Like" [ref=e284] [cursor=pointer]:
+              - img [ref=e285]
+        - generic [ref=e287]:
+          - 'link "Note Counting Machine Accessories Note Counting Machine #00122 ₹5500" [ref=e288] [cursor=pointer]':
+            - /url: /products/note-counting-machine
+            - img "Note Counting Machine" [ref=e290]
+            - generic [ref=e291]:
+              - paragraph [ref=e292]: Accessories
+              - heading "Note Counting Machine" [level=3] [ref=e293]
+              - paragraph [ref=e294]: "#00122"
+              - generic [ref=e296]: ₹5500
+          - generic [ref=e298]:
+            - link "Buy Now" [ref=e299] [cursor=pointer]:
+              - /url: https://wa.me/919958808898?text=Hi%2C+I%27d+like+to+buy%3A+Note%20Counting%20Machine
+            - button "Like" [ref=e300] [cursor=pointer]:
+              - img [ref=e301]
+        - generic [ref=e303]:
+          - 'link "Laptop Charger Accessories Laptop Charger #00034 ₹800" [ref=e304] [cursor=pointer]':
+            - /url: /products/laptop-charger
+            - img "Laptop Charger" [ref=e306]
+            - generic [ref=e307]:
+              - paragraph [ref=e308]: Accessories
+              - heading "Laptop Charger" [level=3] [ref=e309]
+              - paragraph [ref=e310]: "#00034"
+              - generic [ref=e312]: ₹800
+          - generic [ref=e314]:
+            - link "Buy Now" [ref=e315] [cursor=pointer]:
+              - /url: https://wa.me/919958808898?text=Hi%2C+I%27d+like+to+buy%3A+Laptop%20Charger
+            - button "Like" [ref=e316] [cursor=pointer]:
+              - img [ref=e317]
+        - generic [ref=e319]:
+          - 'link "Laptop Repair Uncategorized Laptop Repair #00019 ₹1800" [ref=e320] [cursor=pointer]':
+            - /url: /products/laptop-repair
+            - img "Laptop Repair" [ref=e322]
+            - generic [ref=e323]:
+              - paragraph [ref=e324]: Uncategorized
+              - heading "Laptop Repair" [level=3] [ref=e325]
+              - paragraph [ref=e326]: "#00019"
+              - generic [ref=e328]: ₹1800
+          - generic [ref=e330]:
+            - link "Buy Now" [ref=e331] [cursor=pointer]:
+              - /url: https://wa.me/919958808898?text=Hi%2C+I%27d+like+to+buy%3A+Laptop%20Repair
+            - button "Like" [ref=e332] [cursor=pointer]:
+              - img [ref=e333]
+    - generic [ref=e335]:
+      - generic [ref=e336]:
+        - generic [ref=e337]:
+          - heading "User Deals" [level=2] [ref=e338]
+          - paragraph [ref=e339]: Pre-loved items listed by community members
+        - link "View all →" [ref=e340] [cursor=pointer]:
+          - /url: /sell/listings
+      - generic [ref=e341]:
+        - generic [ref=e342]:
+          - img "Jeans Trouser" [ref=e344]
+          - generic [ref=e345]:
+            - paragraph [ref=e346]: Brand New
+            - heading "Jeans Trouser" [level=3] [ref=e347]
+            - paragraph [ref=e348]: ₹500
+            - paragraph [ref=e349]: Ramesh Kumar
+            - paragraph [ref=e350]: 98997###23
+          - link "Contact Seller" [ref=e352] [cursor=pointer]:
+            - /url: https://wa.me/919958808898?text=Hi%2C+I%27m+interested+in+your+listing%3A+Jeans%20Trouser
+            - img [ref=e353]
+            - text: Contact Seller
+        - generic [ref=e355]:
+          - img "Refurbished Laptop" [ref=e357]
+          - generic [ref=e358]:
+            - paragraph [ref=e359]: Like New
+            - heading "Refurbished Laptop" [level=3] [ref=e360]
+            - paragraph [ref=e361]: ₹20000
+          - link "Contact Seller" [ref=e363] [cursor=pointer]:
+            - /url: https://wa.me/919958808898?text=Hi%2C+I%27m+interested+in+your+listing%3A+Refurbished%20Laptop
+            - img [ref=e364]
+            - text: Contact Seller
+  - generic [ref=e366]:
+    - generic [ref=e367]:
+      - heading "Worth a Read" [level=2] [ref=e368]
+      - link "View all →" [ref=e369] [cursor=pointer]:
+        - /url: /blog
+    - generic [ref=e370]:
+      - link "Setting Up CCTV at Home? Here's What Nobody Tells You Latest 05 Jun 2026 Setting Up CCTV at Home? Here's What Nobody Tells You My neighbor's bike got stolen in broad daylight and he had zero footage to show the police. Here's the honest guide to home CCTV that actually works in India. Read more →" [ref=e371] [cursor=pointer]:
+        - /url: /blog/setting-up-cctv-at-home-here-s-what-nobody-tells-you
+        - generic [ref=e372]:
+          - img "Setting Up CCTV at Home? Here's What Nobody Tells You" [ref=e374]
+          - generic [ref=e375]: Latest
+        - generic [ref=e376]:
+          - paragraph [ref=e377]: 05 Jun 2026
+          - heading "Setting Up CCTV at Home? Here's What Nobody Tells You" [level=3] [ref=e378]
+          - paragraph [ref=e379]: My neighbor's bike got stolen in broad daylight and he had zero footage to show the police. Here's the honest guide to home CCTV that actually works in India.
+          - generic [ref=e380]: Read more →
+      - generic [ref=e381]:
+        - 'link "29 May 2026 Lenovo Yoga Slim 7x Gen 11 Copilot+ laptop Why it’s on the list: the cleanest Snapdragon X2 Elite configuration on the market, bundling 32 GB of memory, 1 TB of storage, and a 14-inch OLED at a price most rivals only hit with downgrades. Read more →" [ref=e382] [cursor=pointer]':
+          - /url: /blog/lenovo-yoga-slim-7x-gen-11-copilot-laptop
+          - img [ref=e384]
+          - generic [ref=e386]:
+            - paragraph [ref=e387]: 29 May 2026
+            - heading "Lenovo Yoga Slim 7x Gen 11 Copilot+ laptop" [level=3] [ref=e388]
+            - paragraph [ref=e389]: "Why it’s on the list: the cleanest Snapdragon X2 Elite configuration on the market, bundling 32 GB of memory, 1 TB of storage, and a 14-inch OLED at a price most rivals only hit with downgrades."
+            - generic [ref=e390]: Read more →
+        - link "New Laptop or Refurbished? Here's What I'd Actually Buy 01 Jun 2026 New Laptop or Refurbished? Here's What I'd Actually Buy Spent hours comparing specs and still confused? Here's the honest breakdown on new vs refurbished laptops that nobody actually gives you. Read more →" [ref=e391] [cursor=pointer]:
+          - /url: /blog/new-laptop-or-refurbished-here-s-what-i-d-actually-buy
+          - img "New Laptop or Refurbished? Here's What I'd Actually Buy" [ref=e393]
+          - generic [ref=e394]:
+            - paragraph [ref=e395]: 01 Jun 2026
+            - heading "New Laptop or Refurbished? Here's What I'd Actually Buy" [level=3] [ref=e396]
+            - paragraph [ref=e397]: Spent hours comparing specs and still confused? Here's the honest breakdown on new vs refurbished laptops that nobody actually gives you.
+            - generic [ref=e398]: Read more →
+        - 'link "CCTV at Home in India: A No-Nonsense Starter Guide 29 May 2026 CCTV at Home in India: A No-Nonsense Starter Guide My neighbour got robbed last year and I finally stopped procrastinating. Here''s everything I wish someone had told me before I bought my first camera. Read more →" [ref=e399] [cursor=pointer]':
+          - /url: /blog/cctv-at-home-in-india-a-no-nonsense-starter-guide
+          - 'img "CCTV at Home in India: A No-Nonsense Starter Guide" [ref=e401]'
+          - generic [ref=e402]:
+            - paragraph [ref=e403]: 29 May 2026
+            - 'heading "CCTV at Home in India: A No-Nonsense Starter Guide" [level=3] [ref=e404]'
+            - paragraph [ref=e405]: My neighbour got robbed last year and I finally stopped procrastinating. Here's everything I wish someone had told me before I bought my first camera.
+            - generic [ref=e406]: Read more →
+  - generic [ref=e408]:
+    - generic [ref=e409]:
+      - generic [ref=e410]: ⭐⭐⭐⭐⭐
+      - generic [ref=e411]:
+        - paragraph [ref=e412]: Loved your experience at Styleus?
+        - paragraph [ref=e413]: It takes just 1 minute — your review helps us serve everyone better.
+    - link "Write a Review" [ref=e414] [cursor=pointer]:
+      - /url: /review
+      - img [ref=e415]
+      - text: Write a Review
+  - contentinfo [ref=e417]:
+    - generic [ref=e418]:
+      - generic [ref=e419]:
+        - generic [ref=e420]:
+          - link "Styleus" [ref=e421] [cursor=pointer]:
+            - /url: /
+            - generic [ref=e422]: Styleus
+          - paragraph [ref=e423]: Your one-stop shop for physical and digital products. Quality guaranteed.
+          - generic [ref=e424]:
+            - generic [ref=e425] [cursor=pointer]:
+              - img "Scan to visit Styleus" [ref=e426]
+              - paragraph [ref=e427]: Scan to visit
+              - paragraph [ref=e428]: styleus.co.in
+            - generic [ref=e429] [cursor=pointer]:
+              - img "Scan to pay" [ref=e430]
+              - paragraph [ref=e431]: Payments
+              - paragraph [ref=e432]: PhonePe
+        - generic [ref=e433]:
+          - heading "Shop" [level=4] [ref=e434]
+          - list [ref=e435]:
+            - listitem [ref=e436]:
+              - link "All Products" [ref=e437] [cursor=pointer]:
+                - /url: /products
+            - listitem [ref=e438]:
+              - link "Physical" [ref=e439] [cursor=pointer]:
+                - /url: /products?type=physical
+            - listitem [ref=e440]:
+              - link "Services" [ref=e441] [cursor=pointer]:
+                - /url: /services
+            - listitem [ref=e442]:
+              - link "App Marketplace" [ref=e443] [cursor=pointer]:
+                - /url: /marketplace
+            - listitem [ref=e444]:
+              - link "Professionals" [ref=e445] [cursor=pointer]:
+                - /url: /professionals
+        - generic [ref=e446]:
+          - heading "Account" [level=4] [ref=e447]
+          - list [ref=e448]:
+            - listitem [ref=e449]:
+              - link "Login" [ref=e450] [cursor=pointer]:
+                - /url: /auth/login
+            - listitem [ref=e451]:
+              - link "Register" [ref=e452] [cursor=pointer]:
+                - /url: /auth/register
+        - generic [ref=e453]:
+          - heading "Company" [level=4] [ref=e454]
+          - list [ref=e455]:
+            - listitem [ref=e456]:
+              - link "Blog" [ref=e457] [cursor=pointer]:
+                - /url: /blog
+            - listitem [ref=e458]:
+              - link "About Us" [ref=e459] [cursor=pointer]:
+                - /url: /about
+            - listitem [ref=e460]:
+              - link "Leave a Review" [ref=e461] [cursor=pointer]:
+                - /url: /review
+            - listitem [ref=e462]:
+              - link "Privacy Policy" [ref=e463] [cursor=pointer]:
+                - /url: /privacy
+      - generic [ref=e464]:
+        - generic [ref=e465]:
+          - generic [ref=e466]: © 2026 Styleus. All rights reserved.
+          - link "About Us" [ref=e467] [cursor=pointer]:
+            - /url: /about
+          - link "Privacy Policy" [ref=e468] [cursor=pointer]:
+            - /url: /privacy
+        - generic [ref=e469]:
+          - link "Facebook" [ref=e470] [cursor=pointer]:
+            - /url: https://www.facebook.com/profile.php?id=61590151628628
+            - img [ref=e471]
+            - generic [ref=e473]: Facebook
+          - link "Instagram" [ref=e474] [cursor=pointer]:
+            - /url: https://www.instagram.com/styleus125/
+            - img [ref=e475]
+            - generic [ref=e477]: Instagram
+          - link "YouTube" [ref=e478] [cursor=pointer]:
+            - /url: https://www.youtube.com/channel/UCt7VbM9bAwZqZ3UMXjuY7xw
+            - img [ref=e479]
+            - generic [ref=e481]: YouTube
+          - link "Telegram" [ref=e482] [cursor=pointer]:
+            - /url: https://t.me/LaptopSoft
+            - img [ref=e483]
+            - generic [ref=e485]: Telegram
+  - generic:
+    - generic:
+      - generic:
+        - generic: 💬
+        - generic:
+          - paragraph: Styleus Assistant
+          - paragraph: Online · Replies instantly
+        - button "Close chat":
+          - img
+      - generic:
+        - textbox "Type a message…"
+        - button:
+          - img
+    - button "Open chat" [ref=e487] [cursor=pointer]:
+      - img [ref=e490]
+      - generic [ref=e509]: Ask me!

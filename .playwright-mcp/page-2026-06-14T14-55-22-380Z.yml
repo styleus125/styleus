@@ -1,0 +1,462 @@
+- generic [active] [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e4]: Welcome to Styleus!
+    - generic [ref=e6]: Register today and start selling online instantly ✦ List new & used items — gadgets, books, furniture, fashion, services and more ✦ Follow our page to stay updated with the latest listings ✦ Recommend us to friends & family ✦ Share with others and help your community buy & sell smarter ✦ Register today and start selling online instantly ✦ List new & used items — gadgets, books, furniture, fashion, services and more ✦ Follow our page to stay updated with the latest listings ✦ Recommend us to friends & family ✦ Share with others and help your community buy & sell smarter ✦
+    - link "WhatsApp +91 9958808898" [ref=e7] [cursor=pointer]:
+      - /url: https://wa.me/919958808898
+      - img "WhatsApp" [ref=e8]
+      - generic [ref=e9]: +91 9958808898
+  - navigation [ref=e10]:
+    - generic [ref=e12]:
+      - link "Styleus" [ref=e13] [cursor=pointer]:
+        - /url: /
+        - generic [ref=e14]: Styleus
+      - generic [ref=e16]:
+        - textbox "Search products & used items…" [ref=e17]
+        - button [ref=e18] [cursor=pointer]:
+          - img [ref=e19]
+      - generic [ref=e21]:
+        - link "Home" [ref=e22] [cursor=pointer]:
+          - /url: /
+        - link "Buy" [ref=e23] [cursor=pointer]:
+          - /url: /products
+        - link [ref=e24] [cursor=pointer]:
+          - /url: /cart/
+          - img [ref=e25]
+        - link "Tech Enquiries" [ref=e27] [cursor=pointer]:
+          - /url: /enquiry
+        - link "Login" [ref=e28] [cursor=pointer]:
+          - /url: /auth/login
+        - link "Register" [ref=e29] [cursor=pointer]:
+          - /url: /auth/register
+  - main [ref=e30]:
+    - generic [ref=e31]:
+      - generic [ref=e32]:
+        - heading "Shop Smarter" [level=1] [ref=e33]
+        - paragraph [ref=e34]: Discover thousands of physical and digital products at unbeatable prices.
+        - generic [ref=e35]:
+          - link "Browse Products" [ref=e36] [cursor=pointer]:
+            - /url: /products
+          - link "Services" [ref=e37] [cursor=pointer]:
+            - /url: /services
+          - link "+ Sell Items" [ref=e38] [cursor=pointer]:
+            - /url: /sell
+          - link "Professionals" [ref=e39] [cursor=pointer]:
+            - /url: /professionals
+        - paragraph [ref=e40]:
+          - text: Looking for ready-to-deploy software?
+          - link "Browse the App Marketplace →" [ref=e41] [cursor=pointer]:
+            - /url: /marketplace
+      - generic [ref=e42]:
+        - generic [ref=e43]:
+          - link "Software Development Software Development" [ref=e44] [cursor=pointer]:
+            - /url: /software-development
+            - img "Software Development" [ref=e45]
+            - paragraph [ref=e48]: Software Development
+          - generic [ref=e49]:
+            - img "Refurbished Laptops" [ref=e50]
+            - paragraph [ref=e53]: Refurbished Laptops
+        - generic [ref=e55]:
+          - generic [ref=e56]:
+            - link "Web Hosting & Maintenance Web Hosting & Maintenance" [ref=e57] [cursor=pointer]:
+              - /url: /webhosting
+              - img "Web Hosting & Maintenance" [ref=e58]
+              - paragraph [ref=e61]: Web Hosting & Maintenance
+            - generic [ref=e62]:
+              - img "Assembled Computers" [ref=e63]
+              - paragraph [ref=e66]: Assembled Computers
+            - generic [ref=e67]:
+              - img "Used Items" [ref=e68]
+              - paragraph [ref=e71]: Used Items
+            - generic [ref=e72]:
+              - img "Online Support" [ref=e73]
+              - paragraph [ref=e76]: Online Support
+            - generic [ref=e77]:
+              - img "Advertise with Us" [ref=e78]
+              - paragraph [ref=e81]: Advertise with Us
+            - generic [ref=e82]:
+              - img "Buy Direct from Sellers" [ref=e83]
+              - paragraph [ref=e86]: Buy Direct from Sellers
+          - generic [ref=e87]:
+            - link [ref=e88] [cursor=pointer]:
+              - /url: /webhosting
+              - paragraph [ref=e91]: Web Hosting & Maintenance
+            - paragraph [ref=e95]: Assembled Computers
+            - paragraph [ref=e99]: Used Items
+            - paragraph [ref=e103]: Online Support
+            - paragraph [ref=e107]: Advertise with Us
+            - paragraph [ref=e111]: Buy Direct from Sellers
+          - generic [ref=e112]:
+            - link [ref=e113] [cursor=pointer]:
+              - /url: /webhosting
+              - paragraph [ref=e116]: Web Hosting & Maintenance
+            - paragraph [ref=e120]: Assembled Computers
+            - paragraph [ref=e124]: Used Items
+            - paragraph [ref=e128]: Online Support
+            - paragraph [ref=e132]: Advertise with Us
+            - paragraph [ref=e136]: Buy Direct from Sellers
+          - generic [ref=e137]:
+            - link [ref=e138] [cursor=pointer]:
+              - /url: /webhosting
+              - paragraph [ref=e141]: Web Hosting & Maintenance
+            - paragraph [ref=e145]: Assembled Computers
+            - paragraph [ref=e149]: Used Items
+            - paragraph [ref=e153]: Online Support
+            - paragraph [ref=e157]: Advertise with Us
+            - paragraph [ref=e161]: Buy Direct from Sellers
+    - generic [ref=e164]:
+      - link "All" [ref=e165] [cursor=pointer]:
+        - /url: /products
+      - link "Antivirus" [ref=e166] [cursor=pointer]:
+        - /url: /products?category=antivirus
+      - link "RAM" [ref=e167] [cursor=pointer]:
+        - /url: /products?category=ram
+      - link "SSD" [ref=e168] [cursor=pointer]:
+        - /url: /products?category=ssd
+      - link "Motherboard" [ref=e169] [cursor=pointer]:
+        - /url: /products?category=motherboard
+      - link "CCTV" [ref=e170] [cursor=pointer]:
+        - /url: /products?category=cctv
+      - link "Securities" [ref=e171] [cursor=pointer]:
+        - /url: /products?category=securities
+      - link "Accessories" [ref=e172] [cursor=pointer]:
+        - /url: /products?category=accessories
+      - link "Refurbished Laptops" [ref=e173] [cursor=pointer]:
+        - /url: /products?category=refurbished
+      - link "Softwares" [ref=e174] [cursor=pointer]:
+        - /url: /products?category=softwares
+      - link "Electronics" [ref=e175] [cursor=pointer]:
+        - /url: /products?category=electronics
+      - link "Clothing" [ref=e176] [cursor=pointer]:
+        - /url: /products?category=clothing
+      - link "Books" [ref=e177] [cursor=pointer]:
+        - /url: /products?category=books
+      - link "Software" [ref=e178] [cursor=pointer]:
+        - /url: /products?category=software
+      - link "Music" [ref=e179] [cursor=pointer]:
+        - /url: /products?category=music
+    - generic [ref=e180]:
+      - generic [ref=e181]:
+        - heading "Featured Products" [level=2] [ref=e182]
+        - link "View all →" [ref=e183] [cursor=pointer]:
+          - /url: /products
+      - generic [ref=e184]:
+        - generic [ref=e185]:
+          - 'link "Consistent H-81 Motherboard Motherboard Consistent H-81 Motherboard #00115 ₹2500" [ref=e186] [cursor=pointer]':
+            - /url: /products/consistent-h-81-motherboard
+            - img "Consistent H-81 Motherboard" [ref=e188]
+            - generic [ref=e189]:
+              - paragraph [ref=e190]: Motherboard
+              - heading "Consistent H-81 Motherboard" [level=3] [ref=e191]
+              - paragraph [ref=e192]: "#00115"
+              - generic [ref=e194]: ₹2500
+          - generic [ref=e196]:
+            - link "Buy Now" [ref=e197] [cursor=pointer]:
+              - /url: https://wa.me/919958808898?text=Hi%2C+I%27d+like+to+buy%3A+Consistent%20H-81%20Motherboard
+            - button "Like" [ref=e198] [cursor=pointer]:
+              - img [ref=e199]
+        - generic [ref=e201]:
+          - 'link "Refurbished HP Laserjet M1005 Refurbished Laptops Refurbished HP Laserjet M1005 #00039 ₹15000" [ref=e202] [cursor=pointer]':
+            - /url: /products/refurbished-hp-laserjet-m1005
+            - img "Refurbished HP Laserjet M1005" [ref=e204]
+            - generic [ref=e205]:
+              - paragraph [ref=e206]: Refurbished Laptops
+              - heading "Refurbished HP Laserjet M1005" [level=3] [ref=e207]
+              - paragraph [ref=e208]: "#00039"
+              - generic [ref=e210]: ₹15000
+          - generic [ref=e212]:
+            - link "Buy Now" [ref=e213] [cursor=pointer]:
+              - /url: https://wa.me/919958808898?text=Hi%2C+I%27d+like+to+buy%3A+Refurbished%20HP%20Laserjet%20M1005
+            - button "Like" [ref=e214] [cursor=pointer]:
+              - img [ref=e215]
+        - generic [ref=e217]:
+          - 'link "CR2032 3V Lithium Coin Cell Accessories CR2032 3V Lithium Coin Cell #00098 ₹150" [ref=e218] [cursor=pointer]':
+            - /url: /products/cr2032-3v-lithium-coin-cell
+            - img "CR2032 3V Lithium Coin Cell" [ref=e220]
+            - generic [ref=e221]:
+              - paragraph [ref=e222]: Accessories
+              - heading "CR2032 3V Lithium Coin Cell" [level=3] [ref=e223]
+              - paragraph [ref=e224]: "#00098"
+              - generic [ref=e226]: ₹150
+          - generic [ref=e228]:
+            - link "Buy Now" [ref=e229] [cursor=pointer]:
+              - /url: https://wa.me/919958808898?text=Hi%2C+I%27d+like+to+buy%3A+CR2032%203V%20Lithium%20Coin%20Cell
+            - button "Like" [ref=e230] [cursor=pointer]:
+              - img [ref=e231]
+        - generic [ref=e233]:
+          - 'link "Wireless Mouse Accessories Wireless Mouse #00006 ₹650" [ref=e234] [cursor=pointer]':
+            - /url: /products/wireless-mouse
+            - img "Wireless Mouse" [ref=e236]
+            - generic [ref=e237]:
+              - paragraph [ref=e238]: Accessories
+              - heading "Wireless Mouse" [level=3] [ref=e239]
+              - paragraph [ref=e240]: "#00006"
+              - generic [ref=e242]: ₹650
+          - generic [ref=e244]:
+            - link "Buy Now" [ref=e245] [cursor=pointer]:
+              - /url: https://wa.me/919958808898?text=Hi%2C+I%27d+like+to+buy%3A+Wireless%20Mouse
+            - button "Like" [ref=e246] [cursor=pointer]:
+              - img [ref=e247]
+        - generic [ref=e249]:
+          - 'link "Quantum Thin Client Motherboard Quantum Thin Client #00038 ₹2300" [ref=e250] [cursor=pointer]':
+            - /url: /products/quantum-thin-client
+            - img "Quantum Thin Client" [ref=e252]
+            - generic [ref=e253]:
+              - paragraph [ref=e254]: Motherboard
+              - heading "Quantum Thin Client" [level=3] [ref=e255]
+              - paragraph [ref=e256]: "#00038"
+              - generic [ref=e258]: ₹2300
+          - generic [ref=e260]:
+            - link "Buy Now" [ref=e261] [cursor=pointer]:
+              - /url: https://wa.me/919958808898?text=Hi%2C+I%27d+like+to+buy%3A+Quantum%20Thin%20Client
+            - button "Like" [ref=e262] [cursor=pointer]:
+              - img [ref=e263]
+        - generic [ref=e265]:
+          - 'link "dell i5 Refurbished Laptops dell i5 #00047 ₹20000" [ref=e266] [cursor=pointer]':
+            - /url: /products/dell-i5-1
+            - img "dell i5" [ref=e268]
+            - generic [ref=e269]:
+              - paragraph [ref=e270]: Refurbished Laptops
+              - heading "dell i5" [level=3] [ref=e271]
+              - paragraph [ref=e272]: "#00047"
+              - generic [ref=e274]: ₹20000
+          - generic [ref=e276]:
+            - link "Buy Now" [ref=e277] [cursor=pointer]:
+              - /url: https://wa.me/919958808898?text=Hi%2C+I%27d+like+to+buy%3A+dell%20i5
+            - button "Like" [ref=e278] [cursor=pointer]:
+              - img [ref=e279]
+        - generic [ref=e281]:
+          - 'link "Smart Lock Securities Smart Lock #00020 ₹2500" [ref=e282] [cursor=pointer]':
+            - /url: /products/smart-lock
+            - img "Smart Lock" [ref=e284]
+            - generic [ref=e285]:
+              - paragraph [ref=e286]: Securities
+              - heading "Smart Lock" [level=3] [ref=e287]
+              - paragraph [ref=e288]: "#00020"
+              - generic [ref=e290]: ₹2500
+          - generic [ref=e292]:
+            - link "Buy Now" [ref=e293] [cursor=pointer]:
+              - /url: https://wa.me/919958808898?text=Hi%2C+I%27d+like+to+buy%3A+Smart%20Lock
+            - button "Like" [ref=e294] [cursor=pointer]:
+              - img [ref=e295]
+        - generic [ref=e297]:
+          - 'link "Portronics SoundDrum Accessories Portronics SoundDrum #00068 ₹1100" [ref=e298] [cursor=pointer]':
+            - /url: /products/portronics-sounddrum
+            - img "Portronics SoundDrum" [ref=e300]
+            - generic [ref=e301]:
+              - paragraph [ref=e302]: Accessories
+              - heading "Portronics SoundDrum" [level=3] [ref=e303]
+              - paragraph [ref=e304]: "#00068"
+              - generic [ref=e306]: ₹1100
+          - generic [ref=e308]:
+            - link "Buy Now" [ref=e309] [cursor=pointer]:
+              - /url: https://wa.me/919958808898?text=Hi%2C+I%27d+like+to+buy%3A+Portronics%20SoundDrum
+            - button "Like" [ref=e310] [cursor=pointer]:
+              - img [ref=e311]
+        - generic [ref=e313]:
+          - 'link "Samsung 24\" Flat Monitor Accessories Samsung 24\" Flat Monitor #00128 ₹7500" [ref=e314] [cursor=pointer]':
+            - /url: /products/samsung-24-flat-monitor
+            - img "Samsung 24\" Flat Monitor" [ref=e316]
+            - generic [ref=e317]:
+              - paragraph [ref=e318]: Accessories
+              - heading "Samsung 24\" Flat Monitor" [level=3] [ref=e319]
+              - paragraph [ref=e320]: "#00128"
+              - generic [ref=e322]: ₹7500
+          - generic [ref=e324]:
+            - link "Buy Now" [ref=e325] [cursor=pointer]:
+              - /url: https://wa.me/919958808898?text=Hi%2C+I%27d+like+to+buy%3A+Samsung%2024%22%20Flat%20Monitor
+            - button "Like" [ref=e326] [cursor=pointer]:
+              - img [ref=e327]
+        - generic [ref=e329]:
+          - 'link "Screwdriver Set Multi Pocket Repair Tool Kit Accessories Screwdriver Set Multi Pocket Repair Tool Kit #00094 ₹500" [ref=e330] [cursor=pointer]':
+            - /url: /products/screwdriver-set-multi-pocket-repair-tool-kit
+            - img "Screwdriver Set Multi Pocket Repair Tool Kit" [ref=e332]
+            - generic [ref=e333]:
+              - paragraph [ref=e334]: Accessories
+              - heading "Screwdriver Set Multi Pocket Repair Tool Kit" [level=3] [ref=e335]
+              - paragraph [ref=e336]: "#00094"
+              - generic [ref=e338]: ₹500
+          - generic [ref=e340]:
+            - link "Buy Now" [ref=e341] [cursor=pointer]:
+              - /url: https://wa.me/919958808898?text=Hi%2C+I%27d+like+to+buy%3A+Screwdriver%20Set%20Multi%20Pocket%20Repair%20Tool%20Kit
+            - button "Like" [ref=e342] [cursor=pointer]:
+              - img [ref=e343]
+    - generic [ref=e345]:
+      - generic [ref=e346]:
+        - generic [ref=e347]:
+          - heading "User Deals" [level=2] [ref=e348]
+          - paragraph [ref=e349]: Pre-loved items listed by community members
+        - link "View all →" [ref=e350] [cursor=pointer]:
+          - /url: /sell/listings
+      - generic [ref=e351]:
+        - generic [ref=e352]:
+          - img "Jeans Trouser" [ref=e354]
+          - generic [ref=e355]:
+            - paragraph [ref=e356]: Brand New
+            - heading "Jeans Trouser" [level=3] [ref=e357]
+            - paragraph [ref=e358]: ₹500
+            - paragraph [ref=e359]: Ramesh Kumar
+            - paragraph [ref=e360]: 98997###23
+          - link "Contact Seller" [ref=e362] [cursor=pointer]:
+            - /url: https://wa.me/919958808898?text=Hi%2C+I%27m+interested+in+your+listing%3A+Jeans%20Trouser
+            - img [ref=e363]
+            - text: Contact Seller
+        - generic [ref=e365]:
+          - img "Refurbished Laptop" [ref=e367]
+          - generic [ref=e368]:
+            - paragraph [ref=e369]: Like New
+            - heading "Refurbished Laptop" [level=3] [ref=e370]
+            - paragraph [ref=e371]: ₹20000
+          - link "Contact Seller" [ref=e373] [cursor=pointer]:
+            - /url: https://wa.me/919958808898?text=Hi%2C+I%27m+interested+in+your+listing%3A+Refurbished%20Laptop
+            - img [ref=e374]
+            - text: Contact Seller
+  - generic [ref=e376]:
+    - generic [ref=e377]:
+      - heading "Worth a Read" [level=2] [ref=e378]
+      - link "View all →" [ref=e379] [cursor=pointer]:
+        - /url: /blog
+    - generic [ref=e380]:
+      - link "Setting Up CCTV at Home? Here's What Nobody Tells You Latest 05 Jun 2026 Setting Up CCTV at Home? Here's What Nobody Tells You My neighbor's bike got stolen in broad daylight and he had zero footage to show the police. Here's the honest guide to home CCTV that actually works in India. Read more →" [ref=e381] [cursor=pointer]:
+        - /url: /blog/setting-up-cctv-at-home-here-s-what-nobody-tells-you
+        - generic [ref=e382]:
+          - img "Setting Up CCTV at Home? Here's What Nobody Tells You" [ref=e384]
+          - generic [ref=e385]: Latest
+        - generic [ref=e386]:
+          - paragraph [ref=e387]: 05 Jun 2026
+          - heading "Setting Up CCTV at Home? Here's What Nobody Tells You" [level=3] [ref=e388]
+          - paragraph [ref=e389]: My neighbor's bike got stolen in broad daylight and he had zero footage to show the police. Here's the honest guide to home CCTV that actually works in India.
+          - generic [ref=e390]: Read more →
+      - generic [ref=e391]:
+        - link "Still Using a Slow Laptop for WFH? Here's Your Fix 31 May 2026 Still Using a Slow Laptop for WFH? Here's Your Fix Your Zoom calls shouldn't stutter because your laptop can't keep up. Here are the WFH laptops under ₹50K that are actually worth it. Read more →" [ref=e392] [cursor=pointer]:
+          - /url: /blog/still-using-a-slow-laptop-for-wfh-here-s-your-fix
+          - img "Still Using a Slow Laptop for WFH? Here's Your Fix" [ref=e394]
+          - generic [ref=e395]:
+            - paragraph [ref=e396]: 31 May 2026
+            - heading "Still Using a Slow Laptop for WFH? Here's Your Fix" [level=3] [ref=e397]
+            - paragraph [ref=e398]: Your Zoom calls shouldn't stutter because your laptop can't keep up. Here are the WFH laptops under ₹50K that are actually worth it.
+            - generic [ref=e399]: Read more →
+        - link "27 May 2026 Your PC Is Slow. Here's Why It's Probably the HDD. Your laptop takes forever to boot and apps crawl at startup. Honestly, it's probably your storage â€” here's how to fix that. Read more →" [ref=e400] [cursor=pointer]:
+          - /url: /blog/your-pc-is-slow-here-s-why-it-s-probably-the-hdd
+          - img [ref=e402]
+          - generic [ref=e404]:
+            - paragraph [ref=e405]: 27 May 2026
+            - heading "Your PC Is Slow. Here's Why It's Probably the HDD." [level=3] [ref=e406]
+            - paragraph [ref=e407]: Your laptop takes forever to boot and apps crawl at startup. Honestly, it's probably your storage â€” here's how to fix that.
+            - generic [ref=e408]: Read more →
+        - link "Good Bluetooth Speakers Under â‚¹2000? Yes, They Exist. 27 May 2026 Good Bluetooth Speakers Under â‚¹2000? Yes, They Exist. I spent two weekends testing speakers under â‚¹2000 so you don't have to â€” and honestly, a few of them genuinely impressed me. Read more →" [ref=e409] [cursor=pointer]:
+          - /url: /blog/good-bluetooth-speakers-under-a-12000-yes-they-exist
+          - img "Good Bluetooth Speakers Under â‚¹2000? Yes, They Exist." [ref=e411]
+          - generic [ref=e412]:
+            - paragraph [ref=e413]: 27 May 2026
+            - heading "Good Bluetooth Speakers Under â‚¹2000? Yes, They Exist." [level=3] [ref=e414]
+            - paragraph [ref=e415]: I spent two weekends testing speakers under â‚¹2000 so you don't have to â€” and honestly, a few of them genuinely impressed me.
+            - generic [ref=e416]: Read more →
+  - generic [ref=e418]:
+    - generic [ref=e419]:
+      - generic [ref=e420]: ⭐⭐⭐⭐⭐
+      - generic [ref=e421]:
+        - paragraph [ref=e422]: Loved your experience at Styleus?
+        - paragraph [ref=e423]: It takes just 1 minute — your review helps us serve everyone better.
+    - link "Write a Review" [ref=e424] [cursor=pointer]:
+      - /url: /review
+      - img [ref=e425]
+      - text: Write a Review
+  - contentinfo [ref=e427]:
+    - generic [ref=e428]:
+      - generic [ref=e429]:
+        - generic [ref=e430]:
+          - link "Styleus" [ref=e431] [cursor=pointer]:
+            - /url: /
+            - generic [ref=e432]: Styleus
+          - paragraph [ref=e433]: Your one-stop shop for physical and digital products. Quality guaranteed.
+          - generic [ref=e434]:
+            - generic [ref=e435] [cursor=pointer]:
+              - img "Scan to visit Styleus" [ref=e436]
+              - paragraph [ref=e437]: Scan to visit
+              - paragraph [ref=e438]: styleus.co.in
+            - generic [ref=e439] [cursor=pointer]:
+              - img "Scan to pay" [ref=e440]
+              - paragraph [ref=e441]: Payments
+              - paragraph [ref=e442]: PhonePe
+        - generic [ref=e443]:
+          - heading "Shop" [level=4] [ref=e444]
+          - list [ref=e445]:
+            - listitem [ref=e446]:
+              - link "All Products" [ref=e447] [cursor=pointer]:
+                - /url: /products
+            - listitem [ref=e448]:
+              - link "Physical" [ref=e449] [cursor=pointer]:
+                - /url: /products?type=physical
+            - listitem [ref=e450]:
+              - link "Services" [ref=e451] [cursor=pointer]:
+                - /url: /services
+            - listitem [ref=e452]:
+              - link "App Marketplace" [ref=e453] [cursor=pointer]:
+                - /url: /marketplace
+            - listitem [ref=e454]:
+              - link "Professionals" [ref=e455] [cursor=pointer]:
+                - /url: /professionals
+        - generic [ref=e456]:
+          - heading "Account" [level=4] [ref=e457]
+          - list [ref=e458]:
+            - listitem [ref=e459]:
+              - link "Login" [ref=e460] [cursor=pointer]:
+                - /url: /auth/login
+            - listitem [ref=e461]:
+              - link "Register" [ref=e462] [cursor=pointer]:
+                - /url: /auth/register
+        - generic [ref=e463]:
+          - heading "Company" [level=4] [ref=e464]
+          - list [ref=e465]:
+            - listitem [ref=e466]:
+              - link "Blog" [ref=e467] [cursor=pointer]:
+                - /url: /blog
+            - listitem [ref=e468]:
+              - link "About Us" [ref=e469] [cursor=pointer]:
+                - /url: /about
+            - listitem [ref=e470]:
+              - link "Leave a Review" [ref=e471] [cursor=pointer]:
+                - /url: /review
+            - listitem [ref=e472]:
+              - link "Privacy Policy" [ref=e473] [cursor=pointer]:
+                - /url: /privacy
+      - generic [ref=e474]:
+        - generic [ref=e475]:
+          - generic [ref=e476]: © 2026 Styleus. All rights reserved.
+          - link "About Us" [ref=e477] [cursor=pointer]:
+            - /url: /about
+          - link "Privacy Policy" [ref=e478] [cursor=pointer]:
+            - /url: /privacy
+        - generic [ref=e479]:
+          - link "Facebook" [ref=e480] [cursor=pointer]:
+            - /url: https://www.facebook.com/profile.php?id=61590151628628
+            - img [ref=e481]
+            - generic [ref=e483]: Facebook
+          - link "Instagram" [ref=e484] [cursor=pointer]:
+            - /url: https://www.instagram.com/styleus125/
+            - img [ref=e485]
+            - generic [ref=e487]: Instagram
+          - link "YouTube" [ref=e488] [cursor=pointer]:
+            - /url: https://www.youtube.com/channel/UCt7VbM9bAwZqZ3UMXjuY7xw
+            - img [ref=e489]
+            - generic [ref=e491]: YouTube
+          - link "Telegram" [ref=e492] [cursor=pointer]:
+            - /url: https://t.me/LaptopSoft
+            - img [ref=e493]
+            - generic [ref=e495]: Telegram
+  - generic [ref=e496]:
+    - generic:
+      - generic:
+        - generic: 💬
+        - generic:
+          - paragraph: Styleus Assistant
+          - paragraph: Online · Replies instantly
+        - button "Close chat":
+          - img
+      - generic:
+        - textbox "Type a message…"
+        - button:
+          - img
+    - button "Open chat" [ref=e497] [cursor=pointer]:
+      - generic [ref=e498]: 💬

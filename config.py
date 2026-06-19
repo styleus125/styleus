@@ -38,3 +38,8 @@ class Config:
 
     # Blog draft API
     BLOG_API_TOKEN = os.environ.get('BLOG_API_TOKEN', '')
+
+    # AI chat microservice (styleus-ai). Empty string disables AI streaming
+    # in the widget and falls back to the built-in FAQ matcher.
+    CHAT_API_URL = os.environ.get('CHAT_API_URL', '')
+    CHAT_SECRET = os.environ.get('CHAT_SECRET', '')
