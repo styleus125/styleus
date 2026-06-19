@@ -93,6 +93,15 @@ def create_app(config_class=Config):
         return {'liked_ids': liked_ids}
 
     @app.context_processor
+    def inject_latest_reviews():
+        from models import CustomerReview
+        try:
+            reviews = CustomerReview.query.order_by(CustomerReview.created_at.desc()).limit(3).all()
+        except Exception:
+            reviews = []
+        return {'latest_reviews': reviews}
+
+    @app.context_processor
     def inject_chat_config():
         from models import ChatConfig
         try:

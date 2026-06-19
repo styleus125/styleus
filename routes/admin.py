@@ -143,7 +143,12 @@ def products():
     search = request.args.get('q', '').strip()
     query = Product.query
     if search:
-        query = query.filter(Product.name.ilike(f'%{search}%'))
+        if search.isdigit():
+            query = query.filter(
+                db.or_(Product.name.ilike(f'%{search}%'), Product.id == int(search))
+            )
+        else:
+            query = query.filter(Product.name.ilike(f'%{search}%'))
     pagination = query.order_by(Product.created_at.desc()).paginate(
         page=page, per_page=current_app.config['ADMIN_ITEMS_PER_PAGE'], error_out=False)
     return render_template('admin/products.html',
