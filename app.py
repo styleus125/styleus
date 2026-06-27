@@ -96,7 +96,10 @@ def create_app(config_class=Config):
     def inject_latest_reviews():
         from models import CustomerReview
         try:
-            reviews = CustomerReview.query.order_by(CustomerReview.created_at.desc()).limit(3).all()
+            reviews = (CustomerReview.query
+                       .filter_by(is_approved=True)
+                       .order_by(CustomerReview.created_at.desc())
+                       .limit(20).all())
         except Exception:
             reviews = []
         return {'latest_reviews': reviews}

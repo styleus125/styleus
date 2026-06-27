@@ -845,14 +845,34 @@ def blog_delete(post_id):
 @admin_required
 def customer_reviews():
     page = request.args.get('page', 1, type=int)
-    pagination = CustomerReview.query.order_by(CustomerReview.created_at.desc()).paginate(
+    status_filter = request.args.get('status', 'pending')
+    query = CustomerReview.query
+    if status_filter == 'pending':
+        query = query.filter_by(is_approved=False)
+    elif status_filter == 'approved':
+        query = query.filter_by(is_approved=True)
+    pagination = query.order_by(CustomerReview.created_at.desc()).paginate(
         page=page, per_page=current_app.config['ADMIN_ITEMS_PER_PAGE'], error_out=False)
     review_url = url_for('shop.review_form', _external=True)
+    pending_count = CustomerReview.query.filter_by(is_approved=False).count()
     return render_template('admin/customer_reviews.html',
                            reviews=pagination.items,
                            pagination=pagination,
                            review_url=review_url,
+                           status_filter=status_filter,
+                           pending_count=pending_count,
                            title='Customer Reviews')
+
+
+@admin_bp.route('/customer-reviews/<int:review_id>/approve', methods=['POST'])
+@login_required
+@admin_required
+def customer_review_approve(review_id):
+    review = CustomerReview.query.get_or_404(review_id)
+    review.is_approved = True
+    db.session.commit()
+    flash(f'Review by {review.name} approved and is now live.', 'success')
+    return redirect(url_for('admin.customer_reviews', status='pending'))
 
 
 @admin_bp.route('/customer-reviews/<int:review_id>/delete', methods=['POST'])
@@ -860,10 +880,11 @@ def customer_reviews():
 @admin_required
 def customer_review_delete(review_id):
     review = CustomerReview.query.get_or_404(review_id)
+    status = request.form.get('status', 'pending')
     db.session.delete(review)
     db.session.commit()
     flash('Review deleted.', 'success')
-    return redirect(url_for('admin.customer_reviews'))
+    return redirect(url_for('admin.customer_reviews', status=status))
 
 
 @admin_bp.route('/password-resets')

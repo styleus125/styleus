@@ -239,9 +239,18 @@ def review_form():
             db.session.add(CustomerReview(
                 name=name, email=email,
                 phone=phone if phone else None,
-                stars=stars, comment=comment
+                stars=stars, comment=comment,
+                is_approved=False
             ))
             db.session.commit()
+            send_telegram(
+                f"⭐ <b>New Customer Review (Pending Approval)</b>\n"
+                f"Name: {name}\n"
+                f"Email: {email}\n"
+                f"Phone: {phone or '—'}\n"
+                f"Stars: {'★' * stars}{'☆' * (5 - stars)}\n"
+                f"Comment: {comment[:300]}"
+            )
             session.pop('captcha_answer', None)
             session.pop('captcha_q', None)
             submitted = True
@@ -486,9 +495,12 @@ def search():
     service_results = []
     professional_results = []
     if q:
+        product_filter = _multi_search([Product.name, Product.description], q)
+        if q.isdigit():
+            product_filter = db.or_(product_filter, Product.id == int(q))
         shop_results = Product.query.filter(
             Product.is_active.is_(True),
-            _multi_search([Product.name, Product.description], q)
+            product_filter
         ).order_by(Product.created_at.desc()).limit(40).all()
         used_results = UserListing.query.filter(
             UserListing.status == 'approved',

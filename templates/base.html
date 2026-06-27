@@ -432,50 +432,91 @@
 <!-- Review CTA Strip -->
 <section class="bg-gradient-to-r from-amber-500 via-yellow-400 to-amber-500 py-6">
   <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-    <!-- CTA row -->
-    <div class="flex flex-col sm:flex-row items-center justify-between gap-4 {% if latest_reviews %}mb-5{% endif %}">
-      <div class="flex items-center gap-4">
+    <div class="flex flex-col lg:flex-row items-center gap-6">
+
+      <!-- CTA left -->
+      <div class="flex flex-col sm:flex-row items-center gap-4 lg:shrink-0">
         <div class="flex gap-0.5 text-2xl shrink-0">⭐⭐⭐⭐⭐</div>
         <div>
           <p class="text-navy-900 font-extrabold text-base sm:text-lg leading-tight">Loved your experience at Styleus?</p>
           <p class="text-amber-900 text-sm font-medium">It takes just 1 minute — your review helps us serve everyone better.</p>
         </div>
+        <a href="{{ url_for('shop.review_form') }}"
+           class="shrink-0 flex items-center gap-2 bg-navy-900 hover:bg-navy-800 text-white font-bold px-6 py-2.5 rounded-xl shadow-lg transition text-sm whitespace-nowrap group">
+          <svg class="w-4 h-4 text-yellow-400 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
+            <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
+          </svg>
+          Write a Review
+        </a>
       </div>
-      <a href="{{ url_for('shop.review_form') }}"
-         class="shrink-0 flex items-center gap-2 bg-navy-900 hover:bg-navy-800 text-white font-bold px-7 py-3 rounded-xl shadow-lg transition text-sm whitespace-nowrap group">
-        <svg class="w-4 h-4 text-yellow-400 group-hover:scale-110 transition-transform" fill="currentColor" viewBox="0 0 24 24">
-          <path d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"/>
-        </svg>
-        Write a Review
-      </a>
-    </div>
-    <!-- 3 latest reviews -->
-    {% if latest_reviews %}
-    <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
-      {% for review in latest_reviews %}
-      <div class="bg-white/70 rounded-xl p-4 flex flex-col gap-2">
-        <div class="flex items-center gap-2">
-          <div class="w-8 h-8 rounded-full bg-navy-900 text-white text-xs font-bold flex items-center justify-center shrink-0">
-            {{ review.name[0].upper() }}
-          </div>
-          <div>
-            <p class="text-sm font-bold text-gray-900 leading-tight">{{ review.name.split()[0] }}</p>
-            <div class="flex gap-0.5">
-              {% for i in range(1, 6) %}
-              <svg class="w-3.5 h-3.5 {{ 'text-amber-500' if i <= review.stars else 'text-gray-300' }}" fill="currentColor" viewBox="0 0 20 20">
-                <path d="M9.049 2.927c.3-.921 1.603-.921 1.902 0l1.07 3.292a1 1 0 00.95.69h3.462c.969 0 1.371 1.24.588 1.81l-2.8 2.034a1 1 0 00-.364 1.118l1.07 3.292c.3.921-.755 1.688-1.54 1.118l-2.8-2.034a1 1 0 00-1.175 0l-2.8 2.034c-.784.57-1.838-.197-1.539-1.118l1.07-3.292a1 1 0 00-.364-1.118L2.98 8.72c-.783-.57-.38-1.81.588-1.81h3.461a1 1 0 00.951-.69l1.07-3.292z"/>
-              </svg>
-              {% endfor %}
+
+      <!-- Vertical ticker (approved reviews) -->
+      {% if latest_reviews %}
+      <div class="flex-1 w-full lg:w-auto min-w-0">
+        <div class="flex items-center gap-3 mb-2 justify-end">
+          <button id="rev-prev" aria-label="Previous review"
+                  class="w-7 h-7 rounded-full bg-navy-900/20 hover:bg-navy-900/40 text-navy-900 flex items-center justify-center transition">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M5 15l7-7 7 7"/>
+            </svg>
+          </button>
+          <span id="rev-counter" class="text-xs font-bold text-navy-900/60 min-w-[36px] text-center">1 / {{ latest_reviews|length }}</span>
+          <button id="rev-next" aria-label="Next review"
+                  class="w-7 h-7 rounded-full bg-navy-900/20 hover:bg-navy-900/40 text-navy-900 flex items-center justify-center transition">
+            <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7"/>
+            </svg>
+          </button>
+        </div>
+        <div class="relative overflow-hidden rounded-xl" style="height:88px;">
+          <div id="rev-track" class="transition-transform duration-500 ease-in-out">
+            {% for r in latest_reviews %}
+            <div class="rev-slide bg-white/70 rounded-xl px-4 py-3 flex items-center gap-3" style="height:88px;">
+              <div class="w-9 h-9 rounded-full bg-navy-900 text-white text-sm font-bold flex items-center justify-center shrink-0">
+                {{ r.name[0].upper() }}
+              </div>
+              <div class="min-w-0 flex-1">
+                <div class="flex items-center gap-2 mb-0.5">
+                  <p class="text-sm font-bold text-gray-900 leading-tight">{{ r.name.split()[0] }}</p>
+                  <span class="text-amber-500 text-xs leading-none">{{ '★' * r.stars }}{{ '☆' * (5 - r.stars) }}</span>
+                </div>
+                <p class="text-xs text-gray-700 leading-relaxed line-clamp-2">{{ r.comment }}</p>
+              </div>
             </div>
+            {% endfor %}
           </div>
         </div>
-        <p class="text-xs text-gray-700 leading-relaxed line-clamp-3">{{ review.comment }}</p>
       </div>
-      {% endfor %}
+      {% endif %}
+
     </div>
-    {% endif %}
   </div>
 </section>
+
+<script>
+(function () {
+  var slides = document.querySelectorAll('.rev-slide');
+  if (!slides.length) return;
+  var track   = document.getElementById('rev-track');
+  var counter = document.getElementById('rev-counter');
+  var h = 88, current = 0, timer;
+
+  function goTo(idx) {
+    current = (idx + slides.length) % slides.length;
+    track.style.transform = 'translateY(-' + (current * h) + 'px)';
+    counter.textContent = (current + 1) + ' / ' + slides.length;
+  }
+  function next() { goTo(current + 1); }
+  function prev() { goTo(current - 1); }
+  function startAuto() { timer = setInterval(next, 4000); }
+  function stopAuto()  { clearInterval(timer); }
+
+  document.getElementById('rev-next').addEventListener('click', function () { stopAuto(); next(); startAuto(); });
+  document.getElementById('rev-prev').addEventListener('click', function () { stopAuto(); prev(); startAuto(); });
+
+  if (slides.length > 1) startAuto();
+})();
+</script>
 
 <!-- Footer -->
 <footer class="bg-navy-900 text-gray-400 mt-0">
@@ -528,7 +569,6 @@
         <ul class="space-y-2 text-sm">
           <li><a href="{{ url_for('shop.blog') }}" class="hover:text-white transition">Blog</a></li>
           <li><a href="{{ url_for('shop.about') }}" class="hover:text-white transition">About Us</a></li>
-          <li><a href="{{ url_for('shop.review_form') }}" class="hover:text-white transition">Leave a Review</a></li>
           <li><a href="{{ url_for('shop.privacy') }}" class="hover:text-white transition">Privacy Policy</a></li>
         </ul>
       </div>

@@ -262,6 +262,7 @@ class CustomerReview(db.Model):
     phone = db.Column(db.String(20), nullable=True)
     stars = db.Column(db.Integer, nullable=False)  # 1-5
     comment = db.Column(db.Text, nullable=False)
+    is_approved = db.Column(db.Boolean, default=False, nullable=False, server_default='false')
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
     def __repr__(self):
