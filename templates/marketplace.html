@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% block content %}
 
-{# ── Icon SVG paths keyed by icon_name ───────────────────────────────────── #}
+{# â”€â”€ Icon SVG paths keyed by icon_name â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ #}
 {% set icon_paths = {
   'invoice':    'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z',
   'inventory':  'M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4',
@@ -17,7 +17,7 @@
   'default':    'M4 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2V6zM14 6a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V6zM4 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2H6a2 2 0 01-2-2v-2zM14 16a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z',
 } %}
 
-{# ── Colour maps ─────────────────────────────────────────────────────────── #}
+{# â”€â”€ Colour maps â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€â”€ #}
 {% set gradient_map = {
   'orange':'from-orange-50 to-orange-100','blue':'from-blue-50 to-blue-100',
   'green':'from-green-50 to-green-100','purple':'from-purple-50 to-purple-100',
@@ -97,7 +97,7 @@
       <div class="flex flex-wrap items-center gap-4">
         <span class="text-3xl font-black">{{ featured.price_display }}</span>
         {% if featured.pricing_type == 'subscription' %}<span class="text-gray-400 text-sm">per month</span>{% endif %}
-        <a href="https://wa.me/919958808898?text={{ featured.whatsapp_message | urlencode }}"
+        <a href="https://wa.me/917827338898?text={{ featured.whatsapp_message | urlencode }}"
            target="_blank" rel="noopener noreferrer"
            class="bg-blue-500 hover:bg-blue-600 text-white font-semibold px-6 py-3 rounded-xl transition text-sm">
           Get This App →
@@ -138,7 +138,7 @@
           <span class="text-xl font-black {% if app.pricing_type == 'free' %}text-green-600{% else %}text-gray-900{% endif %}">
             {{ app.price_display }}
           </span>
-          <a href="https://wa.me/919958808898?text={{ app.whatsapp_message | urlencode }}"
+          <a href="https://wa.me/917827338898?text={{ app.whatsapp_message | urlencode }}"
              target="_blank" rel="noopener noreferrer"
              class="bg-gray-900 hover:bg-gray-700 text-white text-sm font-semibold px-4 py-2 rounded-lg transition">
             {% if app.pricing_type == 'free' %}Get Free{% else %}Get App{% endif %}

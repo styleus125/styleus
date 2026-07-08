@@ -1188,3 +1188,10 @@ def chat_conversation_delete(session_id):
     flash('Conversation deleted.', 'success')
     return redirect(url_for('admin.chat_conversations'))
 
+
+@admin_bp.route('/bill-generator')
+@login_required
+@admin_required
+def bill_generator():
+    return render_template('admin/bill_generator.html', title='Bill Generator')
+

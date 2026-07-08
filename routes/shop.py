@@ -419,6 +419,11 @@ def about():
     return render_template('about.html', title='About Us')
 
 
+@shop_bp.route('/contact')
+def contact():
+    return render_template('contact.html', title='Contact Us')
+
+
 @shop_bp.route('/privacy')
 def privacy():
     return render_template('privacy.html', title='Privacy Policy')

@@ -1,0 +1,522 @@
+{% extends 'admin/base.html' %}
+{% block title %}Bill Generator{% endblock %}
+
+{% block content %}
+<style>
+/* ── Reset ── */
+*,*::before,*::after{box-sizing:border-box}
+
+/* ── Buttons ── */
+.bg-btn{padding:8px 18px;border:none;border-radius:8px;font-size:.875rem;font-weight:600;cursor:pointer;transition:all .15s;display:inline-flex;align-items:center;gap:6px}
+.bg-btn:hover{opacity:.9;transform:translateY(-1px)}
+.bg-btn-primary{background:#1a73e8;color:#fff}
+.bg-btn-success{background:#2e7d32;color:#fff}
+.bg-btn-danger{background:#c62828;color:#fff}
+.bg-btn-ghost{background:#e8f0fe;color:#1a73e8;border:1.5px dashed #1a73e8}
+.bg-btn-sm{padding:5px 12px;font-size:.8rem}
+.bg-btn-muted{background:#f5f5f5;color:#555;border:1px solid #ddd}
+.bg-btn-outline{background:rgba(26,115,232,.08);color:#1a73e8;border:1px solid #1a73e8}
+
+/* ── Card ── */
+.bg-card{background:#fff;border-radius:14px;box-shadow:0 1px 10px rgba(0,0,0,.08);margin-bottom:18px;overflow:hidden}
+.bg-card-title{padding:13px 20px;border-bottom:1px solid #f0f0f0;font-size:.72rem;font-weight:700;text-transform:uppercase;letter-spacing:.08em;color:#888}
+.bg-card-body{padding:20px}
+
+/* ── Form ── */
+.bg-frow{display:flex;gap:14px;margin-bottom:14px}
+.bg-frow:last-child{margin-bottom:0}
+.bg-fcol{flex:1}
+.bg-label{display:block;font-size:.72rem;font-weight:700;color:#777;text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px}
+.bg-input{width:100%;padding:9px 12px;border:1.5px solid #e0e0e0;border-radius:8px;font-size:.9rem;font-family:inherit;color:#1a1a2e;outline:none;transition:border-color .15s,box-shadow .15s;background:#fff}
+.bg-input:focus{border-color:#1a73e8;box-shadow:0 0 0 3px rgba(26,115,232,.12)}
+textarea.bg-input{resize:vertical;min-height:60px}
+
+/* ── Items table ── */
+.bg-items-table{width:100%;border-collapse:collapse}
+.bg-items-table th{background:#fafafa;padding:10px;text-align:left;font-size:.7rem;font-weight:700;text-transform:uppercase;letter-spacing:.05em;color:#888;border-bottom:2px solid #eee}
+.bg-items-table td{padding:6px;border-bottom:1px solid #f5f5f5;vertical-align:top}
+.bg-items-table td .bg-input{padding:7px 9px;font-size:.88rem}
+.bg-items-table td textarea.bg-input{min-height:54px}
+.bg-col-sno{width:44px;text-align:center}
+.bg-col-rate{width:110px}
+.bg-col-amt{width:130px}
+.bg-col-del{width:38px}
+.bg-del-btn{background:none;border:none;color:#ccc;font-size:1.3rem;cursor:pointer;padding:5px;border-radius:6px;line-height:1;transition:all .15s}
+.bg-del-btn:hover{color:#c62828;background:#fff0f0}
+
+/* ── Totals ── */
+.bg-totals{display:flex;justify-content:space-between;align-items:center;padding:14px 20px;background:#f8f9ff;border-top:2px solid #e8eaf6}
+.bg-words-txt{font-size:.85rem;color:#555}
+.bg-words-txt strong{color:#1a73e8}
+.bg-total-lbl{font-size:.72rem;font-weight:700;color:#888;text-transform:uppercase}
+.bg-total-val{font-size:1.5rem;font-weight:800;color:#1a73e8}
+
+/* ── Footer ── */
+.bg-form-footer{display:flex;justify-content:flex-end;gap:10px;margin-top:18px}
+
+/* ── Modal ── */
+.bg-overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:1000;align-items:center;justify-content:center;padding:16px}
+.bg-overlay.open{display:flex}
+.bg-modal{background:#fff;border-radius:16px;width:100%;max-width:580px;max-height:90vh;overflow-y:auto;box-shadow:0 25px 60px rgba(0,0,0,.3)}
+.bg-modal-hdr{padding:20px 24px 18px;border-bottom:1px solid #f0f0f0;display:flex;align-items:center;justify-content:space-between}
+.bg-modal-hdr h2{font-size:1.1rem;font-weight:700}
+.bg-close-btn{background:none;border:none;font-size:1.3rem;cursor:pointer;color:#aaa;padding:4px;border-radius:6px}
+.bg-close-btn:hover{color:#555;background:#f5f5f5}
+.bg-modal-body{padding:22px 24px}
+.bg-modal-ftr{padding:14px 24px;border-top:1px solid #f0f0f0;display:flex;justify-content:flex-end;gap:10px}
+
+/* ── Toast ── */
+.bg-toast{position:fixed;bottom:24px;right:24px;background:#323232;color:#fff;padding:12px 20px;border-radius:10px;font-size:.88rem;font-weight:500;box-shadow:0 4px 20px rgba(0,0,0,.3);z-index:9999;opacity:0;transform:translateY(10px);transition:all .25s;pointer-events:none}
+.bg-toast.show{opacity:1;transform:translateY(0)}
+
+/* ── PRINT ── */
+@media print {
+  @page{size:A4 portrait;margin:10mm 12mm}
+  *{-webkit-print-color-adjust:exact !important;print-color-adjust:exact !important}
+  #bg-screen-ui{display:none !important}
+  .bg-overlay{display:none !important}
+  .bg-toast{display:none !important}
+  #bg-print-bill{display:block !important}
+  /* Hide all admin chrome during print */
+  aside, header, .px-4, nav { display:none !important; }
+}
+
+/* ── Print bill ── */
+#bg-print-bill{
+  display:none;
+  font-family:Arial,Helvetica,sans-serif;
+  font-size:11pt;
+  color:#000;
+  background:#fff;
+}
+#bg-print-bill *{box-sizing:border-box}
+
+.bg-wm{
+  position:fixed;top:50%;left:50%;
+  transform:translate(-50%,-50%) rotate(-30deg);
+  font-size:72pt;font-weight:900;
+  color:rgba(0,0,0,.035);
+  white-space:nowrap;pointer-events:none;z-index:0;user-select:none;
+}
+
+.bg-bill{position:relative;z-index:1}
+.bg-bill-top{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:3px}
+.bg-bill-top .bg-center{text-align:center;font-weight:bold;font-size:10pt;text-decoration:underline;flex:1}
+.bg-bill-top .bg-mobile{text-align:right;font-size:9.5pt;white-space:nowrap;min-width:160px}
+.bg-bill-coname{text-align:center;font-size:28pt;font-weight:900;letter-spacing:3px;line-height:1.1;margin:2px 0}
+.bg-bill-codesc{text-align:center;font-size:9.5pt;line-height:1.5}
+.bg-bill-coaddr{text-align:center;font-size:9.5pt;margin-bottom:4px}
+.bg-bill-numdate{display:flex;justify-content:space-between;padding:4px 0;border-top:2px solid #000;border-bottom:1px solid #000;margin:4px 0;font-size:10.5pt}
+.bg-bill-numdate .bg-nval{font-size:13pt;font-weight:bold}
+.bg-bill-ms{padding:3px 0;border-bottom:1px dashed #000;margin-bottom:4px;font-size:10.5pt;min-height:24px}
+.bg-btable{width:100%;border-collapse:collapse;font-size:10.5pt}
+.bg-btable th,.bg-btable td{border:1px solid #000;padding:4px 6px}
+.bg-btable th{text-align:center;font-weight:bold;font-size:10pt}
+.bg-btable .bg-tc{text-align:center}
+.bg-btable .bg-tr{text-align:right}
+.bg-btable .bg-col-sno{width:36px}
+.bg-btable .bg-col-rate{width:72px}
+.bg-btable .bg-col-rs{width:80px}
+.bg-btable .bg-col-p{width:36px}
+.bg-btable .bg-irow td{height:28px;vertical-align:top;padding-top:3px}
+.bg-btable .bg-erow td{height:26px}
+.bg-btable tfoot td{padding:5px 7px}
+.bg-bill-sign-section{display:flex;justify-content:space-between;margin-top:14px;font-size:9.5pt}
+.bg-bill-terms ol{padding-left:16px;margin-top:4px}
+.bg-bill-terms li{margin-bottom:2px}
+.bg-bill-sign{text-align:right;min-width:160px}
+.bg-sign-for{font-weight:bold;font-size:10pt}
+.bg-sign-line{margin-top:44px;border-bottom:1px solid #000;width:130px;margin-left:auto}
+.bg-sign-name{font-size:10pt;margin-top:3px}
+.bg-sign-label{font-size:9pt}
+</style>
+
+<!-- ══════════ SCREEN UI ══════════ -->
+<div id="bg-screen-ui">
+
+  <div class="flex items-center justify-between mb-6">
+    <div></div>
+    <div class="flex gap-3">
+      <button class="bg-btn bg-btn-outline" onclick="bgOpenSettings()">&#9881; Settings</button>
+      <button class="bg-btn bg-btn-primary" onclick="bgPrintBill()">&#128438; Print / PDF</button>
+    </div>
+  </div>
+
+  <div style="max-width:860px;margin:0 auto">
+
+    <div class="bg-card">
+      <div class="bg-card-title">Bill Information</div>
+      <div class="bg-card-body">
+        <div class="bg-frow">
+          <div class="bg-fcol" style="max-width:130px">
+            <label class="bg-label">Bill No.</label>
+            <input type="text" id="bg-bill-no" class="bg-input" placeholder="001">
+          </div>
+          <div class="bg-fcol" style="max-width:180px">
+            <label class="bg-label">Date</label>
+            <input type="date" id="bg-bill-date" class="bg-input">
+          </div>
+          <div class="bg-fcol">
+            <label class="bg-label">Customer (M/s)</label>
+            <input type="text" id="bg-customer" class="bg-input" placeholder="Customer or company name">
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-card">
+      <div class="bg-card-title">Items / Services</div>
+      <div style="overflow-x:auto">
+        <table class="bg-items-table">
+          <thead>
+            <tr>
+              <th class="bg-col-sno">#</th>
+              <th>Particulars (Description)</th>
+              <th class="bg-col-rate">Rate (Rs.)</th>
+              <th class="bg-col-amt">Amount (Rs.)</th>
+              <th class="bg-col-del"></th>
+            </tr>
+          </thead>
+          <tbody id="bg-items-body"></tbody>
+        </table>
+      </div>
+      <div style="padding:12px 16px;border-top:1px solid #f0f0f0">
+        <button class="bg-btn bg-btn-ghost bg-btn-sm" onclick="bgAddRow()">+ Add Row</button>
+      </div>
+      <div class="bg-totals">
+        <div class="bg-words-txt" id="bg-words-display">Amount: <strong>Zero Rupees Only</strong></div>
+        <div style="text-align:right">
+          <div class="bg-total-lbl">Total</div>
+          <div class="bg-total-val">Rs.&nbsp;<span id="bg-total-val">0.00</span></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="bg-form-footer">
+      <button class="bg-btn bg-btn-danger" onclick="bgResetForm()">Reset</button>
+      <button class="bg-btn bg-btn-success" onclick="bgPrintBill()">Print / Save as PDF</button>
+    </div>
+
+  </div>
+</div>
+
+<!-- ══════════ SETTINGS MODAL ══════════ -->
+<div class="bg-overlay" id="bg-settings-overlay">
+  <div class="bg-modal">
+    <div class="bg-modal-hdr">
+      <h2>Company Settings</h2>
+      <button class="bg-close-btn" onclick="bgCloseSettings()">&#10005;</button>
+    </div>
+    <div class="bg-modal-body">
+      <div class="bg-frow"><div class="bg-fcol">
+        <label class="bg-label">Company Name</label>
+        <input type="text" id="bg-s-name" class="bg-input" placeholder="e.g. STYLEUS">
+      </div></div>
+      <div class="bg-frow"><div class="bg-fcol">
+        <label class="bg-label">Description / Tagline</label>
+        <textarea id="bg-s-desc" class="bg-input" rows="3" placeholder="Fashion & Lifestyle Store..."></textarea>
+      </div></div>
+      <div class="bg-frow"><div class="bg-fcol">
+        <label class="bg-label">Address</label>
+        <input type="text" id="bg-s-addr" class="bg-input" placeholder="Shop address">
+      </div></div>
+      <div class="bg-frow">
+        <div class="bg-fcol">
+          <label class="bg-label">Mobile 1</label>
+          <input type="text" id="bg-s-mob1" class="bg-input" placeholder="9999999999">
+        </div>
+        <div class="bg-fcol">
+          <label class="bg-label">Mobile 2 (optional)</label>
+          <input type="text" id="bg-s-mob2" class="bg-input" placeholder="">
+        </div>
+      </div>
+      <div class="bg-frow"><div class="bg-fcol">
+        <label class="bg-label">Authorised Signatory Name</label>
+        <input type="text" id="bg-s-sign" class="bg-input" placeholder="Owner Name">
+      </div></div>
+      <div class="bg-frow"><div class="bg-fcol">
+        <label class="bg-label">Terms &amp; Conditions (one per line)</label>
+        <textarea id="bg-s-terms" class="bg-input" rows="5" placeholder="Goods once sold will not be returned.&#10;No warranty on used items.&#10;Payment in advance for custom orders."></textarea>
+      </div></div>
+    </div>
+    <div class="bg-modal-ftr">
+      <button class="bg-btn bg-btn-muted" onclick="bgCloseSettings()">Cancel</button>
+      <button class="bg-btn bg-btn-primary" onclick="bgSaveSettings()">Save</button>
+    </div>
+  </div>
+</div>
+
+<!-- Toast -->
+<div class="bg-toast" id="bg-toast"></div>
+
+<!-- ══════════ PRINT BILL ══════════ -->
+<div id="bg-print-bill">
+  <div class="bg-wm" id="bg-wm"></div>
+  <div class="bg-bill">
+
+    <div class="bg-bill-top">
+      <div style="width:30%"></div>
+      <div class="bg-center">BILL/CASH MEMO</div>
+      <div class="bg-mobile">Mobile : <span id="bg-p-mob1"></span><br><span id="bg-p-mob2"></span></div>
+    </div>
+
+    <div class="bg-bill-coname" id="bg-p-coname"></div>
+    <div class="bg-bill-codesc" id="bg-p-codesc"></div>
+    <div class="bg-bill-coaddr" id="bg-p-coaddr"></div>
+
+    <div class="bg-bill-numdate">
+      <div>No.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span class="bg-nval" id="bg-p-billno"></span></div>
+      <div>Dated.&nbsp;&nbsp; <span id="bg-p-date"></span></div>
+    </div>
+
+    <div class="bg-bill-ms">M/s.&nbsp;&nbsp;&nbsp;&nbsp;&nbsp; <span id="bg-p-ms"></span></div>
+
+    <table class="bg-btable">
+      <thead>
+        <tr>
+          <th class="bg-col-sno" rowspan="2">S.No.</th>
+          <th rowspan="2">PARTICULARS</th>
+          <th class="bg-col-rate" rowspan="2">RATE</th>
+          <th colspan="2">AMOUNT</th>
+        </tr>
+        <tr>
+          <th class="bg-col-rs">Rs.</th>
+          <th class="bg-col-p">P.</th>
+        </tr>
+      </thead>
+      <tbody id="bg-p-items"></tbody>
+      <tfoot>
+        <tr>
+          <td colspan="3">Rs. in words &nbsp;&nbsp; <span id="bg-p-words" style="font-style:italic"></span></td>
+          <td colspan="2" style="text-align:right"><strong>TOTAL &nbsp; <span id="bg-p-total"></span></strong></td>
+        </tr>
+      </tfoot>
+    </table>
+
+    <div class="bg-bill-sign-section">
+      <div class="bg-bill-terms">
+        <strong>Terms &amp; Conditions :-</strong>
+        <ol id="bg-p-terms"></ol>
+      </div>
+      <div class="bg-bill-sign">
+        <div class="bg-sign-for">For <span id="bg-p-sign-co"></span></div>
+        <div class="bg-sign-line"></div>
+        <div class="bg-sign-name" id="bg-p-sign-name"></div>
+        <div class="bg-sign-label">Authorised Signatory</div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+{% endblock %}
+
+{% block scripts %}
+<script>
+'use strict';
+
+const BG_DEFAULTS = {
+  name: 'STYLEUS',
+  desc: 'Fashion & Lifestyle Store',
+  addr: 'Your Shop Address',
+  mob1: '',
+  mob2: '',
+  sign: 'Owner',
+  terms: 'Goods once sold will not be returned.\nNo warranty on used items.\nPayment in advance for custom orders.'
+};
+
+let bgCfg = bgLoadCfg();
+let bgRows = [];
+let bgRid = 0;
+let bgBillNum = parseInt(localStorage.getItem('styleus_bg_num') || '1', 10);
+
+(function bgInit() {
+  document.getElementById('bg-bill-no').value = bgPad3(bgBillNum);
+  document.getElementById('bg-bill-date').value = new Date().toISOString().slice(0, 10);
+  bgAddRow(); bgAddRow(); bgAddRow();
+})();
+
+function bgAddRow() {
+  bgRows.push({ id: ++bgRid, desc: '', rate: '', amount: '' });
+  bgRenderRows();
+}
+
+function bgDeleteRow(id) {
+  if (bgRows.length <= 1) return;
+  bgRows = bgRows.filter(r => r.id !== id);
+  bgRenderRows();
+  bgRecalc();
+}
+
+function bgOnField(id, field, val) {
+  const r = bgRows.find(r => r.id === id);
+  if (r) { r[field] = val; bgRecalc(); }
+}
+
+function bgRenderRows() {
+  document.getElementById('bg-items-body').innerHTML = bgRows.map((r, i) => `
+    <tr>
+      <td class="bg-col-sno" style="text-align:center;padding-top:12px;color:#bbb">${i + 1}</td>
+      <td><textarea class="bg-input" placeholder="Description of item / service"
+        oninput="bgOnField(${r.id},'desc',this.value)">${bgEsc(r.desc)}</textarea></td>
+      <td class="bg-col-rate"><input type="number" min="0" step="0.01" class="bg-input" placeholder="0.00"
+        value="${bgEsc(r.rate)}" oninput="bgOnField(${r.id},'rate',this.value)"></td>
+      <td class="bg-col-amt"><input type="number" min="0" step="0.01" class="bg-input" placeholder="0.00"
+        value="${bgEsc(r.amount)}" oninput="bgOnField(${r.id},'amount',this.value)"></td>
+      <td class="bg-col-del"><button class="bg-del-btn" onclick="bgDeleteRow(${r.id})" title="Remove">&#215;</button></td>
+    </tr>`).join('');
+}
+
+function bgRecalc() {
+  const total = bgRows.reduce((s, r) => s + (parseFloat(r.amount) || 0), 0);
+  document.getElementById('bg-total-val').textContent = bgFmtNum(total);
+  document.getElementById('bg-words-display').innerHTML =
+    `Amount: <strong>${bgToWords(total)} Rupees Only</strong>`;
+}
+
+function bgResetForm() {
+  if (!confirm('Clear all items and reset?')) return;
+  bgRows = []; bgRid = 0;
+  document.getElementById('bg-customer').value = '';
+  bgAddRow(); bgAddRow(); bgAddRow();
+  bgRecalc();
+}
+
+function bgLoadCfg() {
+  try { return { ...BG_DEFAULTS, ...JSON.parse(localStorage.getItem('styleus_bg_cfg') || '{}') }; }
+  catch { return { ...BG_DEFAULTS }; }
+}
+
+function bgOpenSettings() {
+  Object.keys(BG_DEFAULTS).forEach(k => {
+    document.getElementById('bg-s-' + k).value = bgCfg[k] || '';
+  });
+  document.getElementById('bg-settings-overlay').classList.add('open');
+}
+
+function bgCloseSettings() {
+  document.getElementById('bg-settings-overlay').classList.remove('open');
+}
+
+function bgSaveSettings() {
+  Object.keys(BG_DEFAULTS).forEach(k => {
+    bgCfg[k] = (document.getElementById('bg-s-' + k).value || '').trim();
+  });
+  localStorage.setItem('styleus_bg_cfg', JSON.stringify(bgCfg));
+  bgCloseSettings();
+  bgToast('Settings saved');
+}
+
+function bgPrintBill() {
+  bgSet('bg-p-coname', bgCfg.name);
+  bgSetH('bg-p-codesc', bgCfg.desc.replace(/\n/g, '<br>'));
+  bgSet('bg-p-coaddr', bgCfg.addr);
+  bgSet('bg-p-mob1', bgCfg.mob1);
+  bgSet('bg-p-mob2', bgCfg.mob2);
+  bgSet('bg-p-billno', document.getElementById('bg-bill-no').value);
+  bgSet('bg-p-ms', document.getElementById('bg-customer').value);
+  bgSet('bg-p-sign-co', bgCfg.name);
+  bgSet('bg-p-sign-name', bgCfg.sign);
+  bgSet('bg-wm', bgCfg.name);
+
+  const dv = document.getElementById('bg-bill-date').value;
+  if (dv) {
+    const [y, m, d] = dv.split('-');
+    bgSet('bg-p-date', `${d}-${m}-${y.slice(2)}`);
+  }
+
+  const filled = bgRows.filter(r => r.desc.trim() || r.amount);
+  const MIN = 12;
+  const empties = Math.max(0, MIN - filled.length);
+
+  let html = filled.map((r, i) => {
+    const amt = parseFloat(r.amount) || 0;
+    const rs = Math.floor(amt);
+    const p = Math.round((amt - rs) * 100);
+    return `<tr class="bg-irow">
+      <td class="bg-tc bg-col-sno">${i + 1}</td>
+      <td>${r.desc.replace(/\n/g, '<br>')}</td>
+      <td class="bg-tc bg-col-rate">${bgEsc(r.rate || '')}</td>
+      <td class="bg-tr bg-col-rs">${rs ? bgInNum(rs) : ''}</td>
+      <td class="bg-tr bg-col-p">${amt ? bgPad2(p) : ''}</td>
+    </tr>`;
+  }).join('');
+
+  for (let i = 0; i < empties; i++) {
+    html += `<tr class="bg-erow"><td></td><td></td><td></td><td></td><td></td></tr>`;
+  }
+  bgSetH('bg-p-items', html);
+
+  const total = bgRows.reduce((s, r) => s + (parseFloat(r.amount) || 0), 0);
+  const tRs = Math.floor(total);
+  const tP = Math.round((total - tRs) * 100);
+  bgSet('bg-p-total', `${bgInNum(tRs)}-${bgPad2(tP)}`);
+  bgSet('bg-p-words', `${bgToWords(total)} Rupees Only`);
+
+  const terms = bgCfg.terms.split('\n').filter(t => t.trim());
+  bgSetH('bg-p-terms', terms.map(t => `<li>${bgEsc(t)}</li>`).join(''));
+
+  bgBillNum++;
+  localStorage.setItem('styleus_bg_num', bgBillNum);
+  document.getElementById('bg-bill-no').value = bgPad3(bgBillNum);
+
+  window.print();
+}
+
+function bgSet(id, val) { const e = document.getElementById(id); if (e) e.textContent = val; }
+function bgSetH(id, html) { const e = document.getElementById(id); if (e) e.innerHTML = html; }
+function bgEsc(s) {
+  return String(s)
+    .replace(/&/g,'&amp;').replace(/</g,'&lt;')
+    .replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+function bgPad2(n) { return String(n).padStart(2, '0'); }
+function bgPad3(n) { return String(n).padStart(3, '0'); }
+function bgFmtNum(n) { return n.toLocaleString('en-IN', { minimumFractionDigits:2, maximumFractionDigits:2 }); }
+function bgInNum(n) { return n.toLocaleString('en-IN'); }
+
+function bgToWords(n) {
+  n = Math.round(n * 100) / 100;
+  if (!n) return 'Zero';
+  const ones = ['','One','Two','Three','Four','Five','Six','Seven','Eight','Nine',
+    'Ten','Eleven','Twelve','Thirteen','Fourteen','Fifteen','Sixteen',
+    'Seventeen','Eighteen','Nineteen'];
+  const tensW = ['','','Twenty','Thirty','Forty','Fifty','Sixty','Seventy','Eighty','Ninety'];
+  function lt100(n) {
+    if (n < 20) return ones[n];
+    return tensW[Math.floor(n/10)] + (n%10 ? ' '+ones[n%10] : '');
+  }
+  function lt1000(n) {
+    if (n < 100) return lt100(n);
+    return ones[Math.floor(n/100)] + ' Hundred' + (n%100 ? ' '+lt100(n%100) : '');
+  }
+  const rupees = Math.floor(n);
+  const paise = Math.round((n - rupees) * 100);
+  const parts = [];
+  const crore    = Math.floor(rupees / 10000000);
+  const lakh     = Math.floor((rupees % 10000000) / 100000);
+  const thousand = Math.floor((rupees % 100000) / 1000);
+  const rem      = rupees % 1000;
+  if (crore)    parts.push(lt1000(crore)    + ' Crore');
+  if (lakh)     parts.push(lt100(lakh)      + ' Lakh');
+  if (thousand) parts.push(lt1000(thousand) + ' Thousand');
+  if (rem)      parts.push(lt1000(rem));
+  let result = parts.join(' ');
+  if (paise) result += ' and ' + lt100(paise) + ' Paise';
+  return result.trim();
+}
+
+let _bgTt;
+function bgToast(msg) {
+  const el = document.getElementById('bg-toast');
+  el.textContent = msg;
+  el.classList.add('show');
+  clearTimeout(_bgTt);
+  _bgTt = setTimeout(() => el.classList.remove('show'), 2500);
+}
+
+document.getElementById('bg-settings-overlay').addEventListener('click', e => {
+  if (e.target === e.currentTarget) bgCloseSettings();
+});
+</script>
+{% endblock %}
